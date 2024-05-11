@@ -50,7 +50,7 @@ function Branding() {
   useEffect(() => {
     setTimeout(() => {
       setFakeLoading(false);
-    }, 2800);
+    }, 1200);
   }, []);
 
   useEffect(() => {
@@ -289,6 +289,7 @@ function Branding() {
           cursor: loading ? "wait" : "auto",
         }}
       >
+        {/* Picture section  */}
         <div className="profile-update-section">
           <p
             className={
@@ -376,6 +377,8 @@ function Branding() {
             </div>
           </div>
         </div>
+
+        {/* Banner section  */}
         <div className="cover-update-section">
           <p className={theme ? "cover-head" : "cover-head text-light-mode"}>
             Banner image
@@ -454,6 +457,7 @@ function Branding() {
             </div>
           </div>
         </div>
+        
       </div>
     </>
   );

@@ -18,6 +18,7 @@ import FeaturedChannels from "./FeaturedChannels";
 import { RiUserSettingsLine } from "react-icons/ri";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import BasicTabs from "../BasicTabs";
 
 function OtherChannel() {
   const navigate = useNavigate();
@@ -344,6 +345,7 @@ function OtherChannel() {
               </div>
             </div>
           </SkeletonTheme>
+
           <div
             className="channel-top-content"
             style={
@@ -508,7 +510,10 @@ function OtherChannel() {
             </div>
           </div>
           <div className="channel-mid-content">
-            <div className="different-sections">
+            {/* <BasicTabs section={Section} /> */}
+            <BasicTabs />
+
+            {/* <div className="different-sections">
               {Section === "Home" ? (
                 <p
                   className={theme ? "channel-home1" : "channel-home2"}
@@ -642,7 +647,7 @@ function OtherChannel() {
                   ABOUT
                 </p>
               )}
-            </div>
+            </div> */}
           </div>
           <br />
           <hr

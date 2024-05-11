@@ -12,8 +12,10 @@ import DoneOutlinedIcon from "@mui/icons-material/DoneOutlined";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import YouTubeIcon from "@mui/icons-material/YouTube";
+import { useNavigate } from "react-router-dom";
 
 function AccountPop() {
+  const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -83,6 +85,7 @@ function AccountPop() {
           isBtnClicked === false ? { display: "block" } : { display: "none" }
         }
       >
+        {/*==================== profile pic ==================== */}
         <div className="user-section">
           <div className="left-part">
             <img
@@ -105,14 +108,17 @@ function AccountPop() {
             </Tooltip>
           </div>
         </div>
+
         <hr className={theme ? "seperate" : "seperate seperate-light"} />
+
+        {/*===================== middle details  ================*/}
         <div className="about-channel-section">
           <div
             className={
               theme ? "yourchannel c-sec" : "yourchannel c-sec preview-lightt"
             }
             onClick={() => {
-              window.location.href = `/channel/${ChannelID}`;
+              navigate(`/channel/${ChannelID}`);
             }}
           >
             <AccountBoxOutlinedIcon
@@ -126,7 +132,7 @@ function AccountPop() {
               theme ? "yourstudio c-sec" : "yourstudio c-sec preview-lightt"
             }
             onClick={() => {
-              window.location.href = "/";
+              navigate("/");
             }}
           >
             <YouTubeIcon
@@ -159,24 +165,16 @@ function AccountPop() {
             />
           </div>
         </div>
+
         <hr className={theme ? "seperate" : "seperate seperate-light"} />
+
+        {/*====================== sign out ==================  */}
         <div className="extra1-section">
-          <div
-            className={
-              theme ? "language c-sec" : "language c-sec preview-lightt"
-            }
-          >
-            <TranslateOutlinedIcon
-              fontSize="medium"
-              style={{ color: theme ? "#909090" : "black" }}
-            />
-            <p>Language: English</p>
-          </div>
           <div
             className={theme ? "exitout c-sec" : "exitout c-sec preview-lightt"}
             onClick={() => {
               localStorage.removeItem("userToken");
-              window.location.href = "/";
+              navigate("/");
             }}
           >
             <LogoutOutlinedIcon
@@ -187,6 +185,8 @@ function AccountPop() {
           </div>
         </div>
       </div>
+
+      {/*========================== dark & light mode nu ander nu dialog box ================== */}
       <div
         className={theme ? "account-pop2" : "account-pop2 light-mode"}
         style={

@@ -1,6 +1,6 @@
 import LeftPanel3 from "../LeftPanel3";
 import Navbar2 from "../Navbar2";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import "../../Css/Studio/videodetails.css";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -20,6 +20,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { GrUndo } from "react-icons/gr";
 
 function VideoDetails() {
+  const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const { id } = useParams();
   const [videodata, setVideoData] = useState();
@@ -131,18 +132,18 @@ function VideoDetails() {
   useEffect(() => {
     setTimeout(() => {
       setFakeLoading(false);
-    }, 3000);
+    }, 1200);
   }, []);
 
-  useEffect(() => {
-    const handler = (e) => {
-      if (!optionRef.current.contains(e.target)) {
-        setOptionClicked(false);
-      }
-    };
+  // useEffect(() => {
+  //   const handler = (e) => {
+  //     if (!optionRef.current.contains(e.target)) {
+  //       setOptionClicked(false);
+  //     }
+  //   };
 
-    document.addEventListener("mousedown", handler);
-  }, []);
+  //   document.addEventListener("mousedown", handler);
+  // }, []);
 
   useEffect(() => {
     if (loading === true) {
@@ -323,10 +324,7 @@ function VideoDetails() {
       <Navbar2 />
       <LeftPanel3 />
 
-      <div
-        className="back-menu-edit"
-        onClick={() => (window.location.href = "/studio/video")}
-      >
+      <div className="back-menu-edit" onClick={() => navigate("/studio/video")}>
         <WestIcon fontSize="medium" style={{ color: "#aaa" }} />
       </div>
 
@@ -340,6 +338,7 @@ function VideoDetails() {
           cursor: loading ? "wait" : "auto",
         }}
       >
+        {/*======================  undo and save button ====================== */}
         <div className="current-editvideodata">
           <p
             className={
@@ -383,7 +382,9 @@ function VideoDetails() {
             </button>
           </div>
         </div>
+
         <div className="current-editvideo-data">
+          {/*======================  video form ====================== */}
           <div className="video-details-left">
             <div className="current-video-editable-section">
               <div className="currentvideo-title">
@@ -542,6 +543,8 @@ function VideoDetails() {
                         style={{ color: "white" }}
                       />
                     </div>
+
+                    {/* ========== updated tubmnail in three dot click so open card details ============= */}
                     <div
                       className="extra-img-options"
                       ref={optionRef}
@@ -596,37 +599,11 @@ function VideoDetails() {
                     </div>
                   </div>
                 </div>
-                <div
-                  className="currnt-video-tags-section"
-                  style={{ marginTop: thumbnailSelected ? "0px" : "30px" }}
-                >
-                  <p className={theme ? "" : "text-light-mode"}>Tags</p>
-                  <p className={theme ? "" : "text-light-mode2"}>
-                    Tags can be useful if content in your video is commonly
-                    misspelled. Otherwise, tags play a minimal role in helping
-                    viewers find your video.
-                  </p>
-                  <input
-                    type="text"
-                    name="video-title"
-                    className={
-                      theme
-                        ? "currentvid-tagsinp"
-                        : "currentvid-tagsinp new-light-border text-light-mode"
-                    }
-                    value={previewTags}
-                    required
-                    onChange={(e) => {
-                      setPreviewTags(e.target.value);
-                      setChanges(true);
-                    }}
-                    placeholder="Add tags to rank your video up"
-                    maxLength={200}
-                  />
-                </div>
               </div>
             </div>
           </div>
+
+          {/*===============  Video show , link ============= */}
           <div className="video-details-right">
             <div className="preview-current-video">
               <iframe
@@ -654,7 +631,7 @@ function VideoDetails() {
                       className="current-videolink"
                       onClick={() => {
                         if (videodata) {
-                          window.location.href = `${videolink}/${videodata._id}`;
+                          navigate(`${videolink}/${videodata._id}`);
                         }
                       }}
                     >

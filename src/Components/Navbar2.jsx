@@ -16,8 +16,10 @@ import Zoom from "@mui/material/Zoom";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { BiSearch } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 
 function Navbar2() {
+  const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const token = localStorage.getItem("userToken");
   const [email, setEmail] = useState();
@@ -88,7 +90,7 @@ function Navbar2() {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 2800);
+    }, 1200);
   }, []);
 
   useEffect(() => {
@@ -156,6 +158,7 @@ function Navbar2() {
   return (
     <>
       <div className={theme ? "navbar2" : "navbar2 light-mode text-light-mode"}>
+        {/*================  logo ================ */}
         <div className="left-bar">
           <MenuRoundedIcon
             className={theme ? "menu2" : "menu2 menu2-light"}
@@ -168,10 +171,12 @@ function Navbar2() {
             alt="logo"
             className="youtubeLogo2"
             onClick={() => {
-              window.location.href = "/studio";
+              navigate("/studio");
             }}
           />
         </div>
+
+        {/*======================  searchBar ============ */}
         <div className="middle-bar2">
           <div
             className={
@@ -219,6 +224,7 @@ function Navbar2() {
               }
             />
           </div>
+
           <div
             className={
               theme
@@ -240,7 +246,7 @@ function Navbar2() {
                 <p
                   className="show-all"
                   onClick={() => {
-                    window.location.href = "/studio/video";
+                    navigate("/studio/video");
                   }}
                 >
                   Show all
@@ -276,7 +282,7 @@ function Navbar2() {
                           alt="thumbnail"
                           className="searching-thumbnail"
                           onClick={() => {
-                            window.location.href = `/studio/video/edit/${element._id}`;
+                            navigate(`/studio/video/edit/${element._id}`);
                           }}
                         />
                         <p
@@ -295,7 +301,7 @@ function Navbar2() {
                         <div className="searchvid-data">
                           <p
                             onClick={() => {
-                              window.location.href = `/studio/video/edit/${element._id}`;
+                              navigate(`/studio/video/edit/${element._id}`);
                             }}
                           >
                             {element.Title.length <= 30
@@ -328,7 +334,7 @@ function Navbar2() {
                                 fontSize="medium"
                                 style={{ color: theme ? "#aaa" : "#606060" }}
                                 onClick={() => {
-                                  window.location.href = `/studio/video/edit/${element._id}`;
+                                  navigate(`/studio/video/edit/${element._id}`);
                                 }}
                               />
                             </Tooltip>
@@ -344,7 +350,9 @@ function Navbar2() {
                                 fontSize="medium"
                                 style={{ color: theme ? "#aaa" : "#606060" }}
                                 onClick={() => {
-                                  window.location.href = `/studio/video/comments/${element._id}`;
+                                  navigate(
+                                    `/studio/video/comments/${element._id}`
+                                  );
                                 }}
                               />
                             </Tooltip>
@@ -360,7 +368,7 @@ function Navbar2() {
                                 fontSize="medium"
                                 style={{ color: theme ? "#aaa" : "#606060" }}
                                 onClick={() => {
-                                  window.location.href = `/video/${element._id}`;
+                                  navigate(`/video/${element._id}`);
                                 }}
                               />
                             </Tooltip>
@@ -384,6 +392,7 @@ function Navbar2() {
                 })}
             </div>
           </div>
+
           <div
             className={
               theme
@@ -409,7 +418,7 @@ function Navbar2() {
                 <p
                   className="show-all"
                   onClick={() => {
-                    window.location.href = "/studio/video";
+                    navigate("/studio/video");
                   }}
                 >
                   Show all
@@ -445,7 +454,7 @@ function Navbar2() {
                           alt="thumbnail"
                           className="searching-thumbnail"
                           onClick={() => {
-                            window.location.href = `/studio/video/edit/${element._id}`;
+                            navigate(`/studio/video/edit/${element._id}`);
                           }}
                         />
                         <p
@@ -464,7 +473,7 @@ function Navbar2() {
                         <div className="searchvid-data">
                           <p
                             onClick={() => {
-                              window.location.href = `/studio/video/edit/${element._id}`;
+                              navigate(`/studio/video/edit/${element._id}`);
                             }}
                           >
                             {element.Title.length <= 30
@@ -497,7 +506,7 @@ function Navbar2() {
                                 fontSize="medium"
                                 style={{ color: theme ? "#aaa" : "#606060" }}
                                 onClick={() => {
-                                  window.location.href = `/studio/video/edit/${element._id}`;
+                                  navigate(`/studio/video/edit/${element._id}`);
                                 }}
                               />
                             </Tooltip>
@@ -513,7 +522,9 @@ function Navbar2() {
                                 fontSize="medium"
                                 style={{ color: theme ? "#aaa" : "#606060" }}
                                 onClick={() => {
-                                  window.location.href = `/studio/video/comments/${element._id}`;
+                                  navigate(
+                                    `/studio/video/comments/${element._id}`
+                                  );
                                 }}
                               />
                             </Tooltip>
@@ -529,7 +540,7 @@ function Navbar2() {
                                 fontSize="medium"
                                 style={{ color: theme ? "#aaa" : "#606060" }}
                                 onClick={() => {
-                                  window.location.href = `/video/${element._id}`;
+                                  navigate(`/video/${element._id}`);
                                 }}
                               />
                             </Tooltip>
@@ -585,6 +596,7 @@ function Navbar2() {
             <div className="my-five-videos"></div>
           </div>
         </div>
+
         <SkeletonTheme
           baseColor={theme ? "#353535" : "#aaaaaa"}
           highlightColor={theme ? "#444" : "#b6b6b6"}
@@ -601,6 +613,8 @@ function Navbar2() {
             />
           </div>
         </SkeletonTheme>
+
+        {/*==================== profile ============= */}
         <div
           className="right-bar2"
           style={
@@ -624,6 +638,7 @@ function Navbar2() {
           />
         </div>
       </div>
+
       <div
         className="ac-pop"
         ref={accountRef}
@@ -638,6 +653,7 @@ function Navbar2() {
         className="new-studio-search-section"
         style={{ display: searchClicked && MobileSearch ? "flex" : "none" }}
       >
+
         <div
           className={
             theme ? "search2-new" : "search2-new light-mode text-light-mode"
@@ -703,7 +719,7 @@ function Navbar2() {
                 <p
                   className="show-all"
                   onClick={() => {
-                    window.location.href = "/studio/video";
+                    navigate("/studio/video");
                   }}
                 >
                   Show all
@@ -739,7 +755,7 @@ function Navbar2() {
                           alt="thumbnail"
                           className="searching-thumbnail"
                           onClick={() => {
-                            window.location.href = `/studio/video/edit/${element._id}`;
+                            navigate(`/studio/video/edit/${element._id}`);
                           }}
                         />
                         <p
@@ -758,7 +774,7 @@ function Navbar2() {
                         <div className="searchvid-data">
                           <p
                             onClick={() => {
-                              window.location.href = `/studio/video/edit/${element._id}`;
+                              navigate(`/studio/video/edit/${element._id}`);
                             }}
                           >
                             {element.Title.length <= 30
@@ -791,7 +807,7 @@ function Navbar2() {
                                 fontSize="medium"
                                 style={{ color: theme ? "#aaa" : "#606060" }}
                                 onClick={() => {
-                                  window.location.href = `/studio/video/edit/${element._id}`;
+                                  navigate(`/studio/video/edit/${element._id}`);
                                 }}
                               />
                             </Tooltip>
@@ -807,7 +823,9 @@ function Navbar2() {
                                 fontSize="medium"
                                 style={{ color: theme ? "#aaa" : "#606060" }}
                                 onClick={() => {
-                                  window.location.href = `/studio/video/comments/${element._id}`;
+                                  navigate(
+                                    `/studio/video/comments/${element._id}`
+                                  );
                                 }}
                               />
                             </Tooltip>
@@ -823,7 +841,7 @@ function Navbar2() {
                                 fontSize="medium"
                                 style={{ color: theme ? "#aaa" : "#606060" }}
                                 onClick={() => {
-                                  window.location.href = `/video/${element._id}`;
+                                  navigate(`/video/${element._id}`);
                                 }}
                               />
                             </Tooltip>
@@ -874,7 +892,7 @@ function Navbar2() {
                 <p
                   className="show-all"
                   onClick={() => {
-                    window.location.href = "/studio/video";
+                    navigate("/studio/video");
                   }}
                 >
                   Show all
@@ -910,7 +928,7 @@ function Navbar2() {
                           alt="thumbnail"
                           className="searching-thumbnail"
                           onClick={() => {
-                            window.location.href = `/studio/video/edit/${element._id}`;
+                            navigate(`/studio/video/edit/${element._id}`);
                           }}
                         />
                         <p
@@ -929,7 +947,7 @@ function Navbar2() {
                         <div className="searchvid-data">
                           <p
                             onClick={() => {
-                              window.location.href = `/studio/video/edit/${element._id}`;
+                              navigate(`/studio/video/edit/${element._id}`);
                             }}
                           >
                             {element.Title.length <= 30
@@ -962,7 +980,7 @@ function Navbar2() {
                                 fontSize="medium"
                                 style={{ color: theme ? "#aaa" : "#606060" }}
                                 onClick={() => {
-                                  window.location.href = `/studio/video/edit/${element._id}`;
+                                  navigate(`/studio/video/edit/${element._id}`);
                                 }}
                               />
                             </Tooltip>
@@ -978,7 +996,9 @@ function Navbar2() {
                                 fontSize="medium"
                                 style={{ color: theme ? "#aaa" : "#606060" }}
                                 onClick={() => {
-                                  window.location.href = `/studio/video/comments/${element._id}`;
+                                  navigate(
+                                    `/studio/video/comments/${element._id}`
+                                  );
                                 }}
                               />
                             </Tooltip>
@@ -994,7 +1014,7 @@ function Navbar2() {
                                 fontSize="medium"
                                 style={{ color: theme ? "#aaa" : "#606060" }}
                                 onClick={() => {
-                                  window.location.href = `/video/${element._id}`;
+                                  navigate(`/video/${element._id}`);
                                 }}
                               />
                             </Tooltip>
@@ -1050,6 +1070,7 @@ function Navbar2() {
           </div>
         </div>
       </div>
+
     </>
   );
 }

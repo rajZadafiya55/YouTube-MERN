@@ -5,8 +5,10 @@ import Branding from "./Branding";
 import { useState, useEffect } from "react";
 import jwtDecode from "jwt-decode";
 import Basic from "./Basic";
+import { useNavigate } from "react-router-dom";
 
 function Customization() {
+  const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const [currentTab, setCurrentTab] = useState("branding");
   const [email, setEmail] = useState();
@@ -119,6 +121,7 @@ function Customization() {
     <>
       <Navbar2 />
       <LeftPanel2 />
+
       <div className="channel-customize">
         <div
           className="channel-customize-section"
@@ -132,6 +135,8 @@ function Customization() {
               Channel customization
             </p>
           </div>
+
+          {/* ================ tab view  ================*/}
           <div className="redirectss">
             <div className="left-redirects">
               <p
@@ -156,11 +161,13 @@ function Customization() {
                 Basic info
               </p>
             </div>
+
+            {/*====================  view channel and publish button  ====================== F*/}
             <div className="right-redirects">
               <p
                 onClick={() => {
                   if (channelID !== undefined) {
-                    window.location.href = `/channel/${channelID}`;
+                    navigate(`/channel/${channelID}`);
                   }
                 }}
                 style={{ cursor: "pointer" }}

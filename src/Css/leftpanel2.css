@@ -160,17 +160,17 @@
   .long-left {
     display: none !important;
   }
-  .short-left {
+  /* .short-left {
     display: none !important;
-  }
-  .short-left2 {
+  } */
+  .short-left {
     display: block !important;
     width: 90px !important;
   }
 }
 
 @media (width<= 650px) {
-  .short-left2 {
+  .short-left {
     display: none !important;
   }
   .studio-horizontal-menu {

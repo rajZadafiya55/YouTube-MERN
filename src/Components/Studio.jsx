@@ -30,8 +30,10 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import LanguageIcon from "@mui/icons-material/Language";
+import { useNavigate } from "react-router-dom";
 
 function Studio() {
+  const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const [email, setEmail] = useState("");
   const [isChannel, setisChannel] = useState();
@@ -591,7 +593,9 @@ function Studio() {
     <>
       <Navbar2 />
       <LeftPanel2 />
+
       <div className={theme ? "studio" : "studio studio-light"}>
+        {/* video upload icon  */}
         <div
           className={theme ? "create-btn" : "create-btn create-btn-light"}
           onClick={() => setIsClicked(true)}
@@ -625,6 +629,8 @@ function Studio() {
             color={theme ? "#b1b1b1" : "#606060"}
           />
         </div>
+
+        {/* create channel form  */}
         <div
           className={
             theme
@@ -640,7 +646,7 @@ function Studio() {
             className={theme ? "close-channel" : "close-channel-light"}
             style={{ color: theme ? "rgb(170 170 170 / 50%)" : "#606060" }}
             onClick={() => {
-              window.location.href = "/";
+              navigate("/");
             }}
           />
           <p className="channel-head">Create Your Channel</p>
@@ -1337,6 +1343,7 @@ function Studio() {
           </div>
         </div>
       </div>
+      
       {isChannel === true ? <Dashboard /> : ""}
     </>
   );

@@ -5,19 +5,18 @@ import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
 import { useEffect, useState } from "react";
 import jwtDecode from "jwt-decode";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import Tooltip from "@mui/material/Tooltip";
 import WestIcon from "@mui/icons-material/West";
 import Zoom from "@mui/material/Zoom";
 import noImage from "../../img/no-comment.png";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 function VideoComments() {
+  const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const { id } = useParams();
   const [Email, setEmail] = useState();
@@ -76,7 +75,7 @@ function VideoComments() {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 2800);
+    }, 1200);
   }, []);
 
   useEffect(() => {
@@ -172,23 +171,6 @@ function VideoComments() {
     }
   };
 
-  const HeartComment = async (id, commentID) => {
-    try {
-      const response = await fetch(
-        `${backendURL}/heartcomment/${id}/${commentID}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      await response.json();
-    } catch (error) {
-      //console.log(error.message);
-    }
-  };
-
   const DeleteComment = async (id, commentId) => {
     try {
       const response = await fetch(
@@ -231,12 +213,14 @@ function VideoComments() {
     <>
       <Navbar2 />
       <LeftPanel3 />
+
       <div
         className="back-menu-edit"
-        onClick={() => (window.location.href = "/studio/comments")}
+        onClick={() => navigate("/studio/comments")}
       >
         <WestIcon fontSize="medium" style={{ color: "#aaa" }} />
       </div>
+
       <div className="video-all-comments-section">
         <div
           className="vid-comments-top"
@@ -272,6 +256,7 @@ function VideoComments() {
             onChange={(e) => setFilterComment(e.target.value)}
           />
         </div>
+
         <div
           className="vid-comments-list"
           style={{ left: menu ? "90px" : "270px" }}
@@ -354,39 +339,6 @@ function VideoComments() {
                                   />
                                 </Tooltip>
                               </div>
-                              {element.heartComment === true ? (
-                                <Tooltip
-                                  TransitionComponent={Zoom}
-                                  title="Remove heart"
-                                  placement="bottom"
-                                >
-                                  <div className="hearted-thiscomment">
-                                    <Skeleton
-                                      count={1}
-                                      width={25}
-                                      height={25}
-                                      style={{
-                                        borderRadius: "100%",
-                                      }}
-                                    />
-                                  </div>
-                                </Tooltip>
-                              ) : (
-                                <Tooltip
-                                  TransitionComponent={Zoom}
-                                  title="Heart"
-                                  placement="bottom"
-                                >
-                                  <FavoriteBorderOutlinedIcon
-                                    fontSize="small"
-                                    className="heartcmmt-btn"
-                                    style={{
-                                      color: theme ? "#aaa" : "#606060",
-                                    }}
-                                  />
-                                </Tooltip>
-                              )}
-
                               <Tooltip
                                 TransitionComponent={Zoom}
                                 title="Delete"
@@ -406,6 +358,7 @@ function VideoComments() {
 
                     {/* END HERE  */}
 
+                    {/*===================  comment deatils ================== */}
                     <div
                       className={
                         theme
@@ -505,47 +458,6 @@ function VideoComments() {
                                 {element.likes}
                               </p>
                             </div>
-                            {element.heartComment === true ? (
-                              <Tooltip
-                                TransitionComponent={Zoom}
-                                title="Remove heart"
-                                placement="bottom"
-                              >
-                                <div
-                                  className="hearted-thiscomment"
-                                  onClick={() => {
-                                    HeartComment(element.videoid, element._id);
-                                  }}
-                                >
-                                  <img
-                                    src={Profile && Profile}
-                                    alt="profile"
-                                    className="channelp"
-                                  />
-
-                                  <FavoriteIcon
-                                    className="heartlike-this"
-                                    fontSize="100px"
-                                    style={{ color: "red" }}
-                                  />
-                                </div>
-                              </Tooltip>
-                            ) : (
-                              <Tooltip
-                                TransitionComponent={Zoom}
-                                title="Heart"
-                                placement="bottom"
-                              >
-                                <FavoriteBorderOutlinedIcon
-                                  fontSize="small"
-                                  className="heartcmmt-btn"
-                                  style={{ color: theme ? "#aaa" : "#606060" }}
-                                  onClick={() => {
-                                    HeartComment(element.videoid, element._id);
-                                  }}
-                                />
-                              </Tooltip>
-                            )}
 
                             <Tooltip
                               TransitionComponent={Zoom}
@@ -568,6 +480,7 @@ function VideoComments() {
                   </>
                 );
               })}
+
 
             {filterComments &&
               filterComment !== "" &&
@@ -665,47 +578,6 @@ function VideoComments() {
                               {element.likes}
                             </p>
                           </div>
-                          {element.heartComment === true ? (
-                            <Tooltip
-                              TransitionComponent={Zoom}
-                              title="Remove heart"
-                              placement="bottom"
-                            >
-                              <div
-                                className="hearted-thiscomment"
-                                onClick={() => {
-                                  HeartComment(element.videoid, element._id);
-                                }}
-                              >
-                                <img
-                                  src={Profile && Profile}
-                                  alt="profile"
-                                  className="channelp"
-                                />
-
-                                <FavoriteIcon
-                                  className="heartlike-this"
-                                  fontSize="100px"
-                                  style={{ color: "red" }}
-                                />
-                              </div>
-                            </Tooltip>
-                          ) : (
-                            <Tooltip
-                              TransitionComponent={Zoom}
-                              title="Heart"
-                              placement="bottom"
-                            >
-                              <FavoriteBorderOutlinedIcon
-                                fontSize="small"
-                                className="heartcmmt-btn"
-                                style={{ color: theme ? "#aaa" : "#606060" }}
-                                onClick={() => {
-                                  HeartComment(element.videoid, element._id);
-                                }}
-                              />
-                            </Tooltip>
-                          )}
 
                           <Tooltip
                             TransitionComponent={Zoom}
@@ -727,6 +599,7 @@ function VideoComments() {
                   </div>
                 );
               })}
+
             {filterComments &&
               filterComment !== "" &&
               filterComments.length === 0 && (
@@ -739,6 +612,7 @@ function VideoComments() {
                   </div>
                 </div>
               )}
+
             {loading === false &&
               videoComments &&
               videoComments.length === 0 &&

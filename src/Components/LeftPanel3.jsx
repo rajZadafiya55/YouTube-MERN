@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "../Css/leftpanel3.css";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import WestIcon from "@mui/icons-material/West";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import Tooltip from "@mui/material/Tooltip";
@@ -11,6 +11,7 @@ import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 function LeftPanel2() {
+  const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const { id } = useParams();
   const [videodata, setVideoData] = useState();
@@ -59,15 +60,6 @@ function LeftPanel2() {
     } else if (currentUrl === `/studio/video/comments/${id}`) {
       selected = "Video-Comments";
     }
-    // } else if (currentUrl === "/watchlater") {
-    //   selected = "watch-later";
-    // } else if (currentUrl === "/subscriptions") {
-    //   selected = "subscription";
-    // } else if (currentUrl === "/likedVideos") {
-    //   selected = "liked-video";
-    // } else {
-    //   selected = "other";
-    // }
 
     localStorage.setItem("Video-Edit Section", selected);
   }, [location, id]);
@@ -75,7 +67,7 @@ function LeftPanel2() {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 2800);
+    }, 1200);
   }, []);
 
   useEffect(() => {
@@ -104,6 +96,7 @@ function LeftPanel2() {
           studioMenuClicked === true ? { display: "none" } : { display: "flex" }
         }
       >
+        {/*================== channel and conetnt back arrow navbar in top ====================== */}
         <div
           className={
             theme
@@ -112,9 +105,9 @@ function LeftPanel2() {
           }
           onClick={() => {
             if (window.location.href.includes(`/studio/video/edit/${id}`)) {
-              window.location.href = "/studio/video";
+              navigate("/studio/video");
             } else {
-              window.location.href = "/studio/comments";
+              navigate("/studio/comments");
             }
           }}
         >
@@ -127,6 +120,7 @@ function LeftPanel2() {
             )}
           </div>
         </div>
+
         {/* START HERE  */}
         <SkeletonTheme
           baseColor={theme ? "#353535" : "#aaaaaa"}
@@ -147,7 +141,9 @@ function LeftPanel2() {
             </div>
           </div>
         </SkeletonTheme>
+
         {/* END HERE  */}
+        {/*================== video and description show =================== */}
         <div
           className="mid-panel"
           style={
@@ -160,7 +156,7 @@ function LeftPanel2() {
             className="redirect-video"
             onClick={() => {
               if (videodata) {
-                window.location.href = `/video/${videodata._id}`;
+                navigate(`/video/${videodata._id}`);
               }
             }}
           >
@@ -209,6 +205,8 @@ function LeftPanel2() {
             </Tooltip>
           </div>
         </div>
+
+        {/*================== content and comment menu =================== */}
         <div className="second-panel">
           <div
             className={
@@ -220,7 +218,7 @@ function LeftPanel2() {
             }
             onClick={() => {
               localStorage.setItem("Video-Edit Section", "Details");
-              window.location.href = `/studio/video/edit/${id}`;
+              navigate(`/studio/video/edit/${id}`);
             }}
           >
             <ModeEditOutlineOutlinedIcon
@@ -242,7 +240,7 @@ function LeftPanel2() {
             }
             onClick={() => {
               localStorage.setItem("Video-Edit Section", "Video-Comments");
-              window.location.href = `/studio/video/comments/${id}`;
+              navigate(`/studio/video/comments/${id}`);
             }}
           >
             <ChatOutlinedIcon
@@ -259,10 +257,10 @@ function LeftPanel2() {
         </div>
       </div>
 
-      {/* SHORT HAND  */}
+      {/* ANOTHER SHORT HAND  */}
 
       <div
-        className={theme ? "main-section3" : "main-section3 light-mode"}
+        className={theme ? "main-section3-new" : "main-section3-new light-mode"}
         style={
           studioMenuClicked === false
             ? { display: "none" }
@@ -277,145 +275,9 @@ function LeftPanel2() {
           }
           onClick={() => {
             if (window.location.href.includes(`/studio/video/edit/${id}`)) {
-              window.location.href = "/studio/video";
+              navigate("/studio/video");
             } else {
-              window.location.href = "/studio/comments";
-            }
-          }}
-        >
-          <div
-            className="about-video"
-            style={{ right: studioMenuClicked ? "0px" : "15px" }}
-          >
-            <WestIcon fontSize="medium" style={{ color: "#aaa" }} />
-          </div>
-        </div>
-        {/* START HERE  */}
-        <SkeletonTheme
-          baseColor={theme ? "#353535" : "#aaaaaa"}
-          highlightColor={theme ? "#444" : "#b6b6b6"}
-        >
-          <div
-            className="mid-panel"
-            style={
-              loading === true ? { display: "block" } : { display: "none" }
-            }
-          >
-            <div className="redirect-video">
-              <Skeleton count={1} width={75} height={42} />
-            </div>
-          </div>
-        </SkeletonTheme>
-        {/* END HERE  */}
-        <div
-          className="mid-panel"
-          style={
-            videodata && loading === false
-              ? { visibility: "visible", display: "block" }
-              : { visibility: "hidden", display: "none" }
-          }
-        >
-          <div
-            className="redirect-video"
-            onClick={() => {
-              if (videodata) {
-                window.location.href = `/video/${videodata._id}`;
-              }
-            }}
-          >
-            <img
-              src={videodata && videodata.thumbnailURL}
-              alt="thumbnail"
-              className="current-video-thumbnail"
-              style={{ width: studioMenuClicked ? "70px" : "220px" }}
-            />
-            <Tooltip
-              TransitionComponent={Zoom}
-              title="View on YouTube"
-              placement="bottom"
-            >
-              <YouTubeIcon
-                className="watch-video2"
-                fontSize="medium"
-                style={{ color: "white" }}
-              />
-            </Tooltip>
-          </div>
-        </div>
-        <div className="second-panel">
-          <div
-            className={
-              VideoEditSection === "Details"
-                ? `${theme ? "studio-active" : "studio-active-light"} panel ${
-                    theme ? "" : "panel-light"
-                  }`
-                : `details panel ${theme ? "" : "panel-light"}`
-            }
-            onClick={() => {
-              localStorage.setItem("Video-Edit Section", "Details");
-              window.location.href = `/studio/video/edit/${id}`;
-            }}
-          >
-            <ModeEditOutlineOutlinedIcon
-              className={
-                VideoEditSection === "Details" ? "studio-icon2" : "studio-icon"
-              }
-              fontSize="medium"
-              style={{
-                color: "#A9A9A9",
-                paddingLeft: "25px !important",
-                paddingTop: "16px",
-                paddingBottom: "16px",
-              }}
-            />
-          </div>
-          <div
-            className={
-              VideoEditSection === "Video-Comments"
-                ? `${theme ? "studio-active" : "studio-active-light"} panel ${
-                    theme ? "" : "panel-light"
-                  }`
-                : `comments panel ${theme ? "" : "panel-light"}`
-            }
-            onClick={() => {
-              localStorage.setItem("Video-Edit Section", "Video-Comments");
-              window.location.href = `/studio/video/comments/${id}`;
-            }}
-          >
-            <ChatOutlinedIcon
-              className={
-                VideoEditSection === "Video-Comments"
-                  ? "studio-icon2"
-                  : "studio-icon"
-              }
-              fontSize="medium"
-              style={{
-                color: "#A9A9A9",
-                paddingLeft: "25px !important",
-                paddingTop: "16px",
-                paddingBottom: "16px",
-              }}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* ANOTHER SHORT HAND  */}
-
-      <div
-        className={theme ? "main-section3-new" : "main-section3-new light-mode"}
-      >
-        <div
-          className={
-            theme
-              ? "first-panel first-panel1"
-              : "first-panel first-panel1 preview-lightt"
-          }
-          onClick={() => {
-            if (window.location.href.includes(`/studio/video/edit/${id}`)) {
-              window.location.href = "/studio/video";
-            } else {
-              window.location.href = "/studio/comments";
+              navigate("/studio/comments");
             }
           }}
         >
@@ -452,7 +314,7 @@ function LeftPanel2() {
             className="redirect-video"
             onClick={() => {
               if (videodata) {
-                window.location.href = `/video/${videodata._id}`;
+                navigate(`/video/${videodata._id}`);
               }
             }}
           >
@@ -486,7 +348,7 @@ function LeftPanel2() {
             }
             onClick={() => {
               localStorage.setItem("Video-Edit Section", "Details");
-              window.location.href = `/studio/video/edit/${id}`;
+              navigate(`/studio/video/edit/${id}`);
             }}
           >
             <ModeEditOutlineOutlinedIcon
@@ -512,7 +374,7 @@ function LeftPanel2() {
             }
             onClick={() => {
               localStorage.setItem("Video-Edit Section", "Video-Comments");
-              window.location.href = `/studio/video/comments/${id}`;
+              navigate(`/studio/video/comments/${id}`);
             }}
           >
             <ChatOutlinedIcon
