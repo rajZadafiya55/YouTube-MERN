@@ -98,7 +98,7 @@ function Navbar() {
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && searchedData) {
-      window.location.href = `/results/${searchedData}`;
+      navigate(`/results/${searchedData}`);
     }
   };
 

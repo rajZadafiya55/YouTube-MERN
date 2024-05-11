@@ -1,7 +1,7 @@
 import Navbar from "./Navbar";
 import LeftPanel from "./LeftPanel";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "../Css/search.css";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Tooltip from "@mui/material/Tooltip";
@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function SearchResults() {
+  const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const { data } = useParams();
   const [myemail, setmyEmail] = useState();
@@ -418,16 +419,12 @@ function SearchResults() {
                       src={element.channelProfile}
                       alt="channelDP"
                       className="channel-img"
-                      onClick={() =>
-                        (window.location.href = `/channel/${element._id}`)
-                      }
+                      onClick={() => naviagte(`/channel/${element._id}`)}
                     />
                     <div className="channel-flex-data">
                       <div
                         className="channel-extra-content"
-                        onClick={() =>
-                          (window.location.href = `/channel/${element._id}`)
-                        }
+                        onClick={() => naviagte(`/channel/${element._id}`)}
                       >
                         <div className="channel-liner">
                           <p className="new-title">{element.channelName}</p>
@@ -572,10 +569,10 @@ function SearchResults() {
                         if (token) {
                           updateViews(element._id);
                           setTimeout(() => {
-                            window.location.href = `/video/${element._id}`;
+                            navigate(`/video/${element._id}`);
                           }, 400);
                         } else {
-                          window.location.href = `/video/${element._id}`;
+                          navigate(`/video/${element._id}`);
                         }
                       }}
                     >
@@ -1067,10 +1064,10 @@ function SearchResults() {
                       if (token) {
                         updateViews(element._id);
                         setTimeout(() => {
-                          window.location.href = `/video/${element._id}`;
+                          navigate(`/video/${element._id}`);
                         }, 400);
                       } else {
-                        window.location.href = `/video/${element._id}`;
+                        navigate(`/video/${element._id}`);
                       }
                     }}
                   >
@@ -1552,16 +1549,12 @@ function SearchResults() {
                       src={element.channelProfile}
                       alt="channelDP"
                       className="channel-img"
-                      onClick={() =>
-                        (window.location.href = `/channel/${element._id}`)
-                      }
+                      onClick={() => naviagte(`/channel/${element._id}`)}
                     />
                     <div className="channel-flex-data">
                       <div
                         className="channel-extra-content"
-                        onClick={() =>
-                          (window.location.href = `/channel/${element._id}`)
-                        }
+                        onClick={() => naviagte(`/channel/${element._id}`)}
                       >
                         <div className="channel-liner">
                           <p className="new-title">{element.channelName}</p>
@@ -1702,10 +1695,10 @@ function SearchResults() {
                       if (token) {
                         updateViews(element._id);
                         setTimeout(() => {
-                          window.location.href = `/video/${element._id}`;
+                          navigate(`/video/${element._id}`);
                         }, 400);
                       } else {
-                        window.location.href = `/video/${element._id}`;
+                        navigate(`/video/${element._id}`);
                       }
                     }}
                   >

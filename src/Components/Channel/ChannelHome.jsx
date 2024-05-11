@@ -9,8 +9,10 @@ import noImage from "../../img/no-video.jpg";
 import noImage2 from "../../img/novideo.png";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useNavigate } from "react-router-dom";
 
 function ChannelHome(prop) {
+  const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const [myVideos, setMyVideos] = useState([]);
   const [Email, setEmail] = useState();
@@ -41,7 +43,7 @@ function ChannelHome(prop) {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 3200);
+    }, 1200);
   }, []);
 
   useEffect(() => {
@@ -223,9 +225,9 @@ function ChannelHome(prop) {
             onClick={() => {
               if (token) {
                 updateViews(myVideos[0]._id);
-                window.location.href = `/video/${myVideos[0]._id}`;
+                navigate(`/video/${myVideos[0]._id}`);
               }
-              window.location.href = `/video/${myVideos[0]._id}`;
+              navigate(`/video/${myVideos[0]._id}`);
             }}
           >
             <img
@@ -477,13 +479,9 @@ function ChannelHome(prop) {
               onClick={() => {
                 if (token) {
                   updateViews(AllVideos.sort(sortByViews2)[0]._id);
-                  window.location.href = `/video/${
-                    AllVideos.sort(sortByViews2)[0]._id
-                  }`;
+                  navigate(`/video/${AllVideos.sort(sortByViews2)[0]._id}`);
                 }
-                window.location.href = `/video/${
-                  AllVideos.sort(sortByViews2)[0]._id
-                }`;
+                navigate(`/video/${AllVideos.sort(sortByViews2)[0]._id}`);
               }}
             >
               <PlayArrowIcon
@@ -522,10 +520,10 @@ function ChannelHome(prop) {
                     if (token) {
                       updateViews(element._id);
                       setTimeout(() => {
-                        window.location.href = `/video/${element._id}`;
+                        navigate(`/video/${element._id}`);
                       }, 400);
                     } else {
-                      window.location.href = `/video/${element._id}`;
+                      navigate(`/video/${element._id}`);
                     }
                   }}
                 >
@@ -711,13 +709,9 @@ function ChannelHome(prop) {
               onClick={() => {
                 if (token) {
                   updateViews(AllVideos.sort(sortByViews)[0]._id);
-                  window.location.href = `/video/${
-                    AllVideos.sort(sortByViews)[0]._id
-                  }`;
+                  navigate(`/video/${AllVideos.sort(sortByViews)[0]._id}`);
                 }
-                window.location.href = `/video/${
-                  AllVideos.sort(sortByViews)[0]._id
-                }`;
+                navigate(`/video/${AllVideos.sort(sortByViews)[0]._id}`);
               }}
             >
               <PlayArrowIcon
@@ -756,10 +750,10 @@ function ChannelHome(prop) {
                     if (token) {
                       updateViews(element._id);
                       setTimeout(() => {
-                        window.location.href = `/video/${element._id}`;
+                        navigate(`/video/${element._id}`);
                       }, 400);
                     } else {
-                      window.location.href = `/video/${element._id}`;
+                      navigate(`/video/${element._id}`);
                     }
                   }}
                 >
@@ -881,7 +875,7 @@ function ChannelHome(prop) {
         <button
           className="upload-videoo"
           onClick={() => {
-            window.location.href = "/studio";
+            navigate("/studio");
           }}
         >
           Upload video
@@ -1173,9 +1167,9 @@ function ChannelHome(prop) {
               onClick={() => {
                 if (token) {
                   updateViews(myVideos[0]._id);
-                  window.location.href = `/video/${myVideos[0]._id}`;
+                  navigate(`/video/${myVideos[0]._id}`);
                 }
-                window.location.href = `/video/${myVideos[0]._id}`;
+                navigate(`/video/${myVideos[0]._id}`);
               }}
             >
               <img
@@ -1325,13 +1319,9 @@ function ChannelHome(prop) {
                 onClick={() => {
                   if (token) {
                     updateViews(AllVideos.sort(sortByViews2)[0]._id);
-                    window.location.href = `/video/${
-                      AllVideos.sort(sortByViews2)[0]._id
-                    }`;
+                    navigate(`/video/${AllVideos.sort(sortByViews2)[0]._id}`);
                   }
-                  window.location.href = `/video/${
-                    AllVideos.sort(sortByViews2)[0]._id
-                  }`;
+                  navigate(`/video/${AllVideos.sort(sortByViews2)[0]._id}`);
                 }}
               >
                 <PlayArrowIcon
@@ -1371,10 +1361,10 @@ function ChannelHome(prop) {
                       if (token) {
                         updateViews(element._id);
                         setTimeout(() => {
-                          window.location.href = `/video/${element._id}`;
+                          navigate(`/video/${element._id}`);
                         }, 400);
                       } else {
-                        window.location.href = `/video/${element._id}`;
+                        navigate(`/video/${element._id}`);
                       }
                     }}
                   >
@@ -1479,13 +1469,9 @@ function ChannelHome(prop) {
                 onClick={() => {
                   if (token) {
                     updateViews(AllVideos.sort(sortByViews)[0]._id);
-                    window.location.href = `/video/${
-                      AllVideos.sort(sortByViews)[0]._id
-                    }`;
+                    navigate(`/video/${AllVideos.sort(sortByViews2)[0]._id}`);
                   }
-                  window.location.href = `/video/${
-                    AllVideos.sort(sortByViews)[0]._id
-                  }`;
+                  navigate(`/video/${AllVideos.sort(sortByViews2)[0]._id}`);
                 }}
               >
                 <PlayArrowIcon
@@ -1525,10 +1511,10 @@ function ChannelHome(prop) {
                       if (token) {
                         updateViews(element._id);
                         setTimeout(() => {
-                          window.location.href = `/video/${element._id}`;
+                          navigate(`/video/${element._id}`);
                         }, 400);
                       } else {
-                        window.location.href = `/video/${element._id}`;
+                        navigate(`/video/${element._id}`);
                       }
                     }}
                   >

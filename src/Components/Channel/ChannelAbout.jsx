@@ -55,7 +55,7 @@ function ChannelAbout(prop) {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 3000);
+    }, 1200);
   }, []);
 
   useEffect(() => {

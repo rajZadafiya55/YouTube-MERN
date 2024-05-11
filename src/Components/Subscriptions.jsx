@@ -9,8 +9,10 @@ import nothing from "../img/nothing.png";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useNavigate } from "react-router-dom";
 
 function Subscriptions() {
+  const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const [email, setEmail] = useState();
   const [subscriptions, setSubscriptions] = useState([]);
@@ -288,7 +290,7 @@ function Subscriptions() {
                       className={theme ? "sub-channels" : "sub-channels2"}
                       key={index}
                       onClick={() => {
-                        window.location.href = `/channel/${element.channelID}`;
+                        navigate(`/channel/${element.channelID}`);
                       }}
                     >
                       <img
@@ -334,10 +336,10 @@ function Subscriptions() {
                           if (token) {
                             updateViews(element._id);
                             setTimeout(() => {
-                              window.location.href = `/video/${element._id}`;
+                              navigate(`/video/${element._id}`);
                             }, 400);
                           } else {
-                            window.location.href = `/video/${element._id}`;
+                            navigate(`/video/${element._id}`);
                           }
                         }}
                         style={{

@@ -7,8 +7,10 @@ import nothing from "../img/nothing.png";
 import "../Css/likevideos.css";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useNavigate } from "react-router-dom";
 
 function LikeVideos() {
+  const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const [email, setEmail] = useState();
   const [name, setName] = useState();
@@ -160,10 +162,10 @@ function LikeVideos() {
                       if (token) {
                         updateViews(videolike[0].likedVideoID);
                         setTimeout(() => {
-                          window.location.href = `/video/${videolike[0].likedVideoID}`;
+                          navigate(`/video/${videolike[0].likedVideoID}`);
                         }, 400);
                       } else {
-                        window.location.href = `/video/${videolike[0].likedVideoID}`;
+                        navigate(`/video/${videolike[0].likedVideoID}`);
                       }
                     }}
                   >
@@ -222,10 +224,10 @@ function LikeVideos() {
                     if (token) {
                       updateViews(videolike[0].likedVideoID);
                       setTimeout(() => {
-                        window.location.href = `/video/${videolike[0].likedVideoID}`;
+                        navigate(`/video/${videolike[0].likedVideoID}`);
                       }, 400);
                     } else {
-                      window.location.href = `/video/${videolike[0].likedVideoID}`;
+                      navigate(`/video/${videolike[0].likedVideoID}`);
                     }
                   }}
                 >
@@ -328,10 +330,10 @@ function LikeVideos() {
                             if (token) {
                               updateViews(element.likedVideoID);
                               setTimeout(() => {
-                                window.location.href = `/video/${element.likedVideoID}`;
+                                navigate(`/video/${element.likedVideoID}`);
                               }, 400);
                             } else {
-                              window.location.href = `/video/${element.likedVideoID}`;
+                              navigate(`/video/${element.likedVideoID}`);
                             }
                           }}
                         >
@@ -411,10 +413,10 @@ function LikeVideos() {
                         if (token) {
                           updateViews(videolike[0].likedVideoID);
                           setTimeout(() => {
-                            window.location.href = `/video/${videolike[0].likedVideoID}`;
+                            navigate(`/video/${videolike[0].likedVideoID}`);
                           }, 400);
                         } else {
-                          window.location.href = `/video/${videolike[0].likedVideoID}`;
+                          navigate(`/video/${videolike[0].likedVideoID}`);
                         }
                       }}
                     >
@@ -474,10 +476,10 @@ function LikeVideos() {
                     if (token) {
                       updateViews(videolike[0].likedVideoID);
                       setTimeout(() => {
-                        window.location.href = `/video/${videolike[0].likedVideoID}`;
+                        navigate(`/video/${videolike[0].likedVideoID}`);
                       }, 400);
                     } else {
-                      window.location.href = `/video/${videolike[0].likedVideoID}`;
+                      navigate(`/video/${videolike[0].likedVideoID}`);
                     }
                   }}
                 >
@@ -580,10 +582,10 @@ function LikeVideos() {
                             if (token) {
                               updateViews(element.likedVideoID);
                               setTimeout(() => {
-                                window.location.href = `/video/${element.likedVideoID}`;
+                                navigate(`/video/${element.likedVideoID}`);
                               }, 400);
                             } else {
-                              window.location.href = `/video/${element.likedVideoID}`;
+                                navigate(`/video/${element.likedVideoID}`);
                             }
                           }}
                         >

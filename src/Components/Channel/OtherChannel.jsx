@@ -4,17 +4,12 @@ import Navbar from "../Navbar";
 import LeftPanel from "../LeftPanel";
 import "../../Css/channel.css";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import ChannelHome from "./ChannelHome";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import ChannelVideos from "./ChannelVideos";
 import jwtDecode from "jwt-decode";
 import Tooltip from "@mui/material/Tooltip";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Zoom from "@mui/material/Zoom";
-import ChannelAbout from "./ChannelAbout";
-import ChannelPlaylists from "./ChannelPlaylists";
-import FeaturedChannels from "./FeaturedChannels";
 import { RiUserSettingsLine } from "react-icons/ri";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -30,7 +25,9 @@ function OtherChannel() {
   const [ChannelProfile, setChannelProfile] = useState();
   const [myVideos, setMyVideos] = useState([]);
   const [isbtnClicked, setisbtnClicked] = useState(false);
-  const Section = localStorage.getItem("Section") || "Home";
+  const [Section, setSection] = useState(
+    localStorage.getItem("Section") || "Home"
+  );
   const token = localStorage.getItem("userToken");
   const [isSubscribed, setIsSubscribed] = useState();
   const [Subscribers, setSubscribers] = useState();
@@ -67,7 +64,7 @@ function OtherChannel() {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 3200);
+    }, 1200);
   }, []);
 
   useEffect(() => {
@@ -135,18 +132,7 @@ function OtherChannel() {
     return () => clearInterval(interval);
   }, [Email]);
 
-  useEffect(() => {
-    const getUserVideos = async () => {
-      try {
-        const response = await fetch(`${backendURL}/getuservideos/${Email}`);
-        const myvideos = await response.json();
-        setMyVideos(myvideos);
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-    getUserVideos();
-  }, [Email]);
+
 
   useEffect(() => {
     if (Section === "Home" && coverIMG !== "No data") {
@@ -233,6 +219,12 @@ function OtherChannel() {
     } catch (error) {
       // console.log(error.message);
     }
+  };
+
+  // Function to handle tab changes
+  const handleTabChange = (newSection) => {
+    setSection(newSection);
+    localStorage.setItem("Section", newSection);
   };
 
   return (
@@ -401,6 +393,7 @@ function OtherChannel() {
                       <p className="my-videoscount">0 videos</p>
                     )}
                   </div>
+
                   <div
                     className={
                       theme ? "more-about" : "more-about text-light-mode2"
@@ -444,7 +437,7 @@ function OtherChannel() {
                     <div
                       className="setting-btn"
                       onClick={() => {
-                        window.location.href = "/studio/video";
+                        navigate("/studio/video");
                       }}
                     >
                       <RiUserSettingsLine
@@ -509,9 +502,13 @@ function OtherChannel() {
               </div>
             </div>
           </div>
+
+          <div className="channel-mid-content">
+            <BasicTabs section={Section} handleTabChange={handleTabChange} />
+          </div>
           <div className="channel-mid-content">
             {/* <BasicTabs section={Section} /> */}
-            <BasicTabs />
+            {/* <BasicTabs /> */}
 
             {/* <div className="different-sections">
               {Section === "Home" ? (
@@ -649,15 +646,17 @@ function OtherChannel() {
               )}
             </div> */}
           </div>
+
           <br />
-          <hr
+          {/* <hr
             className={
               theme
                 ? "seperate seperate-new"
                 : "seperate seperate-new seperate-light"
             }
-          />
-          {Section === "Home" || Section === "" ? (
+          /> */}
+
+          {/* {Section === "Home" || Section === "" ? (
             <ChannelHome newmail={Email} />
           ) : (
             ""
@@ -680,7 +679,7 @@ function OtherChannel() {
             <ChannelAbout newmail={Email} channelid={id} />
           ) : (
             ""
-          )}
+          )} */}
         </div>
       ) : (
         <div className="main-trending-section">

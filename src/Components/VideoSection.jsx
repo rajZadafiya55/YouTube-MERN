@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Plyr from "plyr";
 import Navbar from "./Navbar";
 import Share from "./Share";
@@ -36,6 +36,7 @@ import LeftPanel from "./LeftPanel";
 import Error from "./Error";
 
 function VideoSection() {
+  const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const { id } = useParams();
   const [videoData, setVideoData] = useState(null);
@@ -1044,7 +1045,7 @@ function VideoSection() {
           <p
             className={theme ? "trending-tag" : "trending-tag-light"}
             onClick={() => {
-              window.location.href = "/trending";
+              navigate("/trending");
             }}
           >
             {checkTrending === true ? "#TRENDING" : ""}
@@ -1067,7 +1068,7 @@ function VideoSection() {
                 loading="lazy"
                 onClick={() => {
                   if (channelID !== undefined) {
-                    window.location.href = `/channel/${channelID}`;
+                    navigate(`/channel/${channelID}`);
                   }
                 }}
               />
@@ -1077,7 +1078,7 @@ function VideoSection() {
                     style={{ fontSize: "17px", cursor: "pointer" }}
                     onClick={() => {
                       if (channelID !== undefined) {
-                        window.location.href = `/channel/${channelID}`;
+                        navigate(`/channel/${channelID}`);
                       }
                     }}
                   >
@@ -1965,7 +1966,7 @@ function VideoSection() {
                           loading="lazy"
                           onClick={() => {
                             if (element.channel_id !== undefined) {
-                              window.location.href = `/channel/${element.channel_id}`;
+                              navigate(`/channel/${element.channel_id}`);
                             }
                           }}
                         />
@@ -1981,7 +1982,7 @@ function VideoSection() {
                           <p
                             onClick={() => {
                               if (element.channel_id !== undefined) {
-                                window.location.href = `/channel/${element.channel_id}`;
+                                navigate(`/channel/${element.channel_id}`);
                               }
                             }}
                             style={{ cursor: "pointer" }}
@@ -2267,10 +2268,10 @@ function VideoSection() {
                       if (token) {
                         updateViews(VideoID[index]);
                         setTimeout(() => {
-                          window.location.href = `/video/${VideoID[index]}`;
+                          navigate(`/video/${VideoID[index]}`);
                         }, 400);
                       } else {
-                        window.location.href = `/video/${VideoID[index]}`;
+                        navigate(`/video/${VideoID[index]}`);
                       }
                     }}
                   >
@@ -2394,10 +2395,10 @@ function VideoSection() {
                       if (token) {
                         updateViews(VideoID[index]);
                         setTimeout(() => {
-                          window.location.href = `/video/${VideoID[index]}`;
+                          navigate(`/video/${VideoID[index]}`);
                         }, 400);
                       } else {
-                        window.location.href = `/video/${VideoID[index]}`;
+                        navigate(`/video/${VideoID[index]}`);
                       }
                     }}
                   >
@@ -2529,10 +2530,10 @@ function VideoSection() {
                       if (token) {
                         updateViews(element._id);
                         setTimeout(() => {
-                          window.location.href = `/video/${element._id}`;
+                          navigate(`/channel/${channelID}`);
                         }, 400);
                       } else {
-                        window.location.href = `/video/${element._id}`;
+                        navigate(`/channel/${channelID}`);
                       }
                     }}
                   >
@@ -2657,10 +2658,10 @@ function VideoSection() {
                       if (token) {
                         updateViews(element._id);
                         setTimeout(() => {
-                          window.location.href = `/video/${element._id}`;
+                          navigate(`/channel/${channelID}`);
                         }, 400);
                       } else {
-                        window.location.href = `/video/${element._id}`;
+                        navigate(`/channel/${channelID}`);
                       }
                     }}
                   >
@@ -2882,7 +2883,7 @@ function VideoSection() {
                           loading="lazy"
                           onClick={() => {
                             if (element.channel_id !== undefined) {
-                              window.location.href = `/channel/${element.channel_id}`;
+                              navigate(`/channel/${element.channel_id}`);
                             }
                           }}
                         />
@@ -2898,7 +2899,7 @@ function VideoSection() {
                           <p
                             onClick={() => {
                               if (element.channel_id !== undefined) {
-                                window.location.href = `/channel/${element.channel_id}`;
+                                navigate(`/channel/${element.channel_id}`);
                               }
                             }}
                             style={{ cursor: "pointer" }}

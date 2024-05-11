@@ -1,8 +1,10 @@
 import errorImg from "../img/error.png";
 import "../Css/error.css";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Error() {
+  const navigate = useNavigate();
   const [theme, setTheme] = useState(() => {
     const Dark = localStorage.getItem("Dark");
     return Dark ? JSON.parse(Dark) : true;
@@ -21,7 +23,7 @@ function Error() {
             className={
               theme ? "revert-home" : "revert-home text-light-mode error-light"
             }
-            onClick={() => (window.location.href = "/")}
+            onClick={() => navigate("/")}
           >
             GO TO HOMEPAGE
           </button>

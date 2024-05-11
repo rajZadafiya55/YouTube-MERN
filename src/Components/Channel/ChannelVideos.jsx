@@ -28,7 +28,7 @@ function ChannelVideos(prop) {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 3500);
+    }, 1200);
   }, []);
 
   useEffect(() => {
