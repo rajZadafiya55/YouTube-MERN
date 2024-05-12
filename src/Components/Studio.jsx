@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import Navbar2 from "./Navbar2";
-import LeftPanel2 from "./LeftPanel2";
 import jwtDecode from "jwt-decode";
 import avatar from "../img/avatar.png";
 import "../Css/studio.css";
@@ -591,9 +589,6 @@ function Studio() {
 
   return (
     <>
-      <Navbar2 />
-      <LeftPanel2 />
-
       <div className={theme ? "studio" : "studio studio-light"}>
         {/* video upload icon  */}
         <div
@@ -1343,7 +1338,7 @@ function Studio() {
           </div>
         </div>
       </div>
-      
+
       {isChannel === true ? <Dashboard /> : ""}
     </>
   );

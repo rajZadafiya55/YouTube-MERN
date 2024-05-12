@@ -1,5 +1,3 @@
-import Navbar from "./Navbar";
-import LeftPanel from "./LeftPanel";
 import WatchLaterOutlinedIcon from "@mui/icons-material/WatchLaterOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import jwtDecode from "jwt-decode";
@@ -228,8 +226,6 @@ function Library() {
   ) {
     return (
       <>
-        <Navbar />
-        <LeftPanel />
         <div className="searched-content">
           <img src={nothing} alt="no results" className="nothing-found" />
           <p className={theme ? "no-results" : "no-results text-light-mode"}>
@@ -243,8 +239,6 @@ function Library() {
   if (loading === true) {
     return (
       <>
-        <Navbar />
-        <LeftPanel />
         <div className="main-trending-section">
           <div className="spin23" style={{ top: "200px" }}>
             <span className={theme ? "loader2" : "loader2-light"}></span>
@@ -256,9 +250,6 @@ function Library() {
 
   return (
     <>
-      <Navbar />
-      <LeftPanel />
-
       <div
         className="library-section"
         style={{

@@ -1,5 +1,3 @@
-import Navbar2 from "../Navbar2";
-import LeftPanel2 from "../LeftPanel2";
 import "../../Css/Studio/customize.css";
 import Branding from "./Branding";
 import { useState, useEffect } from "react";
@@ -119,9 +117,6 @@ function Customization() {
 
   return (
     <>
-      <Navbar2 />
-      <LeftPanel2 />
-
       <div className="channel-customize">
         <div
           className="channel-customize-section"

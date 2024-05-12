@@ -1,5 +1,3 @@
-import LeftPanel2 from "../LeftPanel2";
-import Navbar2 from "../Navbar2";
 import "../../Css/Studio/content.css";
 import SouthIcon from "@mui/icons-material/South";
 import { useEffect, useState } from "react";
@@ -245,9 +243,6 @@ const Content = () => {
 
   return (
     <>
-      <Navbar2 />
-      <LeftPanel2 />
-
       <div className="channel-content-section">
         <div
           className="channel-content-top"

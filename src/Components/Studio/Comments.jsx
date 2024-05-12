@@ -1,5 +1,3 @@
-import LeftPanel2 from "../LeftPanel2";
-import Navbar2 from "../Navbar2";
 import "../../Css/Studio/comments.css";
 import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
 import { useEffect, useState } from "react";
@@ -223,9 +221,6 @@ function Comments() {
 
   return (
     <>
-      <Navbar2 />
-      <LeftPanel2 />
-
       <div className="video-all-comments-section">
         <div
           className="channel-comments-top"

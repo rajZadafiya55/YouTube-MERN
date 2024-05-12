@@ -5,8 +5,6 @@ import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import LeftPanel from "./LeftPanel";
-import Navbar from "./Navbar";
 import "../Css/theme.css";
 import { useNavigate } from "react-router-dom";
 
@@ -140,8 +138,6 @@ function Browse() {
 
   return (
     <>
-      <Navbar />
-      <LeftPanel />
       {/*===================== catagory filter section ============================ */}
 
       <SkeletonTheme

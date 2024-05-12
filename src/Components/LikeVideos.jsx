@@ -1,5 +1,3 @@
-import Navbar from "./Navbar";
-import LeftPanel from "./LeftPanel";
 import { useEffect, useState } from "react";
 import jwtDecode from "jwt-decode";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -8,8 +6,15 @@ import "../Css/likevideos.css";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllLikedVideos } from "../redux/actions/likeAction";
 
 function LikeVideos() {
+  const dispatch = useDispatch();
+  const likeVideosFromRedux = useSelector((state) => state.like.videosDetails);
+
+  const [likeVideos, setLikedVideos] = useState([]);
+
   const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const [email, setEmail] = useState();
@@ -18,7 +23,6 @@ function LikeVideos() {
     const menu = localStorage.getItem("menuClicked");
     return menu ? JSON.parse(menu) : false;
   });
-  const [videolike, setLikedVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState(() => {
     const Dark = localStorage.getItem("Dark");
@@ -43,21 +47,21 @@ function LikeVideos() {
     localStorage.setItem("menuClicked", JSON.stringify(menuClicked));
   }, [menuClicked]);
 
+  //==================== like video api call spark didho che aaya thi ================================
   useEffect(() => {
-    const getLikeVideos = async () => {
-      try {
-        const response = await fetch(`${backendURL}/getlikevideos/${email}`);
-        const result = await response.json();
-        setLikedVideos(result);
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
+    dispatch(getAllLikedVideos({ Email: email }));
 
-    const interval = setInterval(getLikeVideos, 100);
+    const interval = setInterval(() => {
+      dispatch(getAllLikedVideos({ Email: email }));
+    }, 100);
 
     return () => clearInterval(interval);
   }, [email]);
+
+  //------------- selecter je select karo che state tene useState ma set kari didho ===================
+  useEffect(() => {
+    setLikedVideos(likeVideosFromRedux);
+  }, [likeVideosFromRedux]);
 
   useEffect(() => {
     const handleMenuButtonClick = () => {
@@ -115,11 +119,13 @@ function LikeVideos() {
     }
   };
 
-  if (videolike === "NO DATA") {
+  if (
+    !Array.isArray(likeVideos) ||
+    likeVideos.length === 0 ||
+    likeVideos === "NO DATA"
+  ) {
     return (
       <>
-        <Navbar />
-        <LeftPanel />
         <div className="searched-content">
           <img src={nothing} alt="no results" className="nothing-found" />
           <p className={theme ? "no-results" : "no-results text-light-mode"}>
@@ -132,8 +138,6 @@ function LikeVideos() {
 
   return (
     <>
-      <Navbar />
-      <LeftPanel />
       <div
         className={
           theme
@@ -141,7 +145,7 @@ function LikeVideos() {
             : "liked-video-data light-mode text-light-mode"
         }
       >
-        {videolike.length > 0 ? (
+        {likeVideosFromRedux.length > 0 ? (
           <div
             className="like-video-sections"
             style={menuClicked === false ? { left: "80px" } : { left: "255px" }}
@@ -151,21 +155,25 @@ function LikeVideos() {
                 theme ? "like-left-section" : "like-left-section-light"
               }
               style={{
-                backgroundImage: `url(${videolike[0]?.thumbnailURL})`,
+                backgroundImage: `url(${likeVideosFromRedux[0]?.thumbnailURL})`,
               }}
             >
               <div className="page-cover">
-                {videolike && (
+                {likeVideosFromRedux && (
                   <div
                     className="firstvideo-thumbnail"
                     onClick={() => {
                       if (token) {
-                        updateViews(videolike[0].likedVideoID);
+                        updateViews(likeVideosFromRedux[0].likedVideoID);
                         setTimeout(() => {
-                          navigate(`/video/${videolike[0].likedVideoID}`);
+                          navigate(
+                            `/video/${likeVideosFromRedux[0].likedVideoID}`
+                          );
                         }, 400);
                       } else {
-                        navigate(`/video/${videolike[0].likedVideoID}`);
+                        navigate(
+                          `/video/${likeVideosFromRedux[0].likedVideoID}`
+                        );
                       }
                     }}
                   >
@@ -191,7 +199,7 @@ function LikeVideos() {
                       </div>
                     </SkeletonTheme>
                     <img
-                      src={videolike[0].thumbnailURL}
+                      src={likeVideosFromRedux[0].thumbnailURL}
                       alt="first-like-thumbnail"
                       className="first-thumbnail"
                       loading="lazy"
@@ -214,7 +222,7 @@ function LikeVideos() {
                   <div className="last-like2">
                     <p className="like-username">{name}</p>
                     <p className="like-total-videos">
-                      {videolike.length} videos
+                      {likeVideosFromRedux.length} videos
                     </p>
                   </div>
                 </div>
@@ -222,12 +230,14 @@ function LikeVideos() {
                   className="playvideo-btn"
                   onClick={() => {
                     if (token) {
-                      updateViews(videolike[0].likedVideoID);
+                      updateViews(likeVideosFromRedux[0].likedVideoID);
                       setTimeout(() => {
-                        navigate(`/video/${videolike[0].likedVideoID}`);
+                        navigate(
+                          `/video/${likeVideosFromRedux[0].likedVideoID}`
+                        );
                       }, 400);
                     } else {
-                      navigate(`/video/${videolike[0].likedVideoID}`);
+                      navigate(`/video/${likeVideosFromRedux[0].likedVideoID}`);
                     }
                   }}
                 >
@@ -246,8 +256,8 @@ function LikeVideos() {
                   loading === true ? { display: "block" } : { display: "none" }
                 }
               >
-                {videolike.length > 0
-                  ? videolike.map((element, index) => {
+                {likeVideosFromRedux.length > 0
+                  ? likeVideosFromRedux.map((element, index) => {
                       return (
                         <div
                           className={
@@ -308,8 +318,8 @@ function LikeVideos() {
                   : { visibility: "visible", display: "block" }
               }
             >
-              {videolike.length > 0
-                ? videolike.map((element, index) => {
+              {likeVideosFromRedux.length > 0
+                ? likeVideosFromRedux.map((element, index) => {
                     return (
                       <div
                         className={
@@ -391,7 +401,7 @@ function LikeVideos() {
             : "liked-video-data-new text-light-mode light-mode"
         }
       >
-        {videolike.length > 0 ? (
+        {likeVideosFromRedux.length > 0 ? (
           <div
             className="like-video-sections2"
             style={menuClicked === false ? { left: "80px" } : { left: "255px" }}
@@ -401,22 +411,26 @@ function LikeVideos() {
                 theme ? "like-left-section2" : "like-left-section2-light"
               }
               style={{
-                backgroundImage: `url(${videolike[0]?.thumbnailURL})`,
+                backgroundImage: `url(${likeVideosFromRedux[0]?.thumbnailURL})`,
               }}
             >
               <div className="page-cover2">
                 <div className="inside-cover">
-                  {videolike && (
+                  {likeVideosFromRedux && (
                     <div
                       className="firstvideo-thumbnail"
                       onClick={() => {
                         if (token) {
-                          updateViews(videolike[0].likedVideoID);
+                          updateViews(likeVideosFromRedux[0].likedVideoID);
                           setTimeout(() => {
-                            navigate(`/video/${videolike[0].likedVideoID}`);
+                            navigate(
+                              `/video/${likeVideosFromRedux[0].likedVideoID}`
+                            );
                           }, 400);
                         } else {
-                          navigate(`/video/${videolike[0].likedVideoID}`);
+                          navigate(
+                            `/video/${likeVideosFromRedux[0].likedVideoID}`
+                          );
                         }
                       }}
                     >
@@ -442,7 +456,7 @@ function LikeVideos() {
                         </div>
                       </SkeletonTheme>
                       <img
-                        src={videolike[0].thumbnailURL}
+                        src={likeVideosFromRedux[0].thumbnailURL}
                         alt="first-like-thumbnail"
                         className="first-thumbnail2"
                         loading="lazy"
@@ -465,7 +479,7 @@ function LikeVideos() {
                     <div className="last-like2">
                       <p className="like-username">{name}</p>
                       <p className="like-total-videos">
-                        {videolike.length} videos
+                        {likeVideosFromRedux.length} videos
                       </p>
                     </div>
                   </div>
@@ -474,12 +488,14 @@ function LikeVideos() {
                   className="playvideo-btn"
                   onClick={() => {
                     if (token) {
-                      updateViews(videolike[0].likedVideoID);
+                      updateViews(likeVideosFromRedux[0].likedVideoID);
                       setTimeout(() => {
-                        navigate(`/video/${videolike[0].likedVideoID}`);
+                        navigate(
+                          `/video/${likeVideosFromRedux[0].likedVideoID}`
+                        );
                       }, 400);
                     } else {
-                      navigate(`/video/${videolike[0].likedVideoID}`);
+                      navigate(`/video/${likeVideosFromRedux[0].likedVideoID}`);
                     }
                   }}
                 >
@@ -493,13 +509,13 @@ function LikeVideos() {
               highlightColor={theme ? "#444" : "#b6b6b6"}
             >
               <div
-                className="like-right-section  sk-right-like"
+                className="like-right-section2  sk-right-like"
                 style={
                   loading === true ? { display: "block" } : { display: "none" }
                 }
               >
-                {videolike.length > 0
-                  ? videolike.map((element, index) => {
+                {likeVideosFromRedux.length > 0
+                  ? likeVideosFromRedux.map((element, index) => {
                       return (
                         <div
                           className={
@@ -560,8 +576,8 @@ function LikeVideos() {
                   : { visibility: "visible", display: "block" }
               }
             >
-              {videolike.length > 0
-                ? videolike.map((element, index) => {
+              {likeVideosFromRedux.length > 0
+                ? likeVideosFromRedux.map((element, index) => {
                     return (
                       <div
                         className={
@@ -585,7 +601,7 @@ function LikeVideos() {
                                 navigate(`/video/${element.likedVideoID}`);
                               }, 400);
                             } else {
-                                navigate(`/video/${element.likedVideoID}`);
+                              navigate(`/video/${element.likedVideoID}`);
                             }
                           }}
                         >

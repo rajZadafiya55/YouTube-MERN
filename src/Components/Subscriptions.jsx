@@ -1,5 +1,3 @@
-import Navbar from "./Navbar";
-import LeftPanel from "./LeftPanel";
 import { useEffect, useState } from "react";
 import jwtDecode from "jwt-decode";
 import "../Css/subscriptions.css";
@@ -150,8 +148,6 @@ function Subscriptions() {
   if (subscriptions.subscribedData === "NO DATA") {
     return (
       <>
-        <Navbar />
-        <LeftPanel />
         <div className="searched-content">
           <img src={nothing} alt="no results" className="nothing-found" />
           <p className={theme ? "no-results" : "no-results text-light-mode"}>
@@ -164,8 +160,6 @@ function Subscriptions() {
 
   return (
     <>
-      <Navbar />
-      <LeftPanel />
       <div className="subscription-content">
         <div
           className="all-subs-dataaa"

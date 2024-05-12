@@ -1,5 +1,3 @@
-import Navbar from "./Navbar";
-import LeftPanel from "./LeftPanel";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../Css/search.css";
@@ -213,8 +211,6 @@ function SearchResults() {
   ) {
     return (
       <>
-        <Navbar />
-        <LeftPanel />
         <div className="searched-content">
           <img src={nothing} alt="no results" className="nothing-found" />
           <p className={theme ? "no-results" : "no-results text-light-mode"}>
@@ -230,8 +226,6 @@ function SearchResults() {
   ) {
     return (
       <>
-        <Navbar />
-        <LeftPanel />
         <SkeletonTheme
           baseColor={theme ? "#353535" : "#aaaaaa"}
           highlightColor={theme ? "#444" : "#b6b6b6"}
@@ -927,8 +921,6 @@ function SearchResults() {
   ) {
     return (
       <>
-        <Navbar />
-        <LeftPanel />
         <SkeletonTheme
           baseColor={theme ? "#353535" : "#aaaaaa"}
           highlightColor={theme ? "#444" : "#b6b6b6"}
@@ -1349,8 +1341,6 @@ function SearchResults() {
   ) {
     return (
       <>
-        <Navbar />
-        <LeftPanel />
 
         {/* EDIT HERE  */}
         <SkeletonTheme
@@ -1978,8 +1968,6 @@ function SearchResults() {
   ) {
     return (
       <>
-        <Navbar />
-        <LeftPanel />
         <div className="searched-content">
           <img src={nothing} alt="no results" className="nothing-found" />
           <p className={theme ? "no-results" : "no-results text-light-mode"}>
@@ -1992,8 +1980,6 @@ function SearchResults() {
 
   return (
     <>
-      <Navbar />
-      <LeftPanel />
       <div className="main-trending-section">
         <div className="spin23" style={{ top: "200px" }}>
           <span className={theme ? "loader2" : "loader2-light"}></span>

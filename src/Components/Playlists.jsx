@@ -1,5 +1,3 @@
-import Navbar from "./Navbar";
-import LeftPanel from "./LeftPanel";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
@@ -339,8 +337,6 @@ function Playlists() {
   ) {
     return (
       <>
-        <Navbar />
-        <LeftPanel />
         <div className="searched-content">
           <img src={nothing} alt="no results" className="nothing-found" />
           <p className="no-results">No videos found!</p>
@@ -357,8 +353,6 @@ function Playlists() {
   ) {
     return (
       <>
-        <Navbar />
-        <LeftPanel />
         <div className="searched-content">
           <img src={nothing} alt="no results" className="nothing-found" />
           <p
@@ -376,8 +370,6 @@ function Playlists() {
 
   return (
     <>
-      <Navbar />
-      <LeftPanel />
       <div
         className={
           theme

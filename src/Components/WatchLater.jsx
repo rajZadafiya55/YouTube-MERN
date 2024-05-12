@@ -1,5 +1,3 @@
-import Navbar from "./Navbar";
-import LeftPanel from "./LeftPanel";
 import { useEffect, useState } from "react";
 import jwtDecode from "jwt-decode";
 import nothing from "../img/nothing.png";
@@ -119,8 +117,6 @@ function WatchLater() {
   if (watchlater.savedData === "NO DATA") {
     return (
       <>
-        <Navbar />
-        <LeftPanel />
         <div className="searched-content">
           <img src={nothing} alt="no results" className="nothing-found" />
           <p className={theme ? "no-results" : "no-results text-light-mode"}>
@@ -133,8 +129,6 @@ function WatchLater() {
 
   return (
     <>
-      <Navbar />
-      <LeftPanel />
       <div
         className={
           theme

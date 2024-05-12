@@ -13,7 +13,7 @@ import Zoom from "@mui/material/Zoom";
 import { RiUserSettingsLine } from "react-icons/ri";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import BasicTabs from "../BasicTabs";
+import BasicTabs from "./BasicTabs";
 
 function OtherChannel() {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ function OtherChannel() {
   const [myVideos, setMyVideos] = useState([]);
   const [isbtnClicked, setisbtnClicked] = useState(false);
   const [Section, setSection] = useState(
-    localStorage.getItem("Section") || "Home"
+    localStorage.getItem("Section") || "Videos"
   );
   const token = localStorage.getItem("userToken");
   const [isSubscribed, setIsSubscribed] = useState();
@@ -132,26 +132,14 @@ function OtherChannel() {
     return () => clearInterval(interval);
   }, [Email]);
 
-
-
   useEffect(() => {
-    if (Section === "Home" && coverIMG !== "No data") {
-      setTop("31%");
-    } else if (Section === "Home" && coverIMG === "No data") {
-      setTop("2%");
-    } else if (Section === "Videos" && coverIMG !== "No data") {
+    if (Section === "Videos" && coverIMG !== "No data") {
       setTop("31%");
     } else if (Section === "Videos" && coverIMG === "No data") {
       setTop("2%");
-    } else if (
-      (Section !== "Videos" && coverIMG === "No data") ||
-      (Section !== "Home" && coverIMG === "No data")
-    ) {
+    } else if (Section !== "Videos" && coverIMG === "No data") {
       setTop("2%");
-    } else if (
-      (Section !== "Videos" && coverIMG !== "No data") ||
-      (Section !== "Home" && coverIMG !== "No data")
-    ) {
+    } else if (Section !== "Videos" && coverIMG !== "No data") {
       setTop("31%");
     }
   }, [Section, coverIMG]);
@@ -503,183 +491,10 @@ function OtherChannel() {
             </div>
           </div>
 
-          <div className="channel-mid-content">
+          <div className="channel-mid-content" >
             <BasicTabs section={Section} handleTabChange={handleTabChange} />
           </div>
-          <div className="channel-mid-content">
-            {/* <BasicTabs section={Section} /> */}
-            {/* <BasicTabs /> */}
-
-            {/* <div className="different-sections">
-              {Section === "Home" ? (
-                <p
-                  className={theme ? "channel-home1" : "channel-home2"}
-                  onClick={() => {
-                    localStorage.setItem("Section", "Home");
-                    window.location.reload();
-                  }}
-                >
-                  HOME
-                </p>
-              ) : (
-                <p
-                  className={
-                    theme ? "channel-home" : "channel-home text-light-mode2"
-                  }
-                  onClick={() => {
-                    localStorage.setItem("Section", "Home");
-                    window.location.reload();
-                  }}
-                >
-                  HOME
-                </p>
-              )}
-              {Section === "Videos" ? (
-                <p
-                  className={theme ? "channel-videos1" : "channel-videos2"}
-                  style={
-                    myVideos && myVideos.message === "USER DOESN'T EXIST"
-                      ? { display: "none" }
-                      : { display: "block" }
-                  }
-                  onClick={() => {
-                    localStorage.setItem("Section", "Videos");
-                    window.location.reload();
-                  }}
-                >
-                  VIDEOS
-                </p>
-              ) : (
-                <p
-                  className={
-                    theme ? "channel-videos" : "channel-videos text-light-mode2"
-                  }
-                  style={
-                    myVideos && myVideos.message === "USER DOESN'T EXIST"
-                      ? { display: "none" }
-                      : { display: "block" }
-                  }
-                  onClick={() => {
-                    localStorage.setItem("Section", "Videos");
-                    window.location.reload();
-                  }}
-                >
-                  VIDEOS
-                </p>
-              )}
-              {Section === "Playlists" ? (
-                <p
-                  className={
-                    theme ? "channel-playlists1" : "channel-playlists2"
-                  }
-                  onClick={() => {
-                    localStorage.setItem("Section", "Playlists");
-                    window.location.reload();
-                  }}
-                >
-                  PLAYLISTS
-                </p>
-              ) : (
-                <p
-                  className={
-                    theme
-                      ? "channel-playlists"
-                      : "channel-playlists text-light-mode2"
-                  }
-                  onClick={() => {
-                    localStorage.setItem("Section", "Playlists");
-                    window.location.reload();
-                  }}
-                >
-                  PLAYLISTS
-                </p>
-              )}
-              {Section === "Subscriptions" ? (
-                <p
-                  className={
-                    theme ? "channel-subscriptions1" : "channel-subscriptions2"
-                  }
-                  onClick={() => {
-                    localStorage.setItem("Section", "Subscriptions");
-                    window.location.reload();
-                  }}
-                >
-                  CHANNELS
-                </p>
-              ) : (
-                <p
-                  className={
-                    theme
-                      ? "channel-subscriptions"
-                      : "channel-subscriptions text-light-mode2"
-                  }
-                  onClick={() => {
-                    localStorage.setItem("Section", "Subscriptions");
-                    window.location.reload();
-                  }}
-                >
-                  CHANNELS
-                </p>
-              )}
-              {Section === "About" ? (
-                <p
-                  className={theme ? "channel-about1" : "channel-about2"}
-                  onClick={() => {
-                    localStorage.setItem("Section", "About");
-                    window.location.reload();
-                  }}
-                >
-                  ABOUT
-                </p>
-              ) : (
-                <p
-                  className={
-                    theme ? "channel-about" : "channel-about text-light-mode2"
-                  }
-                  onClick={() => {
-                    localStorage.setItem("Section", "About");
-                    window.location.reload();
-                  }}
-                >
-                  ABOUT
-                </p>
-              )}
-            </div> */}
-          </div>
-
           <br />
-          {/* <hr
-            className={
-              theme
-                ? "seperate seperate-new"
-                : "seperate seperate-new seperate-light"
-            }
-          /> */}
-
-          {/* {Section === "Home" || Section === "" ? (
-            <ChannelHome newmail={Email} />
-          ) : (
-            ""
-          )}
-          {Section === "Videos" &&
-          myVideos &&
-          myVideos.message !== "USER DOESN'T EXIST" ? (
-            <ChannelVideos newmail={Email} />
-          ) : (
-            ""
-          )}
-          {Section === "Playlists" ? <ChannelPlaylists newmail={Email} /> : ""}
-          {Section === "Subscriptions" ? (
-            <FeaturedChannels newmail={Email} />
-          ) : (
-            ""
-          )}
-
-          {Section === "About" ? (
-            <ChannelAbout newmail={Email} channelid={id} />
-          ) : (
-            ""
-          )} */}
         </div>
       ) : (
         <div className="main-trending-section">

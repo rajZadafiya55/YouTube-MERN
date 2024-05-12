@@ -387,7 +387,7 @@
 
 .allvideo-sectionn {
   position: relative;
-  top: 100px;
+  top: 10px;
 }
 
 .uploadedvideos-sectionall {
@@ -506,7 +506,7 @@
 .channel-about-section {
   color: #f1f1f1;
   position: absolute;
-  top: 320px;
+  top: 100px;
   display: flex;
   justify-content: space-between;
   width: -webkit-fill-available;
@@ -585,19 +585,17 @@
 
 .channel-playlist-section {
   position: absolute;
-  top: 305px;
+  top: 100px;
   color: white;
 }
 
 .no-playlists {
   position: absolute;
-  /* top: 95px; */
-  /* left: 450px; */
   width: -webkit-fill-available;
   color: white;
   transform: translate(-50%, -50%);
   left: 50%;
-  top: 350px;
+  top: 80px;
 }
 
 .create-playlist {
@@ -631,7 +629,7 @@
 
 .featured-channels-sections {
   position: absolute;
-  top: 300px;
+  top: 100px;
 }
 
 .featured-channel-btn {
@@ -1051,7 +1049,7 @@
   margin-left: 25px;
 }
 
-.not-thiss{
+.not-thiss {
   display: none !important;
 }
 
@@ -1272,6 +1270,7 @@
     top: 28% !important;
     width: 92.3vw;
   }
+
   .channel-main-content-nocover {
     left: 4%;
     width: 92.3vw;
@@ -1299,13 +1298,14 @@
   .thischannel-playlists {
     padding-bottom: 100px;
   }
-  .featured-channels-added, .add-feature-channel {
+  .featured-channels-added,
+  .add-feature-channel {
     padding-bottom: 100px;
   }
   .channel-about-section {
     flex-direction: column;
     padding-bottom: 110px;
-    top: 300px;
+    top: 100px;
   }
   .right-about-section {
     display: none;
@@ -1376,9 +1376,8 @@
     width: 230px !important;
     height: 129px !important;
   }
-  .created-all-playlistss2{
+  .created-all-playlistss2 {
     width: 230px !important;
-
   }
   .playlistt-details > p:nth-child(2) {
     margin-top: 8px;
@@ -1447,11 +1446,9 @@
     top: 10px;
   }
   .no-results {
-    top: 340px !important;
+    top: 240px !important;
   }
-  .featured-channels-sections {
-    top: 320px;
-  }
+
   .featured-channels-added {
     top: 380px !important;
   }
@@ -1459,7 +1456,7 @@
     top: 320px !important;
   }
   .channel-about-section {
-    top: 325px !important;
+    top: 100px !important;
   }
 }
 
@@ -1495,7 +1492,7 @@
   }
 
   .no-results {
-    top: 430px !important;
+    top: 230px !important;
   }
   .no-channel {
     top: 370px !important;
@@ -1570,8 +1567,10 @@
     height: 58px;
   }
   .channel-mid-content {
-    overflow: scroll;
+    overflow: scroll !important;
     top: 105px;
+    height: 80vh;
+    width: auto;
   }
   .seperate-new {
     top: 65px;
@@ -1603,7 +1602,7 @@
     padding-bottom: 120px;
   }
   .allvideo-sectionn {
-    top: 70px;
+    top: 10px;
   }
   .videos-metadataa > p {
     font-size: 15.2px;
@@ -1623,20 +1622,16 @@
     height: 113px !important;
   }
 
-  .created-all-playlistss2{
+  .created-all-playlistss2 {
     width: 200px !important;
-
   }
 
-  .featured-channels-sections {
-    top: 420px;
-  }
   .featured-channels-added {
     top: 470px !important;
   }
 
   .channel-about-section {
-    top: 420px !important;
+    top: 100px !important;
   }
   .channel-desc {
     font-size: 13.8px;
@@ -1777,11 +1772,12 @@
     width: 180px !important;
     height: 101px !important;
   }
-  .created-all-playlistss2{
+  .created-all-playlistss2 {
     width: 180px !important;
-
   }
-
+  .channel-playlist-section {
+    top: 50px;
+  }
   .playlistt-details {
     width: 37vw !important;
   }

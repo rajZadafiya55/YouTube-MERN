@@ -1,5 +1,3 @@
-import LeftPanel3 from "../LeftPanel3";
-import Navbar2 from "../Navbar2";
 import "../../Css/Studio/comments.css";
 import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
 import { useEffect, useState } from "react";
@@ -211,9 +209,6 @@ function VideoComments() {
 
   return (
     <>
-      <Navbar2 />
-      <LeftPanel3 />
-
       <div
         className="back-menu-edit"
         onClick={() => navigate("/studio/comments")}
@@ -480,7 +475,6 @@ function VideoComments() {
                   </>
                 );
               })}
-
 
             {filterComments &&
               filterComment !== "" &&

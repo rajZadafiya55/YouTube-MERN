@@ -1,5 +1,3 @@
-import LeftPanel3 from "../LeftPanel3";
-import Navbar2 from "../Navbar2";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import "../../Css/Studio/videodetails.css";
@@ -321,9 +319,6 @@ function VideoDetails() {
 
   return (
     <>
-      <Navbar2 />
-      <LeftPanel3 />
-
       <div className="back-menu-edit" onClick={() => navigate("/studio/video")}>
         <WestIcon fontSize="medium" style={{ color: "#aaa" }} />
       </div>

@@ -83,8 +83,13 @@ function ChannelPlaylists(prop) {
   ) {
     return (
       <p
-        className={theme ? "no-results" : "no-results text-light-mode"}
-        style={{ color: "white", fontSize: "16px" }}
+        className={theme ? "" : " text-light-mode "}
+        style={{
+          color: "white",
+          fontSize: "16px",
+          textAlign: "center",
+          margin: "100px 0px",
+        }}
       >
         This channel doesn&apos;t have any playlists.
       </p>

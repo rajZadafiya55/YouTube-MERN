@@ -1,9 +1,7 @@
-import Navbar from "./Navbar";
-import LeftPanel from "./LeftPanel";
 import "../Css/trending.css";
 import { useEffect, useState } from "react";
 import "react-loading-skeleton/dist/skeleton.css";
-import BasicTabs from "./BasicTabs";
+import BasicTabs from "./Channel/BasicTabs";
 
 function Trending() {
   const [theme, setTheme] = useState(() => {
@@ -23,8 +21,6 @@ function Trending() {
 
   return (
     <>
-      {/* <Navbar />
-      <LeftPanel /> */}
 
       <BasicTabs />
     </>
