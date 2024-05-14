@@ -1120,6 +1120,7 @@ function Studio() {
               </div>
               <div className="video-tag-section"></div>
             </div>
+            
             <div className="right-video-section">
               <div
                 className={

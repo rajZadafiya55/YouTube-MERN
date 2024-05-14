@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-import { APIHttp, Header } from 'constant/Api';
+;
 import { ADD_VIDEOS, DELETE_VIDEOS, GET_ALL_VIDEOS } from '../types';
+import { APIHttp, Header } from '../../constant/Api';
 
 // Toast messages
 const showToast = (message) => {
@@ -37,6 +38,7 @@ export const getAllVideos = () => (dispatch) => {
       console.log(err);
     });
 };
+
 
 export const addVideoData = (data) => {
   const formData = new FormData();

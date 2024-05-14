@@ -238,6 +238,7 @@ function Navbar() {
           />
         </div>
       </div>
+      
       <div
         className={
           theme ? "auth-popup" : "auth-popup light-mode text-light-mode"

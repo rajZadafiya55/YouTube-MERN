@@ -7,11 +7,11 @@ import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import "../Css/theme.css";
 import { useNavigate } from "react-router-dom";
+import { APIHttp } from "../constant/Api";
 
 function Browse() {
   const navigate = useNavigate();
 
-  const backendURL = "http://localhost:3000/";
   const [thumbnails, setThumbnails] = useState([]);
   const [Titles, setTitles] = useState();
   const [uploader, setUploader] = useState();
@@ -124,7 +124,7 @@ function Browse() {
 
   const updateViews = async (id) => {
     try {
-      const response = await fetch(`${backendURL}/updateview/${id}`, {
+      const response = await fetch(`${APIHttp}/updateview/${id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
