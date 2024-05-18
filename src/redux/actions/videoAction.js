@@ -1,17 +1,16 @@
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
-;
-import { ADD_VIDEOS, DELETE_VIDEOS, GET_ALL_VIDEOS } from '../types';
-import { APIHttp, Header } from '../../constant/Api';
+import axios from "axios";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import { ADD_VIDEOS, DELETE_VIDEOS, GET_ALL_VIDEOS } from "../types";
+import { APIHttp, Header } from "../../constant/Api";
 
 // Toast messages
 const showToast = (message) => {
-  toast.success(message, { position: 'top-right' });
+  toast.success(message, { position: "top-right" });
 };
 
 const showErrorToast = (message) => {
-  toast.error(message, { position: 'top-right' });
+  toast.error(message, { position: "top-right" });
 };
 
 // Action creators
@@ -19,12 +18,12 @@ const addVideo = () => ({ type: ADD_VIDEOS });
 
 const deleteVideo = (videoId) => ({
   type: DELETE_VIDEOS,
-  payload: videoId
+  payload: videoId,
 });
 
 const getVideos = (videos) => ({
   type: GET_ALL_VIDEOS,
-  payload: videos
+  payload: videos,
 });
 
 // Thunks
@@ -39,24 +38,33 @@ export const getAllVideos = () => (dispatch) => {
     });
 };
 
-
 export const addVideoData = (data) => {
+  console.log("video file data is", data.videoFile);
+
   const formData = new FormData();
-  formData.append('title', data.title);
-  formData.append('description', data.description);
-  formData.append('videoFile', data.videoFile);
-  formData.append('thumbnail', data.thumbnail);
+
+  formData.append("videoFile", data.videoFile);
+  formData.append("thumbnail", data.thumbnail);
+  formData.append("title", data.title);
+  formData.append("description", data.description);
+  formData.append("isPublished", data.isPublished);
+
+  formData.append("name", "Raj Zadafiya");
+
+  console.log("append data ", formData);
 
   return (dispatch) => {
     axios
-      .post(`${APIHttp}videos`, formData, Header)
+      .post(`${APIHttp}videos`, formData, Header, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
       .then((res) => {
-        console.log('res', res);
-        dispatch(addVideo);
+        console.log("res", res);
+        dispatch(addVideo());
         if (res.data.success === true) {
-          showToast('Video added successfully!');
+          showToast("Video added successfully!");
         } else {
-          showErrorToast('Failed to upload video');
+          showErrorToast("Failed to upload video");
         }
       })
       .catch((err) => {
@@ -67,12 +75,12 @@ export const addVideoData = (data) => {
 
 export const deleteVideoDetails = (videoId) => (dispatch) => {
   Swal.fire({
-    title: 'Are you sure?',
-    icon: 'warning',
+    title: "Are you sure?",
+    icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!'
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
   }).then((result) => {
     if (result.isConfirmed) {
       axios
@@ -80,14 +88,14 @@ export const deleteVideoDetails = (videoId) => (dispatch) => {
         .then(() => {
           dispatch(deleteVideo(videoId));
           Swal.fire({
-            title: 'Deleted!',
-            text: 'Your file has been deleted.',
-            icon: 'success'
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success",
           });
         })
         .catch((err) => {
           console.log(err);
-          showErrorToast('Failed to delete video');
+          showErrorToast("Failed to delete video");
         });
     }
   });

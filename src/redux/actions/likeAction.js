@@ -2,6 +2,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import axios from "axios";
 import { GET_LIKED_VIDEOS } from "../types";
+import { APIHttp, Header } from "../../constant/Api";
 
 // import { APIHttp, Header } from 'constant/Api';
 
@@ -10,12 +11,13 @@ const getLikeVideo = (video) => ({
   payload: video,
 });
 
-export const getAllLikedVideos = ({ Email }) => {
+export const getAllLikedVideos = () => {
   return (dispatch) => {
     axios
-      .get(`http://localhost:3000/getlikevideos/${Email}`)
+      .get(`${APIHttp}likes/videos`, Header)
       .then((res) => {
-        dispatch(getLikeVideo(res.data));
+        dispatch(getLikeVideo(res.data.data));
+        console.log("liked video", res.data.data);
       })
       .catch((err) => {
         console.log(err);

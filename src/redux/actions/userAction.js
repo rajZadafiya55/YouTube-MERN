@@ -3,6 +3,7 @@ import axios from 'axios';
 import { CHANGE_PASSWORD, GET_USER_CHANNEL_PROFILE, NEW_REGISTRATION, USER_LOGIN } from '../types';
 
 import { APIHttp } from 'constant/Api';
+import { toast } from 'react-toastify';
 
 const showToastMessage = () => {
   toast.success('You have successfully registered!', {

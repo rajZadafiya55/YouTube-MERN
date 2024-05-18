@@ -34,8 +34,10 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LeftPanel from "./LeftPanel";
 import Error from "./Error";
+import { APIHttp, Header } from "../constant/Api";
+import axios from "axios";
 
-function VideoSection() {
+const VideoSection = () => {
   const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const { id } = useParams();
@@ -208,84 +210,102 @@ function VideoSection() {
     };
   });
 
-  useEffect(() => {
-    const checkChannel = async () => {
-      try {
-        if (email !== undefined) {
-          const response = await fetch(`${backendURL}/checkchannel/${email}`);
-          const channelname = await response.json();
-          setChannelName(channelname);
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
+  // useEffect(() => {
+  //   const checkChannel = async () => {
+  //     try {
+  //       if (email !== undefined) {
+  //         const response = await fetch(`${backendURL}/checkchannel/${email}`);
+  //         const channelname = await response.json();
+  //         setChannelName(channelname);
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
 
-    checkChannel();
-  }, []);
+  //   checkChannel();
+  // }, []);
 
-  useEffect(() => {
-    const getChannel = async () => {
-      try {
-        if (email !== undefined) {
-          const response = await fetch(`${backendURL}/getchannel/${email}`);
-          const { channel, profile } = await response.json();
-          setisChannel(channel);
-          setUserProfile(profile);
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
-    getChannel();
-  }, []);
+  // get channel api
+  // useEffect(() => {
+  //   const getChannel = async () => {
+  //     try {
+  //       if (email !== undefined) {
+  //         const response = await fetch(`${APIHttp}/getchannel/${email}`);
+  //         const { email, avatar } = await response.json();
+  //         setisChannel(email);
+  //         setUserProfile(avatar);
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
+  //   getChannel();
+  // }, []);
 
-  useEffect(() => {
-    const getTrendingData = async () => {
-      try {
-        if (id !== undefined) {
-          const response = await fetch(`${backendURL}/gettrendingdata/${id}`);
-          const data = await response.json();
-          setCheckTrending(data);
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
-    getTrendingData();
-  }, []);
+  // trending api
+  // useEffect(() => {
+  //   const getTrendingData = async () => {
+  //     try {
+  //       if (id !== undefined) {
+  //         const response = await fetch(`${backendURL}/gettrendingdata/${id}`);
+  //         const data = await response.json();
+  //         setCheckTrending(data);
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
+  //   getTrendingData();
+  // }, []);
 
-  useEffect(() => {
-    const PushTrending = async () => {
-      try {
-        if (id !== undefined && usermail !== undefined) {
-          const response = await fetch(
-            `${backendURL}/checktrending/${id}/${usermail}`
-          );
-          await response.json();
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
-    PushTrending();
-  }, [id, usermail]);
+  // useEffect(() => {
+  //   const PushTrending = async () => {
+  //     try {
+  //       if (id !== undefined && usermail !== undefined) {
+  //         const response = await fetch(
+  //           `${backendURL}/checktrending/${id}/${usermail}`
+  //         );
+  //         await response.json();
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
+  //   PushTrending();
+  // }, [id, usermail]);
 
+  // get videoData
   useEffect(() => {
     const getVideoData = async () => {
       try {
         if (id !== undefined) {
-          const response = await fetch(`${backendURL}/videodata/${id}`);
-          const video = await response.json();
+          const response = await axios.get(`${APIHttp}videos/${id}`, Header);
+
+          // const {
+          //   thumbnailURLs,
+          //   titles,
+          //   Uploader,
+          //   Profile,
+          //   Duration,
+          //   videoID,
+          //   views,
+          //   uploadDate,
+          //   Visibility,
+          //   videoData,
+          // } = response.data;
+          const video = await response.data.data;
           setVideoData(video);
+          console.log("video", video);
         }
       } catch (error) {
-        //console.log(error.message);
+        console.log(error.message);
       }
     };
+    console.log("video Data ", videoData);
 
     getVideoData();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const getVideos = async () => {
@@ -315,274 +335,287 @@ function VideoSection() {
     getVideos();
   }, []);
 
-  useEffect(() => {
-    const initializePlyr = () => {
-      if (!plyrInitialized && videoRef.current) {
-        const player = new Plyr(videoRef.current, {
-          background: "red",
-          ratio: null,
-        });
-        setPlyrInitialized(true);
-      }
-    };
+  // playlist
+  // useEffect(() => {
+  //   const initializePlyr = () => {
+  //     if (!plyrInitialized && videoRef.current) {
+  //       const player = new Plyr(videoRef.current, {
+  //         background: "red",
+  //         ratio: null,
+  //       });
+  //       setPlyrInitialized(true);
+  //     }
+  //   };
 
-    if (videoData && videoData.VideoData) {
-      initializePlyr();
-    }
-  }, [plyrInitialized, videoData]);
+  //   if (videoData && videoData.VideoData) {
+  //     initializePlyr();
+  //   }
+  // }, [plyrInitialized, videoData]);
 
-  useEffect(() => {
-    const getLikes = async () => {
-      try {
-        if (id !== undefined) {
-          const response = await fetch(`${backendURL}/getlike/${id}/`);
-          const likes = await response.json();
-          setVideoLikes(likes);
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
+  // like  setVideoLikes(likes) amma get video mathi likeCount aave che te set kervanu che
+  // useEffect(() => {
+  //   const getLikes = async () => {
+  //     try {
+  //       if (id !== undefined) {
+  //         const response = await fetch(`${backendURL}/getlike/${id}/`);
+  //         const likes = await response.json();
+  //         setVideoLikes(likes);
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
 
-    const interval = setInterval(getLikes, 300);
+  //   const interval = setInterval(getLikes, 300);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
-  useEffect(() => {
-    const LikeExists = async () => {
-      try {
-        if (id !== undefined && email !== undefined) {
-          const response = await fetch(
-            `${backendURL}/getuserlikes/${id}/${email}`
-          );
-          const { existingLikedVideo } = await response.json();
-          if (!existingLikedVideo) {
-            setIsLiked(false);
-          } else {
-            setIsLiked(true);
-          }
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
-    const interval = setInterval(LikeExists, 200);
+  // useEffect(() => {
+  //   const LikeExists = async () => {
+  //     try {
+  //       if (id !== undefined && email !== undefined) {
+  //         const response = await fetch(
+  //           `${backendURL}/getuserlikes/${id}/${email}`
+  //         );
+  //         const { existingLikedVideo } = await response.json();
+  //         if (!existingLikedVideo) {
+  //           setIsLiked(false);
+  //         } else {
+  //           setIsLiked(true);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
+  //   const interval = setInterval(LikeExists, 200);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
-  useEffect(() => {
-    const CommentLikes = async () => {
-      try {
-        if (id !== undefined) {
-          const response = await fetch(`${backendURL}/likecomment/${id}`);
-          const result = await response.json();
-          setCommentLikes(result);
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
+  // comment
+  // useEffect(() => {
+  //   const CommentLikes = async () => {
+  //     try {
+  //       if (id !== undefined) {
+  //         const response = await fetch(`${backendURL}/likecomment/${id}`);
+  //         const result = await response.json();
+  //         setCommentLikes(result);
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
 
-    const interval = setInterval(CommentLikes, 200);
+  //   const interval = setInterval(CommentLikes, 200);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
-  useEffect(() => {
-    const getWatchlater = async () => {
-      try {
-        if (id !== undefined && email !== undefined) {
-          const response = await fetch(
-            `${backendURL}/checkwatchlater/${id}/${email}`
-          );
-          const data = await response.json();
-          if (data === "Found") {
-            setIsSaved(true);
-          } else {
-            setIsSaved(false);
-          }
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
+  // watch later history
+  // useEffect(() => {
+  //   const getWatchlater = async () => {
+  //     try {
+  //       if (id !== undefined && email !== undefined) {
+  //         const response = await fetch(
+  //           `${backendURL}/checkwatchlater/${id}/${email}`
+  //         );
+  //         const data = await response.json();
+  //         if (data === "Found") {
+  //           setIsSaved(true);
+  //         } else {
+  //           setIsSaved(false);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
 
-    const interval = setInterval(getWatchlater, 200);
+  //   const interval = setInterval(getWatchlater, 200);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
-  useEffect(() => {
-    const getComments = async () => {
-      try {
-        if (id !== undefined) {
-          const response = await fetch(`${backendURL}/getcomments/${id}`);
-          const result = await response.json();
-          setComments(result);
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
-    const interval = setInterval(getComments, 200);
+  // get all comment
+  // useEffect(() => {
+  //   const getComments = async () => {
+  //     try {
+  //       if (id !== undefined) {
+  //         const response = await fetch(`${backendURL}/getcomments/${id}`);
+  //         const result = await response.json();
+  //         setComments(result);
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
+  //   const interval = setInterval(getComments, 200);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
-  useEffect(() => {
-    const getOtherChannel = async () => {
-      try {
-        if (id !== undefined) {
-          const response = await fetch(`${backendURL}/otherchannel/${id}`);
-          const userEmail = await response.json();
-          setUserMail(userEmail);
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
+  // get other channel
+  // useEffect(() => {
+  //   const getOtherChannel = async () => {
+  //     try {
+  //       if (id !== undefined) {
+  //         const response = await fetch(`${backendURL}/otherchannel/${id}`);
+  //         const userEmail = await response.json();
+  //         setUserMail(userEmail);
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
 
-    getOtherChannel();
-  }, []);
+  //   getOtherChannel();
+  // }, []);
 
-  useEffect(() => {
-    const getChannelID = async () => {
-      try {
-        if (usermail !== undefined) {
-          const response = await fetch(
-            `${backendURL}/getchannelid/${usermail}`
-          );
-          const { channelID, subscribers } = await response.json();
-          setChannelID(channelID);
-          setSubscribers(subscribers);
-        }
-      } catch (error) {
-        // console.log("Error fetching user data:", error.message);
-      }
-    };
+  // get channel by id
+  // useEffect(() => {
+  //   const getChannelID = async () => {
+  //     try {
+  //       if (usermail !== undefined) {
+  //         const response = await fetch(
+  //           `${backendURL}/getchannelid/${usermail}`
+  //         );
+  //         const { channelID, subscribers } = await response.json();
+  //         setChannelID(channelID);
+  //         setSubscribers(subscribers);
+  //       }
+  //     } catch (error) {
+  //       // console.log("Error fetching user data:", error.message);
+  //     }
+  //   };
 
-    getChannelID();
-  }, [usermail]);
+  //   getChannelID();
+  // }, [usermail]);
 
-  useEffect(() => {
-    const GetChannelData = async () => {
-      try {
-        if (usermail !== undefined) {
-          const response = await fetch(`${backendURL}/subscribe/${usermail}`);
-          const { channel, profile, channelid } = await response.json();
-          setyoutuberName(channel);
-          setyoutuberProfile(profile);
-          setyoutubeChannelID(channelid);
-        }
-      } catch (error) {
-        // console.log("Error fetching user data:", error.message);
-      }
-    };
+  // get subscriber data
+  // useEffect(() => {
+  //   const GetChannelData = async () => {
+  //     try {
+  //       if (usermail !== undefined) {
+  //         const response = await fetch(`${backendURL}/subscribe/${usermail}`);
+  //         const { channel, profile, channelid } = await response.json();
+  //         setyoutuberName(channel);
+  //         setyoutuberProfile(profile);
+  //         setyoutubeChannelID(channelid);
+  //       }
+  //     } catch (error) {
+  //       // console.log("Error fetching user data:", error.message);
+  //     }
+  //   };
 
-    GetChannelData();
-  }, [usermail]);
+  //   GetChannelData();
+  // }, [usermail]);
 
-  useEffect(() => {
-    const checkSubscription = async () => {
-      try {
-        if (email !== undefined && channelID !== undefined) {
-          const response = await fetch(
-            `${backendURL}/checksubscription/${channelID}/${email}`
-          );
-          const { existingChannelID } = await response.json();
-          if (existingChannelID !== undefined) {
-            setIsSubscribed(true);
-          } else {
-            setIsSubscribed(false);
-          }
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
+  // check subscription data
+  // useEffect(() => {
+  //   const checkSubscription = async () => {
+  //     try {
+  //       if (email !== undefined && channelID !== undefined) {
+  //         const response = await fetch(
+  //           `${backendURL}/checksubscription/${channelID}/${email}`
+  //         );
+  //         const { existingChannelID } = await response.json();
+  //         if (existingChannelID !== undefined) {
+  //           setIsSubscribed(true);
+  //         } else {
+  //           setIsSubscribed(false);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
 
-    const interval = setInterval(checkSubscription, 400);
+  //   const interval = setInterval(checkSubscription, 400);
 
-    return () => clearInterval(interval);
-  }, [channelID]);
+  //   return () => clearInterval(interval);
+  // }, [channelID]);
 
-  useEffect(() => {
-    const GetUserVideos = async () => {
-      try {
-        if (usermail !== undefined) {
-          const response = await fetch(
-            `${backendURL}/getuservideos/${usermail}`
-          );
-          const myvideos = await response.json();
-          setUserVideos(myvideos);
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
+  // get user videos
+  // useEffect(() => {
+  //   const GetUserVideos = async () => {
+  //     try {
+  //       if (usermail !== undefined) {
+  //         const response = await fetch(
+  //           `${backendURL}/getuservideos/${usermail}`
+  //         );
+  //         const myvideos = await response.json();
+  //         setUserVideos(myvideos);
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
 
-    GetUserVideos();
-  }, [usermail]);
+  //   GetUserVideos();
+  // }, [usermail]);
 
-  useEffect(() => {
-    const getPlaylists = async () => {
-      try {
-        if (email !== undefined) {
-          const response = await fetch(
-            `${backendURL}/getplaylistdata/${email}`
-          );
-          const playlists = await response.json();
-          setUserPlaylist(playlists);
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
+  // get playlist
+  // useEffect(() => {
+  //   const getPlaylists = async () => {
+  //     try {
+  //       if (email !== undefined) {
+  //         const response = await fetch(
+  //           `${backendURL}/getplaylistdata/${email}`
+  //         );
+  //         const playlists = await response.json();
+  //         setUserPlaylist(playlists);
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
 
-    const interval = setInterval(getPlaylists, 400);
+  //   const interval = setInterval(getPlaylists, 400);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
-  useEffect(() => {
-    const getVideoAvailableInPlaylist = async () => {
-      try {
-        if (id !== undefined && email !== undefined) {
-          const response = await fetch(
-            `${backendURL}/getvideodataplaylist/${email}/${id}`
-          );
-          const playlistIdsWithVideo = await response.json();
-          setplaylistID(playlistIdsWithVideo);
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
+  // video availble in playlist
+  // useEffect(() => {
+  //   const getVideoAvailableInPlaylist = async () => {
+  //     try {
+  //       if (id !== undefined && email !== undefined) {
+  //         const response = await fetch(
+  //           `${backendURL}/getvideodataplaylist/${email}/${id}`
+  //         );
+  //         const playlistIdsWithVideo = await response.json();
+  //         setplaylistID(playlistIdsWithVideo);
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
 
-    const interval = setInterval(getVideoAvailableInPlaylist, 400);
+  //   const interval = setInterval(getVideoAvailableInPlaylist, 400);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
-  useEffect(() => {
-    const getHeartComments = async () => {
-      try {
-        if (id !== undefined) {
-          const response = await fetch(`${backendURL}/getheartcomment/${id}`);
-          const heart = await response.json();
-          setIsHeart(heart);
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
+  // get heart commentr
+  // useEffect(() => {
+  //   const getHeartComments = async () => {
+  //     try {
+  //       if (id !== undefined) {
+  //         const response = await fetch(`${backendURL}/getheartcomment/${id}`);
+  //         const heart = await response.json();
+  //         setIsHeart(heart);
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
 
-    const interval = setInterval(getHeartComments, 400);
+  //   const interval = setInterval(getHeartComments, 400);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -591,34 +624,33 @@ function VideoSection() {
   }, []);
 
   //POST REQUESTS
-
-  const uploadComment = async () => {
-    try {
-      setCommentLoading(true);
-      const response1 = await fetch(`${backendURL}/getchannelid/${email}`);
-      const { channelID } = await response1.json();
-      const data = {
-        comment,
-        email,
-        channelID,
-      };
-      const response = await fetch(`${backendURL}/comments/${id}`, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const Data = await response.json();
-      if (Data === "Uploaded") {
-        setCommentLoading(false);
-      } else {
-        setCommentLoading(true);
-      }
-    } catch (error) {
-      //console.log(error.message);
-    }
-  };
+  // const uploadComment = async () => {
+  //   try {
+  //     setCommentLoading(true);
+  //     const response1 = await fetch(`${backendURL}/getchannelid/${email}`);
+  //     const { channelID } = await response1.json();
+  //     const data = {
+  //       comment,
+  //       email,
+  //       channelID,
+  //     };
+  //     const response = await fetch(`${backendURL}/comments/${id}`, {
+  //       method: "POST",
+  //       body: JSON.stringify(data),
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     const Data = await response.json();
+  //     if (Data === "Uploaded") {
+  //       setCommentLoading(false);
+  //     } else {
+  //       setCommentLoading(true);
+  //     }
+  //   } catch (error) {
+  //     //console.log(error.message);
+  //   }
+  // };
 
   if (!videoData) {
     return (
@@ -658,6 +690,8 @@ function VideoSection() {
 
   const { VideoData } = videoData;
   const matchedVideo = VideoData && VideoData.find((item) => item._id === id);
+
+  console.log("matchvideo ", matchedVideo);
 
   if (!matchedVideo) {
     return (
@@ -711,71 +745,71 @@ function VideoSection() {
   document.title =
     Title && Title !== undefined ? `${Title} - YouTube` : "YouTube";
 
-  const likeVideo = async () => {
-    try {
-      setLikeLoading(true);
+  // const likeVideo = async () => {
+  //   try {
+  //     setLikeLoading(true);
 
-      const response = await fetch(
-        `${backendURL}/like/${id}/${email}/${usermail}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      // console.log(data);
-      if (data === "Liked") {
-        LikedNotify();
-        setLikeLoading(false);
-      } else if (data === "Liked" || data === "Disliked") {
-        setLikeLoading(false);
-      } else if (data !== "Liked" || data !== "Disliked") {
-        setLikeLoading(true);
-      }
-    } catch (error) {
-      //console.log(error.message);
-    }
-  };
+  //     const response = await fetch(
+  //       `${backendURL}/like/${id}/${email}/${usermail}`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     const data = await response.json();
+  //     // console.log(data);
+  //     if (data === "Liked") {
+  //       LikedNotify();
+  //       setLikeLoading(false);
+  //     } else if (data === "Liked" || data === "Disliked") {
+  //       setLikeLoading(false);
+  //     } else if (data !== "Liked" || data !== "Disliked") {
+  //       setLikeLoading(true);
+  //     }
+  //   } catch (error) {
+  //     //console.log(error.message);
+  //   }
+  // };
 
-  const LikeComment = async (commentId) => {
-    try {
-      if (commentId !== undefined && id !== undefined && email !== undefined) {
-        const response = await fetch(
-          `${backendURL}/LikeComment /${id}/${commentId}/${email}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        await response.json();
-      }
-    } catch (error) {
-      //console.log(error.message);
-    }
-  };
+  // const LikeComment = async (commentId) => {
+  //   try {
+  //     if (commentId !== undefined && id !== undefined && email !== undefined) {
+  //       const response = await fetch(
+  //         `${backendURL}/LikeComment /${id}/${commentId}/${email}`,
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
+  //       await response.json();
+  //     }
+  //   } catch (error) {
+  //     //console.log(error.message);
+  //   }
+  // };
 
-  const HeartComment = async (commentID) => {
-    try {
-      if (id !== undefined && channelID !== undefined) {
-        const response = await fetch(
-          `${backendURL}/heartcomment/${id}/${commentID}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        await response.json();
-      }
-    } catch (error) {
-      //console.log(error.message);
-    }
-  };
+  // const HeartComment = async (commentID) => {
+  //   try {
+  //     if (id !== undefined && channelID !== undefined) {
+  //       const response = await fetch(
+  //         `${backendURL}/heartcomment/${id}/${commentID}`,
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
+  //       await response.json();
+  //     }
+  //   } catch (error) {
+  //     //console.log(error.message);
+  //   }
+  // };
 
   const DeleteComment = async (commentId) => {
     try {
@@ -893,103 +927,103 @@ function VideoSection() {
 
   //ADD PLAYLIST
 
-  const AddPlaylist = async () => {
-    try {
-      setLoading(true);
-      if (email !== undefined) {
-        const currentDate = new Date().toISOString();
-        const data = {
-          playlist_name: playlistName,
-          playlist_privacy: privacy,
-          playlist_date: currentDate,
-          playlist_owner: channelName,
-          thumbnail: thumbnailURL,
-          title: Title,
-          videoID: id,
-          description: Description,
-          videolength: videoLength,
-          video_uploader: uploader,
-          video_date: uploaded_date,
-          video_views: views,
-          videoprivacy: visibility,
-        };
+  // const AddPlaylist = async () => {
+  //   try {
+  //     setLoading(true);
+  //     if (email !== undefined) {
+  //       const currentDate = new Date().toISOString();
+  //       const data = {
+  //         playlist_name: playlistName,
+  //         playlist_privacy: privacy,
+  //         playlist_date: currentDate,
+  //         playlist_owner: channelName,
+  //         thumbnail: thumbnailURL,
+  //         title: Title,
+  //         videoID: id,
+  //         description: Description,
+  //         videolength: videoLength,
+  //         video_uploader: uploader,
+  //         video_date: uploaded_date,
+  //         video_views: views,
+  //         videoprivacy: visibility,
+  //       };
 
-        const response = await fetch(`${backendURL}/addplaylist/${email}`, {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+  //       const response = await fetch(`${backendURL}/addplaylist/${email}`, {
+  //         method: "POST",
+  //         body: JSON.stringify(data),
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       });
 
-        const Data = await response.json();
-        if (Data) {
-          setLoading(false);
-          playlistNotify();
-          window.location.reload();
-        }
-      }
-    } catch (error) {
-      //console.log(error.message);
-      setLoading(true);
-    }
-  };
+  //       const Data = await response.json();
+  //       if (Data) {
+  //         setLoading(false);
+  //         playlistNotify();
+  //         window.location.reload();
+  //       }
+  //     }
+  //   } catch (error) {
+  //     //console.log(error.message);
+  //     setLoading(true);
+  //   }
+  // };
 
-  const AddVideoToExistingPlaylist = async (Id) => {
-    try {
-      if (email !== undefined && Id !== undefined) {
-        const data = {
-          Id,
-          thumbnail: thumbnailURL,
-          title: Title,
-          videoID: id,
-          description: Description,
-          videolength: videoLength,
-          video_uploader: channelName,
-          video_date: uploaded_date,
-          video_views: views,
-          videoprivacy: visibility,
-        };
+  // const AddVideoToExistingPlaylist = async (Id) => {
+  //   try {
+  //     if (email !== undefined && Id !== undefined) {
+  //       const data = {
+  //         Id,
+  //         thumbnail: thumbnailURL,
+  //         title: Title,
+  //         videoID: id,
+  //         description: Description,
+  //         videolength: videoLength,
+  //         video_uploader: channelName,
+  //         video_date: uploaded_date,
+  //         video_views: views,
+  //         videoprivacy: visibility,
+  //       };
 
-        const response = await fetch(
-          `${backendURL}/addvideotoplaylist/${email}`,
-          {
-            method: "POST",
-            body: JSON.stringify(data),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+  //       const response = await fetch(
+  //         `${backendURL}/addvideotoplaylist/${email}`,
+  //         {
+  //           method: "POST",
+  //           body: JSON.stringify(data),
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
 
-        await response.json();
-        playlistNotify();
-      }
-    } catch (error) {
-      //console.log(error.message);
-    }
-  };
+  //       await response.json();
+  //       playlistNotify();
+  //     }
+  //   } catch (error) {
+  //     //console.log(error.message);
+  //   }
+  // };
 
   //REMOVE VIDEO FROM PLAYLIST
 
-  const RemoveVideo = async (playlistID) => {
-    try {
-      if (email !== undefined && id !== undefined && playlistID !== undefined) {
-        const response = await fetch(
-          `${backendURL}/removevideo/${email}/${id}/${playlistID}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        await response.json();
-      }
-    } catch (error) {
-      //console.log(error.message);
-    }
-  };
+  // const RemoveVideo = async (playlistID) => {
+  //   try {
+  //     if (email !== undefined && id !== undefined && playlistID !== undefined) {
+  //       const response = await fetch(
+  //         `${backendURL}/removevideo/${email}/${id}/${playlistID}`,
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
+  //       await response.json();
+  //     }
+  //   } catch (error) {
+  //     //console.log(error.message);
+  //   }
+  // };
 
   const menu = document.querySelector(".menu");
   if (menu !== null) {
@@ -1072,6 +1106,7 @@ function VideoSection() {
                   }
                 }}
               />
+
               <div className="channel-data2">
                 <div className="creator">
                   <p
@@ -1150,6 +1185,7 @@ function VideoSection() {
                 </button>
               )}
             </div>
+
             <div className="channel-right-data c-right1">
               <div
                 className="like-dislike"
@@ -1344,6 +1380,7 @@ function VideoSection() {
                 </div>
               </Tooltip>
             </div>
+
             <div className="channel-right-data c-right2">
               {/* ===================== like share download button ====================================== */}
 
@@ -1394,7 +1431,9 @@ function VideoSection() {
                       <p className="like-count">{VideoLikes}</p>
                     </div>
                   </Tooltip>
+
                   <div className={theme ? "vl" : "vl-light"}></div>
+
                   <Tooltip
                     TransitionComponent={Zoom}
                     title="I dislike this"
@@ -1423,6 +1462,7 @@ function VideoSection() {
                     </div>
                   </Tooltip>
                 </div>
+
                 {/* ========= share button =========== */}
 
                 <Tooltip
@@ -1477,6 +1517,7 @@ function VideoSection() {
                     <p className="download-txt">Download</p>
                   </div>
                 </Tooltip>
+
                 {/* ================= Watch Later button ================ */}
 
                 <Tooltip
@@ -1516,6 +1557,7 @@ function VideoSection() {
                   </div>
                 </Tooltip>
               </div>
+
               <div className="firstt-c-data">
                 <div
                   className="like-dislike"
@@ -1647,6 +1689,7 @@ function VideoSection() {
                   </div>
                 </Tooltip>
               </div>
+
               {/* ===================== add playlist button ====================================== */}
               <div className="second-c-data">
                 <Tooltip
@@ -1724,6 +1767,7 @@ function VideoSection() {
                   title="Add to playlist"
                   placement="top"
                 >
+                  {/* playlist  */}
                   <div
                     className={
                       theme
@@ -1867,6 +1911,7 @@ function VideoSection() {
                 {comments && comments.length > 1 ? "Comments" : "Comment"}
               </p>
             </div>
+
             {commentLoading === false ? (
               <div className="my-comment-area">
                 <img
@@ -2160,6 +2205,7 @@ function VideoSection() {
                   </p>
                 </div>
               </div>
+
               {/* ============ video-section ================= */}
 
               <div className="video-section2">
@@ -2507,6 +2553,7 @@ function VideoSection() {
                 );
               })}
           </div>
+
           <div
             className="video-section23 userVideos"
             style={
@@ -2641,6 +2688,7 @@ function VideoSection() {
                   </div>
                 );
               })}
+
             {userVideos &&
               rec &&
               userVideos.length > 0 &&
@@ -3042,6 +3090,7 @@ function VideoSection() {
           </div>
         </div>
       </div>
+
       <div
         className="share-clicked"
         style={
@@ -3344,6 +3393,6 @@ function VideoSection() {
       </div>
     </>
   );
-}
+};
 
 export default VideoSection;

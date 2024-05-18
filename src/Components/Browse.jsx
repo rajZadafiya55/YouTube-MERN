@@ -8,25 +8,32 @@ import "react-loading-skeleton/dist/skeleton.css";
 import "../Css/theme.css";
 import { useNavigate } from "react-router-dom";
 import { APIHttp } from "../constant/Api";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllVideos } from "../redux/actions/videoAction";
 
 function Browse() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [thumbnails, setThumbnails] = useState([]);
-  const [Titles, setTitles] = useState();
-  const [uploader, setUploader] = useState();
-  const [ProfilePic, setProfilePic] = useState();
-  const [duration, setDuration] = useState();
-  const [VideoID, setVideoID] = useState();
-  const [Visibility, setVisibility] = useState();
+  const AllVideo = useSelector((state) => state.videos.videosDetails);
+  const [videoDetails, setVideoDetails] = useState([]);
+  // const [thumbnails, setThumbnails] = useState([]);
+  // const [Titles, setTitles] = useState();
+  // const [uploader, setUploader] = useState();
+  // const [ProfilePic, setProfilePic] = useState();
+  // const [duration, setDuration] = useState();
+  // const [VideoID, setVideoID] = useState();
+  // const [Visibility, setVisibility] = useState();
+  // const [publishDate, setPublishDate] = useState();
+  // const [VideoViews, setVideoViews] = useState();
+  // const [VideoData, setVideoData] = useState([]);
+
   const [menuClicked, setMenuClicked] = useState(() => {
     const menu = localStorage.getItem("menuClicked");
     return menu ? JSON.parse(menu) : false;
   });
-  const [VideoViews, setVideoViews] = useState();
-  // const [VideoData, setVideoData] = useState([]);
+
   const [TagsSelected, setTagsSelected] = useState("All");
-  const [publishDate, setPublishDate] = useState();
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState(() => {
     const Dark = localStorage.getItem("Dark");
@@ -72,39 +79,39 @@ function Browse() {
     "Fashion",
   ];
 
-  useEffect(() => {
-    const getVideos = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/getvideos");
-        const {
-          thumbnailURLs,
-          titles,
-          Uploader,
-          Profile,
-          Duration,
-          videoID,
-          views,
-          uploadDate,
-          Visibility,
-          videoData,
-        } = await response.json();
-        setThumbnails(thumbnailURLs);
-        setTitles(titles);
-        setUploader(Uploader);
-        setProfilePic(Profile);
-        setDuration(Duration);
-        setVideoID(videoID);
-        setVideoViews(views);
-        setPublishDate(uploadDate);
-        setVisibility(Visibility);
-        setVideoData(videoData);
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
+  // useEffect(() => {
+  //   const getVideos = async () => {
+  //     try {
+  //       const response = await fetch("http://localhost:3000/getvideos");
+  //       const {
+  //         thumbnailURLs,
+  //         titles,
+  //         Uploader,
+  //         Profile,
+  //         Duration,
+  //         videoID,
+  //         views,
+  //         uploadDate,
+  //         Visibility,
+  //         videoData,
+  //       } = await response.json();
+  //       setThumbnails(thumbnailURLs);
+  //       setTitles(titles);
+  //       setUploader(Uploader);
+  //       setProfilePic(Profile);
+  //       setDuration(Duration);
+  //       setVideoID(videoID);
+  //       setVideoViews(views);
+  //       setPublishDate(uploadDate);
+  //       setVisibility(Visibility);
+  //       setVideoData(videoData);
+  //     } catch (error) {
+  //       // console.log(error.message);
+  //     }
+  //   };
 
-    getVideos();
-  }, []);
+  //   getVideos();
+  // }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -122,19 +129,29 @@ function Browse() {
 
   //UPDATE VIEWS
 
-  const updateViews = async (id) => {
-    try {
-      const response = await fetch(`${APIHttp}/updateview/${id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      await response.json();
-    } catch (error) {
-      // console.log(error.message);
-    }
-  };
+  // const updateViews = async (id) => {
+  //   try {
+  //     const response = await fetch(`${APIHttp}/videos/${id}`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     await response.json();
+  //   } catch (error) {
+  //     // console.log(error.message);
+  //   }
+  // };
+
+  useEffect(() => {
+    dispatch(getAllVideos());
+  }, []);
+
+  useEffect(() => {
+    setVideoDetails(AllVideo);
+  }, [AllVideo]);
+
+  console.log("videoDetails", videoDetails);
 
   return (
     <>
@@ -224,6 +241,7 @@ function Browse() {
           </div>
         </div>
       </SkeletonTheme>
+
       <div
         className={theme ? "browse" : "browse light-mode"}
         style={
@@ -261,14 +279,13 @@ function Browse() {
             })}
           </div>
 
+          {/*===================== video thumbnail card detail ============================ */}
           <div
             className="video-section"
             style={{
               marginLeft: menuClicked ? "40px" : "40px",
             }}
           >
-            {/*===================== video thumbnail card detail ============================ */}
-
             <div
               className="uploaded-videos"
               style={
@@ -283,45 +300,74 @@ function Browse() {
                     }
               }
             >
-              {thumbnails &&
-                thumbnails.length > 0 &&
-                thumbnails.map((element, index) => {
+              {videoDetails &&
+                videoDetails.length > 0 &&
+                videoDetails.map((element, index) => {
+                  const {
+                    videoFile,
+                    thumbnail,
+                    title,
+                    views,
+                    createdAt,
+                    owner,
+                    duration,
+                  } = element;
+
+                  const publishDate = new Date(createdAt);
+                  const timeDifference = new Date() - publishDate;
+                  const minutes = Math.floor(timeDifference / 60000);
+                  const hours = Math.floor(timeDifference / 3600000);
+                  const days = Math.floor(timeDifference / 86400000);
+                  const weeks = Math.floor(timeDifference / 604800000);
+                  const years = Math.floor(timeDifference / 31536000000);
+                  let timeAgo = "just now";
+
+                  if (minutes >= 1) {
+                    if (minutes < 60) timeAgo = `${minutes} mins ago`;
+                    else if (hours < 24) timeAgo = `${hours} hours ago`;
+                    else if (days < 7) timeAgo = `${days} days ago`;
+                    else if (weeks < 52) timeAgo = `${weeks} weeks ago`;
+                    else timeAgo = `${years} years ago`;
+                  }
+
+                  const roundedDuration = Math.round(duration);
+                  const durationMinutes = Math.floor(roundedDuration / 60);
+                  const durationSeconds = roundedDuration % 60;
+
                   return (
                     <div
                       className="video-data"
-                      key={index}
-                      style={
-                        Visibility[index] === "Public"
-                          ? { display: "block" }
-                          : { display: "none" }
-                      }
+                      key={element._id}
+                      style={{
+                        display: element.isPublished ? "block" : "none",
+                      }}
                       onClick={() => {
                         if (token) {
-                          updateViews(VideoID[index]);
+                          // updateViews(element._id);
                           setTimeout(() => {
-                            navigate(`/video/${VideoID[index]}`);
+                            navigate(`/video/${element._id}`);
                           }, 400);
+                        } else {
+                          navigate(`/video/${element._id}`);
                         }
-                        navigate(`/video/${VideoID[index]}`);
                       }}
                     >
                       <img
                         style={{ width: "330px", borderRadius: "10px" }}
-                        src={element}
+                        src={thumbnail.url}
                         alt="thumbnails"
                         className="browse-thumbnails"
                       />
                       <p className="duration">
-                        {Math.floor(duration[index] / 60) +
-                          ":" +
-                          (Math.round(duration[index] % 60) < 10
-                            ? "0" + Math.round(duration[index] % 60)
-                            : Math.round(duration[index] % 60))}
+                        {durationMinutes}:
+                        {durationSeconds < 10
+                          ? `0${durationSeconds}`
+                          : durationSeconds}
                       </p>
 
                       <div
                         className={
-                          theme === true
+                          theme
                             ? "channel-basic-data"
                             : "channel-basic-data text-light-mode"
                         }
@@ -329,20 +375,20 @@ function Browse() {
                         <div className="channel-pic">
                           <img
                             className="channel-profile"
-                            src={ProfilePic[index]}
+                            src={owner[0].avatar}
                             alt="channel-profile"
                           />
                         </div>
                         <div className="channel-text-data">
                           <p className="title" style={{ marginTop: "10px" }}>
-                            {Titles[index] && Titles[index].length <= 60
-                              ? Titles[index]
-                              : `${Titles[index].slice(0, 55)}..`}
+                            {title.length <= 60
+                              ? title
+                              : `${title.slice(0, 55)}..`}
                           </p>
                           <div className="video-uploader">
                             <Tooltip
                               TransitionComponent={Zoom}
-                              title={uploader[index]}
+                              title={owner[0].username}
                               placement="top"
                             >
                               <p
@@ -353,9 +399,10 @@ function Browse() {
                                 }
                                 style={{ marginTop: "10px" }}
                               >
-                                {uploader[index]}
+                                {owner[0].username}
                               </p>
                             </Tooltip>
+
                             <Tooltip
                               TransitionComponent={Zoom}
                               title="Verified"
@@ -371,59 +418,27 @@ function Browse() {
                               />
                             </Tooltip>
                           </div>
+
                           <div
                             className={
                               theme ? "view-time" : "view-time text-light-mode2"
                             }
                           >
                             <p className="views">
-                              {VideoViews[index] >= 1e9
-                                ? `${(VideoViews[index] / 1e9).toFixed(1)}B`
-                                : VideoViews[index] >= 1e6
-                                ? `${(VideoViews[index] / 1e6).toFixed(1)}M`
-                                : VideoViews[index] >= 1e3
-                                ? `${(VideoViews[index] / 1e3).toFixed(1)}K`
-                                : VideoViews[index]}
+                              {views >= 1e9
+                                ? `${(views / 1e9).toFixed(1)}B`
+                                : views >= 1e6
+                                ? `${(views / 1e6).toFixed(1)}M`
+                                : views >= 1e3
+                                ? `${(views / 1e3).toFixed(1)}K`
+                                : views}{" "}
                               views
                             </p>
                             <p
                               className="upload-time"
                               style={{ marginLeft: "4px" }}
                             >
-                              &#x2022;
-                              {(() => {
-                                const timeDifference =
-                                  new Date() - new Date(publishDate[index]);
-                                const minutes = Math.floor(
-                                  timeDifference / 60000
-                                );
-                                const hours = Math.floor(
-                                  timeDifference / 3600000
-                                );
-                                const days = Math.floor(
-                                  timeDifference / 86400000
-                                );
-                                const weeks = Math.floor(
-                                  timeDifference / 604800000
-                                );
-                                const years = Math.floor(
-                                  timeDifference / 31536000000
-                                );
-
-                                if (minutes < 1) {
-                                  return "just now";
-                                } else if (minutes < 60) {
-                                  return `${minutes} mins ago`;
-                                } else if (hours < 24) {
-                                  return `${hours} hours ago`;
-                                } else if (days < 7) {
-                                  return `${days} days ago`;
-                                } else if (weeks < 52) {
-                                  return `${weeks} weeks ago`;
-                                } else {
-                                  return `${years} years ago`;
-                                }
-                              })()}
+                              &#x2022; {timeAgo}
                             </p>
                           </div>
                         </div>

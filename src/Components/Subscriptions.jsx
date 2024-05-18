@@ -9,7 +9,7 @@ import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useNavigate } from "react-router-dom";
 
-function Subscriptions() {
+const Subscriptions = () => {
   const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const [email, setEmail] = useState();
@@ -24,6 +24,7 @@ function Subscriptions() {
     const Dark = localStorage.getItem("Dark");
     return Dark ? JSON.parse(Dark) : true;
   });
+
   const token = localStorage.getItem("userToken");
   document.title = "Subscriptions - YouTube";
 
@@ -35,7 +36,7 @@ function Subscriptions() {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 6200);
+    }, 2000);
   }, []);
 
   useEffect(() => {
@@ -169,6 +170,7 @@ function Subscriptions() {
               : { left: "300px", width: "76%" }
           }
         >
+          {/*========================== subscribed channel =================================  */}
           <div className="subscribed-channels">
             <p className={theme ? "main-txxt" : "main-txxt text-light-mode"}>
               Channels
@@ -277,6 +279,7 @@ function Subscriptions() {
                   : { visibility: "visible", display: "flex" }
               }
             >
+              {/*=====================  channel click event ======================== */}
               {subscriptions.length > 0 &&
                 subscriptions.map((element, index) => {
                   return (
@@ -306,6 +309,8 @@ function Subscriptions() {
                 })}
             </div>
           </div>
+
+          {/*==================== subscribed videos ====================  */}
           <div
             className="subscribed-videos"
             style={
@@ -474,6 +479,6 @@ function Subscriptions() {
       </div>
     </>
   );
-}
+};
 
 export default Subscriptions;
