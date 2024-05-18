@@ -609,7 +609,6 @@ function Studio() {
   };
 
   const handleVideoChange = (e) => {
-    console.log("Video file selected:", e.target.files[0]);
     setFormData({
       ...formData,
       videoFile: e.target.files[0],
@@ -617,18 +616,16 @@ function Studio() {
   };
 
   const handleThumbnailChange = (e) => {
-    console.log("Thumbnail selected:", e.target.files[0]);
     setFormData({
       ...formData,
       thumbnail: e.target.files[0],
     });
   };
 
-  const PublishData = (e) => {
+  const PublishData = async (e) => {
     e.preventDefault();
-    console.log("formData", formData);
 
-    dispatch(addVideoData(formData));
+    await dispatch(addVideoData(formData));
 
     setFormData({
       title: "",

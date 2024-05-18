@@ -49,13 +49,14 @@ function LikeVideos() {
 
   //==================== like video api call spark didho che aaya thi ================================
   useEffect(() => {
+
     dispatch(getAllLikedVideos());
 
-    const interval = setInterval(() => {
-      dispatch(getAllLikedVideos());
-    }, 100);
+    // const interval = setInterval(() => {
+    //   dispatch(getAllLikedVideos());
+    // }, 100);
 
-    return () => clearInterval(interval);
+    // return () => clearInterval(interval);
   }, []);
 
   //------------- selecter je select karo che state tene useState ma set kari didho ===================
