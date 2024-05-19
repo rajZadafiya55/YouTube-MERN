@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { GET_CHANNEL_ALL_VIDEOS } from '../types';
-
-import { APIHttp, Header } from 'constant/Api';
+import { APIHttp, Header } from '../../constant/Api';
 
 const getAllVideo = (video) => ({
   type: GET_CHANNEL_ALL_VIDEOS,

@@ -22,9 +22,15 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllChannelVideos } from "../../redux/actions/dashboardAction";
 
 const Content = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const AllVideos = useSelector((state) => state.dashboard.videosDetails);
+
   const backendURL = "http://localhost:3000";
   const [userVideos, setUserVideos] = useState([]);
   const [sortByDateAsc, setSortByDateAsc] = useState(true);
@@ -147,22 +153,16 @@ const Content = () => {
     };
   });
 
+  // get all channel videos
   useEffect(() => {
-    const GetUserVideos = async () => {
-      try {
-        if (Email !== undefined) {
-          const response = await fetch(`${backendURL}/getuservideos/${Email}`);
+    dispatch(getAllChannelVideos());
+  }, []);
 
-          const data = await response.json();
-          setUserVideos(data);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
+  useEffect(() => {
+    setUserVideos(AllVideos);
+  }, [AllVideos]);
 
-    GetUserVideos();
-  }, [Email]);
+  console.log("uservideo ", userVideos);
 
   useEffect(() => {
     const GetDeleteVideoData = async () => {
@@ -193,14 +193,13 @@ const Content = () => {
     userVideos.length > 0 &&
     userVideos.sort((a, b) => {
       if (sortByDateAsc) {
-        return new Date(a.uploaded_date) - new Date(b.uploaded_date);
+        return new Date(a.createdAt) - new Date(b.createdAt);
       } else {
-        return new Date(b.uploaded_date) - new Date(a.uploaded_date);
+        return new Date(b.createdAt) - new Date(a.createdAt);
       }
     });
 
   //POST REQUESTS
-
   const DeleteVideo = async (id) => {
     try {
       if (id !== undefined) {
@@ -238,7 +237,7 @@ const Content = () => {
   };
 
   const DeleteVideoUploadDate = new Date(
-    DeleteVideoData && DeleteVideoData.uploaded_date
+    DeleteVideoData && DeleteVideoData.createdAt
   );
 
   return (
@@ -308,7 +307,7 @@ const Content = () => {
               </thead>
               <tbody>
                 {sortedUserVideos.map((element, index) => {
-                  const uploaded = new Date(element.uploaded_date);
+                  const uploaded = new Date(element.createdAt);
                   return (
                     <tr
                       key={index}
@@ -351,7 +350,7 @@ const Content = () => {
                           }
                         >
                           <img
-                            src={element.thumbnailURL}
+                            src={element.thumbnail.url}
                             alt="thumbnail"
                             className="studio-video-thumbnail"
                             onClick={() => {
@@ -359,11 +358,11 @@ const Content = () => {
                             }}
                           />
                           <p className="video-left-duration">
-                            {Math.floor(element.videoLength / 60) +
+                            {Math.floor(element.duration / 60) +
                               ":" +
-                              (Math.round(element.videoLength % 60) < 10
-                                ? "0" + Math.round(element.videoLength % 60)
-                                : Math.round(element.videoLength % 60))}
+                              (Math.round(element.duration % 60) < 10
+                                ? "0" + Math.round(element.duration % 60)
+                                : Math.round(element.duration % 60))}
                           </p>
                         </div>
                         <div className="studio-video-details">
@@ -433,11 +432,11 @@ const Content = () => {
                                 navigate(`/studio/video/edit/${element._id}`);
                               }}
                             >
-                              {element.Title.length <= 40
-                                ? element.Title
-                                : `${element.Title.slice(0, 40)}...`}
+                              {element.title && element.title.length <= 40
+                                ? element.title
+                                : `${element.title?.slice(0, 40)}...`}
                             </p>
-                            {element.Description ? (
+                            {element.description ? (
                               <p
                                 className={
                                   theme
@@ -445,9 +444,9 @@ const Content = () => {
                                     : "studio-video-desc text-light-mode2"
                                 }
                               >
-                                {element.Description.length <= 85
-                                  ? element.Description
-                                  : `${element.Description.slice(0, 85)}...`}
+                                {element.description.length <= 85
+                                  ? element.description
+                                  : `${element.description.slice(0, 85)}...`}
                               </p>
                             ) : (
                               <p>Add description</p>
@@ -642,9 +641,10 @@ const Content = () => {
                           </div>
                         </div>
                       </td>
+
                       <td>
                         <div className="privacy-table">
-                          {element.visibility === "Public" ? (
+                          {element.isPublished === true ? (
                             <RemoveRedEyeOutlinedIcon
                               fontSize="small"
                               style={{ color: "#2ba640" }}
@@ -663,7 +663,9 @@ const Content = () => {
                             className={theme ? "" : "text-light-mode2"}
                             style={{ marginLeft: "8px" }}
                           >
-                            {element.visibility}
+                            {element.isPublished === true
+                              ? "Public"
+                              : "Private"}
                           </p>
                         </div>
                       </td>
@@ -683,12 +685,12 @@ const Content = () => {
                       </td>
                       <td>
                         <p className={theme ? "" : "text-light-mode2"}>
-                          {element.comments && element.comments.length}
+                          {element.commentCount}
                         </p>
                       </td>
                       <td>
                         <p className={theme ? "" : "text-light-mode2"}>
-                          {element.likes}
+                          {element.likeCount}
                         </p>
                       </td>
                     </tr>
@@ -871,7 +873,6 @@ const Content = () => {
           </div>
         </div>
       </div>
-      
     </>
   );
 };
