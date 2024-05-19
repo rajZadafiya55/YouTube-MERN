@@ -69,63 +69,6 @@ export const addVideoData = (formData, setLoading, setIsClicked ) => {
   };
 };
 
-// export const addVideoData = (data) => {
-//   console.log("data", data);
-//   console.log("video file data is", data.videoFile);
-//   console.log("thumbnail", data.thumbnail);
-//   const formData = new FormData();
-
-//   formData.append("videoFile", data.videoFile);
-//   formData.append("thumbnail", data.thumbnail);
-//   formData.append("title", data.title);
-//   formData.append("description", data.description);
-//   formData.append("isPublished", data.isPublished);
-
-//   formData.append("name", "Raj Zadafiya");
-
-//   console.log("append data ", formData);
-
-//   // Log each item in FormData
-//   for (let [key, value] of formData.entries()) {
-//     if (key === "videoFile" || key === "thumbnail") {
-//       console.log(`${key}:`, value.name); // Log the file names
-//       // formData.append(key, data.thumbnail);
-//     } else {
-//       console.log(`${key}:`, value);
-//     }
-//   }
-
-//   // for (let [key, value] of formData.entries()) {
-//   //   console.log(key, value, "======");
-//   //   // formData.append(key, value);
-//   //   // formData.append("name", "Raj Zadafiya");
-//   // }
-
-//   const accessToken =
-//     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjExNDAwNTU2NTMwODlhOTg4ZGNhNjQiLCJlbWFpbCI6InJhakBnbWFpbC5jb20iLCJ1c2VybmFtZSI6InJhaiIsImZ1bGxOYW1lIjoiUmFqIFphZGFmaXlhIiwiaWF0IjoxNzE2MDQxNTkzLCJleHAiOjE3MTYxMjc5OTN9.31qE9HXkWW3l2SLegccLgK4gOeWXMHPJ1l5fEe1Tkyo";
-//   return (dispatch) => {
-//     axios
-//       .post(`${APIHttp}videos`, formData, {
-//         // headers: { "Content-Type": "multipart/form-data" },
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: "Bearer " + accessToken,
-//         },
-//       })
-//       .then((res) => {
-//         console.log("res", res);
-//         dispatch(addVideo());
-//         if (res.data.success === true) {
-//           showToast("Video added successfully!");
-//         } else {
-//           showErrorToast("Failed to upload video");
-//         }
-//       })
-//       .catch((err) => {
-//         console.log(err);
-//       });
-//   };
-// };
 
 export const deleteVideoDetails = (videoId) => (dispatch) => {
   Swal.fire({
