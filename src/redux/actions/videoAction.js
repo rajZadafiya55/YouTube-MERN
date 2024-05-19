@@ -38,25 +38,29 @@ export const getAllVideos = () => (dispatch) => {
     });
 };
 
-export const addVideoData = (data) => {
+export const addVideoData = (formData, setLoading, setIsClicked ) => {
   return (dispatch) => {
-    const formData = new FormData();
+    const formDataToSend = new FormData();
 
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-    formData.append("isPublished", data.isPublished);
+    formDataToSend.append("title", formData.title || '');
+    formDataToSend.append("description", formData.description || '');
+    formDataToSend.append("isPublished", formData.isPublished || false);
 
-    formData.append("videoFile", data.videoFile);
-    formData.append("thumbnail", data.thumbnail);
+    formDataToSend.append("videoFile", formData.videoFile);
+    formDataToSend.append("thumbnail", formData.thumbnail);
 
     axios
-      .post(`${APIHttp}videos`, formData, VideoHeader)
+      .post(`${APIHttp}videos`, formDataToSend, VideoHeader)
       .then((res) => {
-        dispatch(addVideo());
         if (res.data.success === true) {
           showToast("Video added successfully!");
+          setLoading(false);
+          setIsClicked(false);
+          dispatch(addVideo());
         } else {
           showErrorToast("Failed to upload video");
+          setLoading(true);
+          setIsClicked(true);
         }
       })
       .catch((err) => {

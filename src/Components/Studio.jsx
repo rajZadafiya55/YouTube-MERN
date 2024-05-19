@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import jwtDecode from "jwt-decode";
 import avatar from "../img/avatar.png";
 import "../Css/studio.css";
-import { storage } from "../Firebase";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import Upload from "../img/upload.png";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
@@ -39,7 +37,6 @@ function Studio() {
   const [email, setEmail] = useState("");
   const [isChannel, setisChannel] = useState();
   const [selectedImage, setSelectedImage] = useState(null);
-  const [selectedThumbnail, setSelectedThumbnail] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [previewImage, setPreviewImage] = useState(avatar);
   const [previewThumbnail, setPreviewThumbnail] = useState(null);
@@ -47,30 +44,22 @@ function Studio() {
   const [ChannelAbout, setChannelAbout] = useState();
   const [isLoading, setisLoading] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
-  const [isVideoSelected, setIsVideoSelected] = useState(false);
-  const [isThumbnailSelected, setIsThumbnailSelected] = useState(false);
   const [videoName, setVideoName] = useState("Upload videos");
   const [VideoURL, setVideoURL] = useState("");
   const [Progress, setProgress] = useState(0);
-  const [uploadTask, setUploadTask] = useState(null);
-  const [videoDescription, setVideoDescription] = useState("");
-  const [videoTags, setVideoTags] = useState("");
   const [loading, setLoading] = useState(false);
-  const [duration, setDuration] = useState(null);
   const [linksClicked, setLinksClicked] = useState(false);
   const [iconClicked, setIconClicked] = useState("");
-  const [fblink, setfblink] = useState();
-  const [instalink, setinstalink] = useState();
-  const [twitterlink, settwitterlink] = useState();
-  const [websitelink, setwebsitelink] = useState();
-  const [visibility, setVisibility] = useState("Public");
-  const [isVisibilityClicked, setisVisibilityClicked] = useState(false);
   const [myVideos, setMyVideos] = useState([]);
-  const [isPublished, setIsPublished] = useState(false);
   const [theme, setTheme] = useState(() => {
     const Dark = localStorage.getItem("Dark");
     return Dark ? JSON.parse(Dark) : true;
   });
+
+  const [isVideoSelected, setIsVideoSelected] = useState(false);
+  const [isThumbnailSelected, setIsThumbnailSelected] = useState(false);
+  const [visibility, setVisibility] = useState("Private");
+  const [isVisibilityClicked, setIsVisibilityClicked] = useState(false);
 
   //TOAST FUNCTIONS
 
@@ -78,42 +67,6 @@ function Studio() {
     toast.warning("Video upload was cancelled!", {
       position: "bottom-center",
       autoClose: 950,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const ErrorNotify = () =>
-    toast.error("Image/Input can't be empty.", {
-      position: "top-center",
-      autoClose: 1200,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const VideoErrorNotify = () =>
-    toast.error("Input fields can't be empty.", {
-      position: "top-center",
-      autoClose: 1200,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const ThumbnailNotify = () =>
-    toast.warning("Please select a thumbnail!", {
-      position: "top-center",
-      autoClose: 1200,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -256,193 +209,22 @@ function Studio() {
     setChannelAbout(e.target.value);
   };
 
-  const handleFacebookLink = (e) => {
-    setfblink(e.target.value);
-  };
-
-  const handleTwitterLink = (e) => {
-    settwitterlink(e.target.value);
-  };
-
-  const handleInstagramLink = (e) => {
-    setinstalink(e.target.value);
-  };
-
-  const handleWebsiteLink = (e) => {
-    setwebsitelink(e.target.value);
-  };
-
-  const uploadPic = async () => {
-    try {
-      if (!selectedImage) {
-        return null;
-      }
-
-      const fileReference = ref(storage, `profile/${selectedImage.name}`);
-      const uploadData = uploadBytesResumable(fileReference, selectedImage);
-
-      return new Promise((resolve, reject) => {
-        uploadData.on(
-          "state_changed",
-          null,
-          (error) => {
-            console.log(error);
-            reject(error);
-          },
-          async () => {
-            try {
-              const downloadURL = await getDownloadURL(uploadData.snapshot.ref);
-              resolve(downloadURL);
-            } catch (error) {
-              console.log(error);
-              reject(error);
-            }
-          }
-        );
-      });
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  };
-
-  // UPLOAD VIDEO
-
-  // const handleVideoChange = (e) => {
-  //   const file = e.target.files[0];
-  //   const fileSizeInMB = file.size / (1024 * 1024); // Convert file size to MB
-
-  //   if (fileSizeInMB > 30) {
-  //     alert("Please select a video file with a size of up to 30MB.");
-  //     return;
-  //   }
-
-  //   setSelectedVideo(file);
-  //   setIsVideoSelected(true);
-
-  //   if (file) {
-  //     const fileName = file.name;
-  //     setVideoName(fileName.substring(0, fileName.lastIndexOf(".")));
-  //     uploadVideo(file);
-  //   }
-  // };
-
-  const ClearState = () => {
-    setIsClicked(false);
+  
+  const clearFormState = () => {
+    setFormData({
+      title: "",
+      description: "",
+      videoFile: null,
+      thumbnail: null,
+      isPublished: false,
+    });
     setIsVideoSelected(false);
     setIsThumbnailSelected(false);
-    setVideoName("Upload videos");
-    setVideoDescription("");
+    setVisibility("Private");
+    setIsVisibilityClicked(false);
+    setIsClicked(false);
   };
 
-  const uploadVideo = async (videoFile) => {
-    try {
-      const fileReference = ref(storage, `videos/${videoFile.name}`);
-      const uploadTask = uploadBytesResumable(fileReference, videoFile);
-      setUploadTask(uploadTask); // Store the upload task
-
-      const videoElement = document.createElement("video");
-      videoElement.preload = "metadata";
-
-      videoElement.onloadedmetadata = async function () {
-        const duration = videoElement.duration; // Duration in seconds
-        // console.log("Video duration:", duration);
-        setDuration(duration);
-
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            // Handle upload progress if needed
-            let progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            progress = Math.round(progress);
-            setProgress(progress);
-          },
-          (error) => {
-            // Handle error during upload
-            console.log(error);
-          },
-          async () => {
-            // Handle successful upload
-            try {
-              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-              // console.log("Video download URL:", downloadURL);
-              setVideoURL(downloadURL);
-              // Do something with the download URL, e.g., save it to the database
-            } catch (error) {
-              console.log(error);
-            }
-          }
-        );
-      };
-
-      videoElement.src = URL.createObjectURL(videoFile);
-    } catch (error) {
-      // console.log(error);
-    }
-  };
-
-  //CANCEL VIDEO UPLOAD
-
-  const cancelVideoUpload = () => {
-    if (uploadTask) {
-      uploadTask.cancel();
-      setIsVideoSelected(false);
-      setVideoName("Upload videos");
-      setProgress(0);
-    }
-  };
-
-  //SAVE DATA TO DB
-
-  const saveChannelData = async (e) => {
-    e.preventDefault();
-    if (selectedImage === null || ChannelName === "" || ChannelAbout === "") {
-      ErrorNotify();
-      return;
-    }
-
-    try {
-      setisLoading(true);
-      const downloadURL = await uploadPic(); // Wait for the image upload to complete
-      if (!downloadURL) {
-        setisLoading(false);
-        return; // Handle the case when no image is selected
-      }
-
-      const currentDate = new Date().toISOString();
-
-      const data = {
-        profileURL: downloadURL,
-        ChannelName,
-        ChannelAbout,
-        fblink,
-        instalink,
-        twitterlink,
-        websitelink,
-        currentDate,
-        email,
-      };
-
-      // Proceed with saving the channel data
-      const response = await fetch("http://localhost:3000/savechannel", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const { message } = await response.json();
-      if (message === "Channel saved successfully") {
-        setisChannel(true);
-        window.location.reload();
-      }
-    } catch (error) {
-      // console.log(error.message);
-    } finally {
-      setisLoading(false);
-    }
-  };
 
   //ON VIDEO DROP
 
@@ -465,130 +247,7 @@ function Studio() {
     setIsVideoSelected(true);
     const fileName = file.name;
     setVideoName(fileName.substring(0, fileName.lastIndexOf(".")));
-    uploadVideo(file);
   };
-
-  //VIDEO DETAILS SECTION
-
-  // const handleTitleChange = (e) => {
-  //   setVideoName(e.target.value);
-  // };
-  //UPLOAD THUMBNAIL
-
-  // const handleThumbnailChange = (event) => {
-  //   const file = event.target.files[0];
-
-  //   if (file && file.type.startsWith("image/")) {
-  //     const img = new Image();
-  //     img.onload = function () {
-  //       const aspectRatio = img.width / img.height;
-  //       if (Math.abs(aspectRatio - 16 / 9) < 0.01) {
-  //         setSelectedThumbnail(file);
-  //         setPreviewThumbnail(URL.createObjectURL(file));
-  //         setIsThumbnailSelected(true);
-  //       } else {
-  //         setIsThumbnailSelected(false);
-  //         setSelectedThumbnail(null);
-  //         setPreviewThumbnail(null);
-  //         alert("Please select a 16:9 aspect ratio image.");
-  //       }
-  //     };
-  //     img.src = URL.createObjectURL(file);
-  //   } else {
-  //     setIsThumbnailSelected(false);
-  //     setSelectedThumbnail(null);
-  //     setPreviewThumbnail(null);
-  //     alert("Please select an image file.");
-  //   }
-  // };
-
-  // const uploadThumbnail = async () => {
-  //   try {
-  //     if (isThumbnailSelected === false) {
-  //       return null;
-  //     }
-
-  //     const fileReference = ref(storage, `thumbnail/${selectedThumbnail.name}`);
-  //     const uploadData = uploadBytesResumable(fileReference, selectedThumbnail);
-
-  //     return new Promise((resolve, reject) => {
-  //       uploadData.on(
-  //         "state_changed",
-  //         null,
-  //         (error) => {
-  //           console.log(error);
-  //           reject(error);
-  //         },
-  //         async () => {
-  //           try {
-  //             const downloadURL = await getDownloadURL(uploadData.snapshot.ref);
-  //             resolve(downloadURL);
-  //           } catch (error) {
-  //             console.log(error);
-  //             reject(error);
-  //           }
-  //         }
-  //       );
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //     throw error;
-  //   }
-  // };
-
-  //SAVE UPLOAD DATA TO DATABASE
-
-  // const PublishData = async () => {
-  //   if (videoName === "" || videoDescription === "" || videoTags === "") {
-  //     VideoErrorNotify();
-  //   } else if (selectedThumbnail === null) {
-  //     ThumbnailNotify();
-  //   } else {
-  //     try {
-  //       setLoading(true);
-  //       // Upload the thumbnail
-  //       const thumbnailURL = await uploadThumbnail();
-  //       const currentDate = new Date().toISOString();
-  //       // Proceed with saving the data
-  //       const data = {
-  //         videoTitle: videoName,
-  //         videoDescription: videoDescription,
-  //         tags: videoTags,
-  //         videoLink: VideoURL,
-  //         thumbnailLink: thumbnailURL,
-  //         email: email,
-  //         video_duration: duration,
-  //         publishDate: currentDate,
-  //         Visibility: visibility,
-  //       };
-  //       // Send the POST request
-  //       const response = await fetch("http://localhost:3000/publish", {
-  //         method: "POST",
-  //         body: JSON.stringify(data),
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       });
-
-  //       // Handle the response
-  //       const Data = await response.json();
-  //       if (Data === "Published") {
-  //         setIsPublished(true);
-  //         setLoading(false);
-  //         setIsClicked(false);
-  //         window.location.reload();
-  //       } else {
-  //         setLoading(true);
-  //         setIsClicked(true);
-  //         setTimeout(() => {
-  //           alert("An unknown error occurred, Please try again!");
-  //         }, 1500);
-  //       }
-  //     } catch (error) {
-  //       // console.log(error.message);
-  //     }
-  //   }
-  // };
 
   const [formData, setFormData] = useState({
     title: "",
@@ -596,44 +255,65 @@ function Studio() {
     videoFile: null,
     thumbnail: null,
     isPublished: false,
-    // isVideoSelected: false,
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-      isPublished: value === "public" ? true : false,
-    });
+    if (name === "isPublished") {
+      // Update isPublished based on visibility
+      setFormData({
+        ...formData,
+        visibility: value,
+        isPublished: value === "public" ? true : false,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleVideoChange = (e) => {
+    const file = e.target.files[0];
     setFormData({
       ...formData,
-      videoFile: e.target.files[0],
+      videoFile: file,
     });
+    setIsVideoSelected(true);
+    setVideoName(file.name);
+    setSelectedVideo(file);
+    setProgress(100);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setVideoURL(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleThumbnailChange = (e) => {
+    const file = e.target.files[0];
     setFormData({
       ...formData,
-      thumbnail: e.target.files[0],
+      thumbnail: file,
     });
+    setIsThumbnailSelected(!!file);
+    setPreviewThumbnail(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewThumbnail(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   const PublishData = async (e) => {
     e.preventDefault();
 
-    await dispatch(addVideoData(formData));
+    await dispatch(addVideoData(formData, setLoading,setIsClicked));
 
-    setFormData({
-      title: "",
-      description: "",
-      videoFile: null,
-      thumbnail: null,
-      isPublished: false,
-    });
+    clearFormState();
   };
 
   return (
@@ -652,6 +332,7 @@ function Studio() {
           />
           <p className={theme ? "" : "text-light-mode"}>CREATE</p>
         </div>
+
         <div
           style={
             myVideos && myVideos.message === "USER DOESN'T EXIST"
@@ -663,6 +344,7 @@ function Studio() {
         >
           CREATE
         </div>
+
         <div
           style={isChannel === true ? { display: "flex" } : { display: "none" }}
           className={theme ? "create-btn-short" : "create-btn-short light-mode"}
@@ -701,7 +383,7 @@ function Studio() {
           >
             Share Your Story: Inspire and Connect with a YouTube Channel!
           </p>
-          <form onSubmit={saveChannelData} className="channel-deatils">
+          <form onSubmit="" className="channel-deatils">
             <div className="profile-pic-section">
               <img src={previewImage} alt="" className="selected-pic" />
               <div className="upload-btn-wrapper">
@@ -838,127 +520,6 @@ function Studio() {
                   }}
                 />
               </div>
-              <div
-                className="edit-links"
-                style={
-                  linksClicked === true
-                    ? { display: "block" }
-                    : { display: "none" }
-                }
-              >
-                <div
-                  className="fb-link"
-                  style={
-                    iconClicked === "Facebook"
-                      ? { display: "flex" }
-                      : { display: "none" }
-                  }
-                >
-                  <FacebookIcon
-                    fontSize="large"
-                    style={{ color: theme ? "white" : "#606060" }}
-                    className={
-                      theme
-                        ? "fb-input-icon"
-                        : "fb-input-icon social-lightt new-light-border"
-                    }
-                  />
-                  <input
-                    type="text"
-                    name="fb-link"
-                    className={
-                      theme
-                        ? "fb-input"
-                        : "fb-input light-mode text-light-mode new-light-border"
-                    }
-                    onChange={handleFacebookLink}
-                  />
-                </div>
-                <div
-                  className="insta-link"
-                  style={
-                    iconClicked === "Instagram"
-                      ? { display: "flex" }
-                      : { display: "none" }
-                  }
-                >
-                  <InstagramIcon
-                    fontSize="large"
-                    style={{ color: theme ? "white" : "#606060" }}
-                    className={
-                      theme
-                        ? "insta-input-icon"
-                        : "insta-input-icon social-lightt new-light-border"
-                    }
-                  />
-                  <input
-                    type="text"
-                    name="insta-link"
-                    className={
-                      theme
-                        ? "insta-input"
-                        : "insta-input light-mode text-light-mode new-light-border"
-                    }
-                    onChange={handleInstagramLink}
-                  />
-                </div>
-                <div
-                  className="twitter-link"
-                  style={
-                    iconClicked === "Twitter"
-                      ? { display: "flex" }
-                      : { display: "none" }
-                  }
-                >
-                  <TwitterIcon
-                    fontSize="large"
-                    style={{ color: theme ? "white" : "#606060" }}
-                    className={
-                      theme
-                        ? "twitter-input-icon"
-                        : "twitter-input-icon social-lightt new-light-border"
-                    }
-                  />
-                  <input
-                    type="text"
-                    name="twitter-link"
-                    className={
-                      theme
-                        ? "twitter-input"
-                        : "twitter-input light-mode text-light-mode new-light-border"
-                    }
-                    onChange={handleTwitterLink}
-                  />
-                </div>
-                <div
-                  className="website-link"
-                  style={
-                    iconClicked === "Website"
-                      ? { display: "flex" }
-                      : { display: "none" }
-                  }
-                >
-                  <LanguageIcon
-                    fontSize="large"
-                    style={{ color: theme ? "white" : "#606060" }}
-                    className={
-                      theme
-                        ? "website-input-icon"
-                        : "website-input-icon social-lightt new-light-border"
-                    }
-                  />
-                  <input
-                    type="text"
-                    name="website-link"
-                    className={
-                      theme
-                        ? "website-input"
-                        : "website-input light-mode text-light-mode new-light-border"
-                    }
-                    onChange={handleWebsiteLink}
-                  />
-                </div>
-              </div>
             </div>
             {isLoading === false ? (
               <button
@@ -1002,69 +563,7 @@ function Studio() {
               ? "upload-content"
               : "upload-content light-mode text-light-mode"
           }
-        >
-          <form onSubmit={PublishData}>
-            {/* Title */}
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              placeholder="Title (required)"
-              required
-            />
-
-            {/* Description */}
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              placeholder="Description"
-            />
-
-            {/* Video Upload */}
-            <input
-              type="file"
-              name="videoFile"
-              accept="video/*"
-              onChange={handleVideoChange}
-              // required={!formData.isVideoSelected}
-            />
-
-            {/* Thumbnail Upload */}
-            <input
-              type="file"
-              name="thumbnail"
-              accept="image/*"
-              onChange={handleThumbnailChange}
-              // required={!formData.thumbnail}
-            />
-
-            {/* Publish */}
-            <div>
-              <label htmlFor="publish">Publish:</label>
-              <select
-                id="publish"
-                name="isPublished"
-                onChange={handleInputChange}
-                value={formData.publish}
-              >
-                <option value="public">Public</option>
-                <option value="private">Private</option>
-              </select>
-            </div>
-
-            {/* Submit Button */}
-            <button type="submit">Publish</button>
-          </form>
-        </div>
-
-        {/* <div
-          className={
-            theme
-              ? "upload-content"
-              : "upload-content light-mode text-light-mode"
-          }
+          id="modal"
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
           style={
@@ -1072,8 +571,8 @@ function Studio() {
               ? { display: "flex" }
               : { display: "none" }
           }
-        > */}
-        {/* <div className="top-head">
+        >
+          <div className="top-head">
             {videoName.length <= 70
               ? videoName
               : `${videoName.slice(0, 40)}...`}{" "}
@@ -1082,37 +581,37 @@ function Studio() {
               fontSize="large"
               style={{ color: "gray" }}
               onClick={() => {
-                if (Progress !== 100 && selectedVideo !== null) {
-                  cancelVideoUpload();
+                if (Progress !== 100) {
                   CancelNotify();
+                  setIsClicked(false);
+
                   setTimeout(() => {
                     window.location.reload();
                   }, 1000);
-                } else if (Progress === 100 && isPublished === false) {
+                } else if (
+                  Progress === 100 &&
+                  formData.isPublished === "true"
+                ) {
                   CancelNotify();
                   setTimeout(() => {
                     window.location.reload();
                   }, 1000);
                 }
                 if (isClicked === true) {
-                  ClearState();
+                  clearFormState();
                 }
               }}
             />
-          </div> */}
+          </div>
 
-        <hr
-          className={
-            theme ? "seperate seperate2" : "seperate seperate2 seperate-light"
-          }
-        />
-        {/* <div
-            className="middle-data"
-            style={
-              isVideoSelected === false
-                ? { display: "flex" }
-                : { display: "none" }
+          <hr
+            className={
+              theme ? "seperate seperate2" : "seperate seperate2 seperate-light"
             }
+          />
+          <div
+            className="middle-data"
+            style={!isVideoSelected ? { display: "flex" } : { display: "none" }}
           >
             <img
               src={Upload}
@@ -1135,16 +634,12 @@ function Studio() {
                 onChange={handleVideoChange}
               />
             </div>
-          </div> */}
+          </div>
 
-        {/* =================== video select hoy to teni deatils section ==================  */}
-        {/* <div
+          {/* =================== video details section ================== */}
+          <div
             className="uploading-video-data"
-            style={
-              isVideoSelected === true
-                ? { display: "flex" }
-                : { display: "none" }
-            }
+            style={isVideoSelected ? { display: "flex" } : { display: "none" }}
           >
             <div className="left-video-section">
               <form className="details-form">
@@ -1153,35 +648,31 @@ function Studio() {
                   <input
                     type="text"
                     className={theme ? "video-title" : "video-title light-mode"}
+                    name="title"
                     value={formData.title}
                     placeholder="Title (required)"
                     required
                     onChange={handleInputChange}
                   />
                   <textarea
-                    type="text"
                     className={
                       theme
                         ? "video-description"
                         : "video-description light-mode"
                     }
+                    name="description"
                     placeholder="Description"
                     onChange={handleInputChange}
                     spellCheck="true"
                     value={formData.description}
                   />
-                  <input
-                    type="text"
-                    className={theme ? "video-tags" : "video-tags light-mode"}
-                    placeholder="Tags"
-                    // onChange={(e) => setVideoTags(e.target.value)}
-                  />
                 </div>
               </form>
+
               <div
                 className="thumbnail-section"
                 style={
-                  isThumbnailSelected === false
+                  !isThumbnailSelected
                     ? { display: "flex" }
                     : { display: "none" }
                 }
@@ -1202,6 +693,7 @@ function Studio() {
                 <input
                   id="thumbnail-input"
                   type="file"
+                  name="thumbnail"
                   accept=".jpg, .png"
                   style={{ display: "none" }}
                   onChange={handleThumbnailChange}
@@ -1210,7 +702,7 @@ function Studio() {
               <div
                 className="thumbnail-section thumb2"
                 style={
-                  isThumbnailSelected === true
+                  isThumbnailSelected
                     ? { display: "flex" }
                     : { display: "none" }
                 }
@@ -1237,7 +729,6 @@ function Studio() {
                   />
                 </div>
               </div>
-              <div className="video-tag-section"></div>
             </div>
 
             <div className="right-video-section">
@@ -1259,14 +750,13 @@ function Studio() {
                   </p>
                 </div>
                 {Progress === 100 && VideoURL !== "" ? (
-                  <iframe
-                    width="284.44"
-                    height="160"
-                    src={VideoURL}
-                    title="YouTube video player"
-                    frameBorder="0"
-                    allowFullScreen
-                  ></iframe>
+                  <video controls width="280" height="240">
+                    <source
+                      src={URL.createObjectURL(selectedVideo)}
+                      type="video/mp4"
+                    />
+                    Your browser does not support the video tag.
+                  </video>
                 ) : null}
               </div>
 
@@ -1290,11 +780,7 @@ function Studio() {
                       : "selected-visibility text-light-mode"
                   }
                   onClick={() => {
-                    if (isVisibilityClicked === false) {
-                      setisVisibilityClicked(true);
-                    } else {
-                      setisVisibilityClicked(false);
-                    }
+                    setIsVisibilityClicked(!isVisibilityClicked);
                   }}
                 >
                   <p>{visibility}</p>
@@ -1303,7 +789,7 @@ function Studio() {
                     style={{ color: theme ? "white" : "black" }}
                   />
                 </div>
-                {isVisibilityClicked === true ? (
+                {isVisibilityClicked && (
                   <div
                     className={
                       theme ? "show-visibility" : "show-visibility studio-light"
@@ -1318,12 +804,15 @@ function Studio() {
                       }
                       onClick={() => {
                         setVisibility("Public");
-                        setisVisibilityClicked(false);
+                        setIsVisibilityClicked(false);
+                        handleInputChange({
+                          target: { name: "isPublished", value: "public" },
+                        });
                       }}
                     >
                       Public
                     </p>
-                    <hr className="seperatee" />
+                    <hr className="separatee" />
                     <p
                       className="private"
                       style={
@@ -1333,20 +822,21 @@ function Studio() {
                       }
                       onClick={() => {
                         setVisibility("Private");
-                        setisVisibilityClicked(false);
+                        setIsVisibilityClicked(false);
+                        handleInputChange({
+                          target: { name: "isPublished", value: "private" },
+                        });
                       }}
                     >
                       Private
                     </p>
                   </div>
-                ) : (
-                  ""
                 )}
               </div>
             </div>
-          </div> */}
+          </div>
 
-        {/* <div
+          <div
             className="last-segment"
             style={
               isVideoSelected === true
@@ -1456,8 +946,8 @@ function Studio() {
                 </button>
               )}
             </div>
-          </div> */}
-        {/* </div> */}
+          </div>
+        </div>
       </div>
 
       {isChannel === true ? <Dashboard /> : ""}

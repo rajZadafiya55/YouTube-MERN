@@ -5,6 +5,17 @@
   height: 100vh;
 }
 
+.bg-css::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 7;
+  animation: Fade 0.25s ease-out forwards;
+}
+
 .studio-icon {
   padding-left: 30px !important;
 }
