@@ -248,7 +248,6 @@ function VideoDetails() {
       thumbnail: file,
     });
     setThumbnailImage(file);
-    // setPreviewThumbnail(URL.createObjectURL(file));
     setFinalThumbnail(file);
     setThumbnailSelected(true);
     setChanges(true);
@@ -268,8 +267,6 @@ function VideoDetails() {
 
       dispatch(updateVideoData(id, updatedVideoData, navigate));
       setLoading(false);
-
-      // navigate("/studio/video");
     } catch (error) {
       console.log(error);
       setLoading(true);
@@ -715,6 +712,7 @@ function VideoDetails() {
                 />
                 <p className={theme ? "" : "text-light-mode"}>Private</p>
               </div>
+              
             </div>
           </div>
         </div>
