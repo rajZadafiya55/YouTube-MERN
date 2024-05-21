@@ -17,9 +17,7 @@ const LeftPanel2 = () => {
   const navigate = useNavigate();
 
   const selectedVideos = useSelector((state) => state.videos.selectedVideo);
-  console.log("selectd videos left", selectedVideos);
 
-  const backendURL = "http://localhost:3000";
   const { id } = useParams();
   const [videodata, setVideoData] = useState();
   const VideoEditSection = localStorage.getItem("Video-Edit Section");
@@ -81,13 +79,10 @@ const LeftPanel2 = () => {
     const GetVideoData = async () => {
       try {
         if (id !== undefined) {
-          const response = await fetch(`${backendURL}/getvideodata/${id}`);
-          const data = await response.json();
-          setVideoData(data);
           dispatch(getSelectedVideo(id));
         }
       } catch (error) {
-        // console.log(error.message);
+        console.log(error.message);
       }
     };
 
@@ -98,7 +93,6 @@ const LeftPanel2 = () => {
     setVideoData(selectedVideos);
   }, [selectedVideos]);
 
-  console.log("videoDeatils", videodata);
   return (
     <>
       <div
