@@ -27,7 +27,6 @@ function VideoDetails() {
   const { id } = useParams();
 
   const selectedVideos = useSelector((state) => state.videos.selectedVideo);
-  console.log("selectd videos ", selectedVideos);
 
   const [videoData, setVideoData] = useState({
     title: "",
@@ -266,8 +265,6 @@ function VideoDetails() {
         videoFile: videoData.videoURL,
         isPublished: updatePrivacy === "Public" ? true : false,
       };
-
-      console.log("updatevideo", updateVideoData);
 
       dispatch(updateVideoData(id, updatedVideoData, navigate));
       setLoading(false);

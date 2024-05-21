@@ -37,7 +37,7 @@ const Content = () => {
   const AllVideos = useSelector((state) => state.dashboard.videosDetails);
 
   const selectedVideos = useSelector((state) => state.videos.selectedVideo);
-  console.log("selectd videos ", selectedVideos);
+
 
   const [userVideos, setUserVideos] = useState([]);
   const [sortByDateAsc, setSortByDateAsc] = useState(true);
@@ -168,8 +168,6 @@ const Content = () => {
   useEffect(() => {
     setUserVideos(AllVideos);
   }, [AllVideos]);
-
-  console.log("uservideo ", userVideos);
 
   useEffect(() => {
     const GetDeleteVideoData = async () => {

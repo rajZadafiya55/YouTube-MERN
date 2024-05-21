@@ -13,7 +13,6 @@ export const getAllChannelVideos = () => {
       .get(`${APIHttp}dashboard/videos`, Header)
       .then((res) => {
         dispatch(getAllVideo(res.data.data));
-        console.log('channel all videos', res.data.data);
       })
       .catch((err) => {
         console.log(err);

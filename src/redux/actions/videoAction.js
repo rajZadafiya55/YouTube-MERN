@@ -57,7 +57,6 @@ export const getSelectedVideo = (id) => (dispatch) => {
     .get(`${APIHttp}videos/${id}`, Header)
     .then((res) => {
       dispatch(getVideoById(res.data.data));
-      console.log("selected res data ", res.data.data);
     })
     .catch((err) => {
       console.log(err);
@@ -124,7 +123,6 @@ export const updateVideoData = (videoId, formData, navigate) => {
     axios
       .patch(`${APIHttp}videos/${videoId}`, formData, VideoHeader)
       .then(async (res) => {
-        console.log("res updates data ", res.data.data);
         if (res.data.success) {
           await dispatch(updateVideo(res.data.data));
           await dispatch(getAllVideos());
