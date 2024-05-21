@@ -10,22 +10,34 @@ import UndoOutlinedIcon from "@mui/icons-material/UndoOutlined";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import ArrowDropDownOutlinedIcon from "@mui/icons-material/ArrowDropDownOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import WestIcon from "@mui/icons-material/West";
-import { storage } from "../../Firebase";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { GrUndo } from "react-icons/gr";
+import { APIHttp } from "../../constant/Api";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getSelectedVideo,
+  updateVideoData,
+} from "../../redux/actions/videoAction";
 
 function VideoDetails() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const backendURL = "http://localhost:3000";
   const { id } = useParams();
-  const [videodata, setVideoData] = useState();
-  const [previewTitle, setPreviewTitle] = useState("");
-  const [previewDescription, setPreviewDescription] = useState("");
-  const [previewTags, setPreviewTags] = useState("");
-  const videolink = "https://shubho-youtube-mern.netlify.app/video";
+
+  const selectedVideos = useSelector((state) => state.videos.selectedVideo);
+  console.log("selectd videos ", selectedVideos);
+
+  const [videoData, setVideoData] = useState({
+    title: "",
+    description: "",
+    thumbnailURL: "",
+    videoURL: "",
+    visibility: "",
+  });
+
+  const videolink = `${APIHttp}videos`;
   const [thumbnailImage, setThumbnailImage] = useState(null);
   const [thumbnailSelected, setThumbnailSelected] = useState(false);
   const [finalThumbnail, setFinalThumbnail] = useState(null);
@@ -112,15 +124,10 @@ function VideoDetails() {
     const GetVideoData = async () => {
       try {
         if (id !== undefined) {
-          const response = await fetch(`${backendURL}/getvideodata/${id}`);
-          const data = await response.json();
-          setVideoData(data);
-          setPreviewTitle(data.Title);
-          setPreviewDescription(data.Description);
-          setPreviewTags(data.Tags);
+          dispatch(getSelectedVideo(id));
         }
       } catch (error) {
-        // console.log(error.message);
+        console.log(error.message);
       }
     };
 
@@ -128,20 +135,22 @@ function VideoDetails() {
   }, [id]);
 
   useEffect(() => {
+    if (selectedVideos) {
+      setVideoData({
+        title: selectedVideos.title,
+        description: selectedVideos.description,
+        thumbnailURL: selectedVideos.thumbnail.url,
+        videoURL: selectedVideos.videoFile.url,
+        visibility: selectedVideos.isPublished == true ? "Public" : "Private",
+      });
+    }
+  }, [selectedVideos]);
+
+  useEffect(() => {
     setTimeout(() => {
       setFakeLoading(false);
     }, 1200);
   }, []);
-
-  // useEffect(() => {
-  //   const handler = (e) => {
-  //     if (!optionRef.current.contains(e.target)) {
-  //       setOptionClicked(false);
-  //     }
-  //   };
-
-  //   document.addEventListener("mousedown", handler);
-  // }, []);
 
   useEffect(() => {
     if (loading === true) {
@@ -153,7 +162,7 @@ function VideoDetails() {
 
   const handleCopyLink = () => {
     navigator.clipboard
-      .writeText(`${videolink}/${videodata && videodata._id}`)
+      .writeText(`${videolink}/${id}`)
       .then(() => {
         CopiedNotify();
       })
@@ -202,29 +211,6 @@ function VideoDetails() {
     };
   });
 
-  const handleThumbnailUpload = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const img = new Image();
-      img.onload = () => {
-        const aspectRatio = img.width / img.height;
-        if (Math.abs(aspectRatio - 16 / 9) < 0.01) {
-          setThumbnailImage(file);
-          setThumbnailSelected(true);
-          setFinalThumbnail(file);
-          setChanges(true);
-        } else {
-          alert("Please upload an image with a 16:9 aspect ratio.");
-        }
-      };
-      img.src = reader.result;
-    };
-    if (file) {
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handleThumbnailDownload = () => {
     if (thumbnailImage) {
       const anchor = document.createElement("a");
@@ -247,72 +233,48 @@ function VideoDetails() {
     }
   };
 
-  const UploadThumbnail = async () => {
-    try {
-      if (
-        !finalThumbnail ||
-        (videodata && finalThumbnail === videodata.thumbnailURL)
-      ) {
-        return videodata.thumbnailURL;
-      }
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setVideoData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    setChanges(true);
+  };
 
-      const fileReference = ref(storage, `thumbnail/${finalThumbnail.name}`);
-      const uploadData = uploadBytesResumable(fileReference, finalThumbnail);
-
-      return new Promise((resolve, reject) => {
-        uploadData.on(
-          "state_changed",
-          null,
-          (error) => {
-            console.log(error);
-            reject(error);
-          },
-          async () => {
-            try {
-              const downloadURL = await getDownloadURL(uploadData.snapshot.ref);
-              resolve(downloadURL);
-            } catch (error) {
-              console.log(error);
-              reject(error);
-            }
-          }
-        );
-      });
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files[0];
+    setVideoData({
+      ...videoData,
+      thumbnail: file,
+    });
+    setThumbnailImage(file);
+    // setPreviewThumbnail(URL.createObjectURL(file));
+    setFinalThumbnail(file);
+    setThumbnailSelected(true);
+    setChanges(true);
   };
 
   const SaveData = async () => {
     try {
       setLoading(true);
-      let img = await UploadThumbnail();
-      let newPrivacy =
-        updatePrivacy === null ? videodata.visibility : updatePrivacy;
 
-      const data = {
-        thumbnail: img,
-        title: previewTitle,
-        desc: previewDescription,
-        tags: previewTags,
-        privacy: newPrivacy,
+      const updatedVideoData = {
+        title: videoData.title,
+        description: videoData.description,
+        thumbnail: thumbnailImage,
+        videoFile: videoData.videoURL,
+        isPublished: updatePrivacy === "Public" ? true : false,
       };
 
-      const response = await fetch(`${backendURL}/savevideoeditdetails/${id}`, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const Data = await response.json();
-      if (Data) {
-        setLoading(false);
-        window.location.reload();
-      }
+      console.log("updatevideo", updateVideoData);
+
+      dispatch(updateVideoData(id, updatedVideoData, navigate));
+      setLoading(false);
+
+      // navigate("/studio/video");
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       setLoading(true);
     }
   };
@@ -361,15 +323,11 @@ function VideoDetails() {
                 changes === false ? "disabled-btn2" : "video-editbtnss"
               }
               onClick={() => {
-                if (
-                  previewTitle === "" ||
-                  previewDescription === "" ||
-                  previewTags === ""
-                ) {
-                  WarningNotify();
-                } else {
-                  SaveData();
-                }
+                // if (previewTitle === "" || previewDescription === "") {
+                //   WarningNotify();
+                // } else {
+                SaveData();
+                // }
               }}
               disabled={changes === false ? true : false}
             >
@@ -385,18 +343,15 @@ function VideoDetails() {
               <div className="currentvideo-title">
                 <input
                   type="text"
-                  name="video-title"
+                  name="title"
                   className={
                     theme
                       ? "currentvideo-title-inp"
                       : "currentvideo-title-inp text-light-mode new-light-border"
                   }
-                  value={previewTitle}
+                  value={videoData.title}
                   required
-                  onChange={(e) => {
-                    setPreviewTitle(e.target.value);
-                    setChanges(true);
-                  }}
+                  onChange={handleInputChange}
                   placeholder="Add a title that describes your video"
                   maxLength={100}
                 />
@@ -405,19 +360,16 @@ function VideoDetails() {
               <div className="currentvideo-desc">
                 <textarea
                   type="text"
-                  name="video-desc"
+                  name="description"
                   required
                   className={
                     theme
                       ? "currentvideo-desc-inp"
                       : "currentvideo-desc-inp new-light-border text-light-mode"
                   }
-                  onChange={(e) => {
-                    setPreviewDescription(e.target.value);
-                    setChanges(true);
-                  }}
+                  onChange={handleInputChange}
                   placeholder="Tell viewers about your video"
-                  value={previewDescription}
+                  value={videoData.description}
                   maxLength={5000}
                 />
                 <p
@@ -448,7 +400,7 @@ function VideoDetails() {
                         alt="thumbnail"
                         className="currnt-tbimg2"
                         style={
-                          thumbnailSelected === true && videodata
+                          thumbnailSelected === true && videoData
                             ? {
                                 border: `2.2px solid ${
                                   theme ? "white" : "#606060"
@@ -485,7 +437,7 @@ function VideoDetails() {
                     accept="image/*"
                     id="thumbnail-upload"
                     style={{ display: "none" }}
-                    onChange={handleThumbnailUpload}
+                    onChange={handleThumbnailChange}
                   />
                   <div className="currentthumbnail-data">
                     {fakeLoading === true ? (
@@ -503,11 +455,11 @@ function VideoDetails() {
                       </div>
                     ) : (
                       <img
-                        src={videodata && videodata.thumbnailURL}
+                        src={videoData && videoData.thumbnailURL}
                         alt="thumbnail"
                         className="currnt-tbimg"
                         style={
-                          videodata && thumbnailSelected === false
+                          videoData && thumbnailSelected === false
                             ? {
                                 border: `2.2px solid ${
                                   theme ? "white" : "#606060"
@@ -519,7 +471,7 @@ function VideoDetails() {
                         }
                         onClick={() => {
                           setThumbnailSelected(false);
-                          setFinalThumbnail(videodata.thumbnailURL);
+                          setFinalThumbnail(videoData.thumbnailURL);
                         }}
                       />
                     )}
@@ -605,7 +557,7 @@ function VideoDetails() {
                 width="360"
                 height="220"
                 className="playable-videoedit"
-                src={videodata && videodata.videoURL}
+                src={videoData && videoData.videoURL}
                 title="YouTube video player"
                 frameBorder="0"
                 allowFullScreen
@@ -625,16 +577,18 @@ function VideoDetails() {
                     <p
                       className="current-videolink"
                       onClick={() => {
-                        if (videodata) {
-                          navigate(`${videolink}/${videodata._id}`);
+                        if (videoData) {
+                          navigate(`${videolink}/${videoData._id}`);
                         }
                       }}
                     >
                       {videolink +
                         `/${
-                          videodata && videodata._id.length <= 5
-                            ? videodata && videodata._id
-                            : `${videodata && videodata._id.slice(0, 5)}...`
+                          id
+                            ? id.length <= 5
+                              ? id
+                              : id.substring(0, 5) + "..."
+                            : ""
                         }`}
                     </p>
                   </div>
@@ -654,14 +608,7 @@ function VideoDetails() {
                     <p>Copy Link</p>
                   </div>
                 </div>
-                <div className="preview-part2">
-                  <p className={theme ? "" : "text-light-mode2"}>Filename</p>
-                  <p>
-                    {videodata && videodata.Title.length <= 35
-                      ? videodata && videodata.Title
-                      : `${videodata && videodata.Title.slice(0, 35)}...`}
-                  </p>
-                </div>
+
                 <div className="preview-part3">
                   <p className={theme ? "" : "text-light-mode2"}>
                     Video quality
@@ -673,6 +620,7 @@ function VideoDetails() {
                 </div>
               </div>
             </div>
+
             <div
               className={
                 theme
@@ -688,8 +636,8 @@ function VideoDetails() {
                 <div className="privacy-current">
                   {updatePrivacy === "Public" ||
                   (updatePrivacy === null &&
-                    videodata &&
-                    videodata.visibility === "Public") ? (
+                    videoData &&
+                    videoData.visibility === "Public") ? (
                     <RemoveRedEyeOutlinedIcon
                       fontSize="small"
                       style={{ color: "#2ba640" }}
@@ -705,7 +653,7 @@ function VideoDetails() {
 
                   {updatePrivacy === null ? (
                     <p className={theme ? "" : "text-light-mode"}>
-                      {videodata && videodata.visibility}
+                      {videoData && videoData.visibility}
                     </p>
                   ) : (
                     <p className={theme ? "" : "text-light-mode"}>
@@ -719,6 +667,7 @@ function VideoDetails() {
                 />
               </div>
             </div>
+
             <div
               className={
                 theme

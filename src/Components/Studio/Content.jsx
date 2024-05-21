@@ -24,6 +24,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllChannelVideos } from "../../redux/actions/dashboardAction";
+import {
+  deleteVideoDetails,
+  getSelectedVideo,
+} from "../../redux/actions/videoAction";
+import { APIHttp } from "../../constant/Api";
 
 const Content = () => {
   const dispatch = useDispatch();
@@ -31,7 +36,9 @@ const Content = () => {
 
   const AllVideos = useSelector((state) => state.dashboard.videosDetails);
 
-  const backendURL = "http://localhost:3000";
+  const selectedVideos = useSelector((state) => state.videos.selectedVideo);
+  console.log("selectd videos ", selectedVideos);
+
   const [userVideos, setUserVideos] = useState([]);
   const [sortByDateAsc, setSortByDateAsc] = useState(true);
   const [Email, setEmail] = useState();
@@ -41,7 +48,7 @@ const Content = () => {
   const [isDeleteClicked, setIsDeleteClicked] = useState(false);
   const [DeleteVideoData, setDeleteVideoData] = useState();
   const [boxclicked, setBoxClicked] = useState(false);
-  const videoUrl = "https://shubho-youtube-mern.netlify.app/video";
+  const videoUrl = `${APIHttp}videos`;
   const [loading, setLoading] = useState(true);
   const [menu, setmenu] = useState(() => {
     const menu = localStorage.getItem("studioMenuClicked");
@@ -168,20 +175,19 @@ const Content = () => {
     const GetDeleteVideoData = async () => {
       try {
         if (DeleteVideoID !== undefined) {
-          const response = await fetch(
-            `${backendURL}/getdeletevideodata/${DeleteVideoID}`
-          );
-
-          const data = await response.json();
-          setDeleteVideoData(data);
+          dispatch(getSelectedVideo(DeleteVideoID));
         }
       } catch (error) {
-        // console.log(error.message);
+        console.log(error.message);
       }
     };
 
     GetDeleteVideoData();
   }, [DeleteVideoID]);
+
+  useEffect(() => {
+    setDeleteVideoData(selectedVideos);
+  }, [selectedVideos]);
 
   const handleSortByDate = () => {
     setSortByDateAsc((prevState) => !prevState);
@@ -203,17 +209,13 @@ const Content = () => {
   const DeleteVideo = async (id) => {
     try {
       if (id !== undefined) {
-        const response = await fetch(`${backendURL}/deletevideo/${id}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        await response.json();
+        await dispatch(deleteVideoDetails(id));
+        setIsDeleteClicked(false);
+        document.body.classList.remove("bg-css2");
+        dispatch(getAllChannelVideos());
       }
     } catch (error) {
-      // console.log(error.message);
+      console.log(error.message);
     }
   };
 
@@ -453,6 +455,7 @@ const Content = () => {
                             )}
                           </div>
 
+                          {/* edit video Details page open in this button click event  */}
                           <div className="video-editable-section">
                             <Tooltip
                               TransitionComponent={Zoom}
@@ -593,7 +596,7 @@ const Content = () => {
                                     : "download-video-data-row option-row preview-lightt"
                                 }
                                 onClick={() => {
-                                  downloadVideo(element.videoURL);
+                                  downloadVideo(element.videoFile.url);
                                   setShowOptions(false);
                                 }}
                               >
@@ -716,6 +719,7 @@ const Content = () => {
       </div>
 
       {/* delete dialogbox  */}
+
       <div
         className={
           theme
@@ -738,30 +742,27 @@ const Content = () => {
             }
           >
             <img
-              src={DeleteVideoData && DeleteVideoData.thumbnailURL}
+              src={DeleteVideoData && DeleteVideoData.thumbnail.url}
               alt="thumbnail"
               className="deletevideo-thumbnail"
             />
             <p className="thisdelete-duration">
-              {Math.floor(DeleteVideoData && DeleteVideoData.videoLength / 60) +
+              {Math.floor(DeleteVideoData && DeleteVideoData.duration / 60) +
                 ":" +
-                (Math.round(
-                  DeleteVideoData && DeleteVideoData.videoLength % 60
-                ) < 10
+                (Math.round(DeleteVideoData && DeleteVideoData.duration % 60) <
+                10
                   ? "0" +
-                    Math.round(
-                      DeleteVideoData && DeleteVideoData.videoLength % 60
-                    )
+                    Math.round(DeleteVideoData && DeleteVideoData.duration % 60)
                   : Math.round(
-                      DeleteVideoData && DeleteVideoData.videoLength % 60
+                      DeleteVideoData && DeleteVideoData.duration % 60
                     ))}
             </p>
             <div className="thisdelete-video-details">
               <p className="delete-title">
-                {DeleteVideoData && DeleteVideoData.Title.length <= 15
-                  ? DeleteVideoData.Title
+                {DeleteVideoData && DeleteVideoData.title.length <= 15
+                  ? DeleteVideoData.title
                   : `${
-                      DeleteVideoData && DeleteVideoData.Title.slice(0, 15)
+                      DeleteVideoData && DeleteVideoData.title.slice(0, 15)
                     }...`}
               </p>
               <p
@@ -824,7 +825,7 @@ const Content = () => {
             }
             onClick={() => {
               if (DeleteVideoData) {
-                downloadVideo(DeleteVideoData.videoURL);
+                downloadVideo(DeleteVideoData.videoFile.url);
               }
             }}
           >
@@ -840,7 +841,6 @@ const Content = () => {
               onClick={() => {
                 setIsDeleteClicked(false);
                 document.body.classList.remove("bg-css2");
-                window.location.reload();
               }}
             >
               CANCEL
@@ -857,9 +857,6 @@ const Content = () => {
               onClick={() => {
                 if (boxclicked === true && DeleteVideoData) {
                   DeleteVideo(DeleteVideoData._id);
-                  setTimeout(() => {
-                    window.location.reload();
-                  }, 300);
                 }
               }}
               style={{

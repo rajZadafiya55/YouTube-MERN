@@ -9,9 +9,16 @@ import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutl
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useDispatch, useSelector } from "react-redux";
+import { getSelectedVideo } from ".../../../redux/actions/videoAction.js";
 
-function LeftPanel2() {
+const LeftPanel2 = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const selectedVideos = useSelector((state) => state.videos.selectedVideo);
+  console.log("selectd videos left", selectedVideos);
+
   const backendURL = "http://localhost:3000";
   const { id } = useParams();
   const [videodata, setVideoData] = useState();
@@ -77,6 +84,7 @@ function LeftPanel2() {
           const response = await fetch(`${backendURL}/getvideodata/${id}`);
           const data = await response.json();
           setVideoData(data);
+          dispatch(getSelectedVideo(id));
         }
       } catch (error) {
         // console.log(error.message);
@@ -86,6 +94,11 @@ function LeftPanel2() {
     GetVideoData();
   }, [id]);
 
+  useEffect(() => {
+    setVideoData(selectedVideos);
+  }, [selectedVideos]);
+
+  console.log("videoDeatils", videodata);
   return (
     <>
       <div
@@ -161,16 +174,16 @@ function LeftPanel2() {
             }}
           >
             <img
-              src={videodata && videodata.thumbnailURL}
+              src={videodata && videodata.thumbnail.url}
               alt="thumbnail"
               className="current-video-thumbnail"
             />
             <p className="current-video-duraation">
-              {Math.floor(videodata && videodata.videoLength / 60) +
+              {Math.floor(videodata && videodata.duration / 60) +
                 ":" +
-                (Math.round(videodata && videodata.videoLength % 60) < 10
-                  ? "0" + Math.round(videodata && videodata.videoLength % 60)
-                  : Math.round(videodata && videodata.videoLength % 60))}
+                (Math.round(videodata && videodata.duration % 60) < 10
+                  ? "0" + Math.round(videodata && videodata.duration % 60)
+                  : Math.round(videodata && videodata.duration % 60))}
             </p>
             <Tooltip
               TransitionComponent={Zoom}
@@ -188,7 +201,7 @@ function LeftPanel2() {
             <p className="ur-vid">Your video</p>
             <Tooltip
               TransitionComponent={Zoom}
-              title={videodata && videodata.Title}
+              title={videodata && videodata.title}
               placement="bottom"
             >
               <p
@@ -198,9 +211,9 @@ function LeftPanel2() {
                     : "current-video-title text-light-mode2"
                 }
               >
-                {videodata && videodata.Title.length <= 38
-                  ? videodata && videodata.Title
-                  : `${videodata && videodata.Title.slice(0, 38)}...`}
+                {videodata && videodata.title <= 38
+                  ? videodata && videodata.title
+                  : `${videodata && videodata.title}...`}
               </p>
             </Tooltip>
           </div>
@@ -319,7 +332,7 @@ function LeftPanel2() {
             }}
           >
             <img
-              src={videodata && videodata.thumbnailURL}
+              src={videodata && videodata.thumbnail.url}
               alt="thumbnail"
               className="current-video-thumbnail"
               style={{ width: "70px" }}
@@ -396,6 +409,6 @@ function LeftPanel2() {
       </div>
     </>
   );
-}
+};
 
 export default LeftPanel2;

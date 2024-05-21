@@ -1,8 +1,15 @@
 /* eslint-disable no-case-declarations */
-import { ADD_VIDEOS, DELETE_VIDEOS, GET_ALL_VIDEOS } from '../types';
+import {
+  ADD_VIDEOS,
+  DELETE_VIDEO,
+  GET_ALL_VIDEOS,
+  GET_VIDEO_BY_ID,
+  UPDATE_VIDEO,
+} from "../types";
 
 export const initialState = {
-  videosDetails: [] //for store all video data
+  videosDetails: [], //for store all video data
+  selectedVideo: null, //for store single seleceted video data
 };
 
 const videoReducer = (state = initialState, action) => {
@@ -10,19 +17,33 @@ const videoReducer = (state = initialState, action) => {
     case GET_ALL_VIDEOS:
       return {
         ...state,
-        videosDetails: action.payload
+        videosDetails: action.payload,
+      };
+
+    case GET_VIDEO_BY_ID:
+      return {
+        ...state,
+        selectedVideo: action.payload,
       };
 
     case ADD_VIDEOS:
       return {
-        ...state
+        ...state,
       };
 
-    case DELETE_VIDEOS:
-      const updatedVideos = state.videosDetails.filter((video) => video.id !== action.payload);
+    case DELETE_VIDEO:
+      const updatedVideos = state.videosDetails.filter(
+        (video) => video.id !== action.payload
+      );
       return {
         ...state,
-        videosDetails: updatedVideos
+        videosDetails: updatedVideos,
+      };
+
+    case UPDATE_VIDEO:
+      return {
+        ...state,
+        selectedVideo: action.payload,
       };
 
     default:
