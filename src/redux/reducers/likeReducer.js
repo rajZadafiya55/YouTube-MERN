@@ -1,7 +1,8 @@
-import { GET_LIKED_VIDEOS } from '../types';
+import { GET_LIKED_VIDEOS, TOGGLE_COMMENT_LIKE } from "../types";
 
 export const initialState = {
-  videosDetails: [] //for store all video data
+  videosDetails: [], //for store all video data
+  isLiked: false,
 };
 
 const likeReducer = (state = initialState, action) => {
@@ -9,7 +10,12 @@ const likeReducer = (state = initialState, action) => {
     case GET_LIKED_VIDEOS:
       return {
         ...state,
-        videosDetails: action.payload
+        isLiked: action.payload,
+      };
+
+    case TOGGLE_COMMENT_LIKE:
+      return {
+        ...state,
       };
 
     default:

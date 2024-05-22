@@ -17,6 +17,7 @@ import {
   deleteCoomentsDetails,
   getSelectedComment,
 } from "../../redux/actions/commentAction";
+import { getLikeCommentToggle } from "../../redux/actions/likeAction";
 
 function VideoComments() {
   const dispatch = useDispatch();
@@ -25,11 +26,17 @@ function VideoComments() {
   const selectedComment = useSelector(
     (state) => state.comments.selectedComment
   );
+
+  const isLiked = useSelector((state) => state.like.isLiked);
+
+  useEffect(() => {
+    console.log("Like status changed:", isLiked);
+  }, [isLiked]);
+
   const backendURL = "http://localhost:3000";
   const { id } = useParams();
   const [Email, setEmail] = useState();
   const [videoComments, setVideoComments] = useState([]);
-  const [Profile, setProfile] = useState();
   const [filterComment, setFilterComment] = useState("");
   const [loading, setLoading] = useState(true);
   const [menu, setmenu] = useState(() => {
@@ -127,21 +134,6 @@ function VideoComments() {
   });
 
   useEffect(() => {
-    const getChannel = async () => {
-      try {
-        if (Email !== undefined) {
-          const response = await fetch(`${backendURL}/getchannel/${Email}`);
-          const { profile } = await response.json();
-          setProfile(profile);
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
-    getChannel();
-  }, [Email]);
-
-  useEffect(() => {
     const getComment = async () => {
       try {
         if (id !== undefined) {
@@ -158,24 +150,13 @@ function VideoComments() {
     setVideoComments(selectedComment);
   }, [selectedComment]);
 
-  console.log("video comment", videoComments);
-
-  const LikeComment = async (id, commentId) => {
+  const LikeComment = async (id) => {
     try {
-      if (commentId !== undefined && id !== undefined && Email !== undefined) {
-        const response = await fetch(
-          `${backendURL}/likecomment/${id}/${commentId}/${Email}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        await response.json();
+      if (id !== undefined) {
+        dispatch(getLikeCommentToggle(id, isLiked));
       }
     } catch (error) {
-      //console.log(error.message);
+      console.log(error.message);
     }
   };
 
@@ -434,7 +415,7 @@ function VideoComments() {
                                   className="thiscomment-like-btn"
                                   style={{ color: theme ? "white" : "#606060" }}
                                   onClick={() => {
-                                    LikeComment(element.video, element._id);
+                                    LikeComment(element._id);
                                   }}
                                 />
                               </Tooltip>
@@ -556,7 +537,7 @@ function VideoComments() {
                                 className="thiscomment-like-btn"
                                 style={{ color: theme ? "white" : "#606060" }}
                                 onClick={() => {
-                                  LikeComment(element.video, element._id);
+                                  LikeComment(element._id);
                                 }}
                               />
                             </Tooltip>
@@ -575,7 +556,7 @@ function VideoComments() {
                               style={{ color: theme ? "#aaa" : "#606060" }}
                               className="deletethis-cmmt"
                               onClick={() => {
-                                DeleteComment(element.video, element._id);
+                                DeleteComment(element._id);
                               }}
                             />
                           </Tooltip>

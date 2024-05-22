@@ -24,22 +24,6 @@ const deleteComment = (commentId) => ({
   payload: commentId,
 });
 
-// export const deleteCoomentsDetails = (commentId) => (dispatch) => {
-//   axios
-//     .delete(`${APIHttp}comments/c/${commentId}`, Header)
-//     .then(async (res) => {
-//       await dispatch(deleteComment(commentId));
-//       await dispatch(getSelectedComment());
-//       if (res.data.success) {
-//         showToast("Video Deleted successfully!");
-//       }
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       showErrorToast("Failed to delete comment");
-//     });
-// };
-
 export const deleteCoomentsDetails = (commentId) => async (dispatch) => {
   try {
     const result = await Swal.fire({

@@ -14,6 +14,7 @@ export const UPDATE_VIDEO = "UPDATE_VIDEO";
 
 //Like
 export const GET_LIKED_VIDEOS = "GET_LIKED_VIDEOS";
+export const TOGGLE_COMMENT_LIKE = "TOGGLE_COMMENT_LIKE";
 
 // register
 export const NEW_REGISTRATION = "NEW_REGISTRATION";
