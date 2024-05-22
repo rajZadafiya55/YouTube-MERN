@@ -1,5 +1,4 @@
 import axios from "axios";
-import { toast } from "react-toastify";
 import {
   ADD_VIDEOS,
   DELETE_VIDEO,
@@ -7,16 +6,9 @@ import {
   GET_VIDEO_BY_ID,
   UPDATE_VIDEO,
 } from "../types";
-import { APIHttp, Header, VideoHeader } from "../../constant/Api";
+import { APIHttp, Header, VideoHeader, showErrorToast, showToast } from "../../constant/Api";
 
-// Toast messages
-const showToast = (message) => {
-  toast.success(message, { position: "top-right" });
-};
 
-const showErrorToast = (message) => {
-  toast.error(message, { position: "top-right" });
-};
 
 // Action creators
 const addVideo = () => ({ type: ADD_VIDEOS });

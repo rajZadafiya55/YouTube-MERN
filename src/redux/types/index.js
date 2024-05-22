@@ -23,3 +23,7 @@ export const GET_USER_CHANNEL_PROFILE = "GET_USER_CHANNEL_PROFILE";
 
 //dashboard
 export const GET_CHANNEL_ALL_VIDEOS = "GET_CHANNEL_ALL_VIDEOS";
+
+// comment
+export const GET_COMMENT_BY_ID = "GET_COMMENT_BY_ID";
+export const DELETE_COMMENT = "DELETE_COMMENT";

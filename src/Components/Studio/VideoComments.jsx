@@ -12,9 +12,19 @@ import noImage from "../../img/no-comment.png";
 import { useNavigate, useParams } from "react-router-dom";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteCoomentsDetails,
+  getSelectedComment,
+} from "../../redux/actions/commentAction";
 
 function VideoComments() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const selectedComment = useSelector(
+    (state) => state.comments.selectedComment
+  );
   const backendURL = "http://localhost:3000";
   const { id } = useParams();
   const [Email, setEmail] = useState();
@@ -135,20 +145,20 @@ function VideoComments() {
     const getComment = async () => {
       try {
         if (id !== undefined) {
-          const response = await fetch(
-            `${backendURL}/getvideocommentsbyid/${id}`
-          );
-          const comments = await response.json();
-          setVideoComments(comments);
+          dispatch(getSelectedComment(id));
         }
       } catch (error) {
-        // console.log(error.message);
+        console.log(error.message);
       }
     };
-    const interval = setInterval(getComment, 100);
-
-    return () => clearInterval(interval);
+    getComment();
   }, [id]);
+
+  useEffect(() => {
+    setVideoComments(selectedComment);
+  }, [selectedComment]);
+
+  console.log("video comment", videoComments);
 
   const LikeComment = async (id, commentId) => {
     try {
@@ -169,21 +179,11 @@ function VideoComments() {
     }
   };
 
-  const DeleteComment = async (id, commentId) => {
+  const DeleteComment = async (commentId) => {
     try {
-      const response = await fetch(
-        `${backendURL}/deletecomment/${id}/${commentId}/${Email}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      await response.json();
-      // window.location.reload();
+      dispatch(deleteCoomentsDetails(commentId));
     } catch (error) {
-      //console.log(error.message);
+      console.log(error.message);
     }
   };
 
@@ -191,20 +191,12 @@ function VideoComments() {
     videoComments &&
     videoComments.filter(
       (item) =>
-        item.comment
-          .toLowerCase()
-          .includes(
-            filterComment !== undefined &&
-              filterComment !== "" &&
-              filterComment.toLowerCase()
-          ) ||
-        item.username
-          .toLowerCase()
-          .includes(
-            filterComment !== undefined &&
-              filterComment !== "" &&
-              filterComment.toLowerCase()
-          )
+        (item.content &&
+          item.content.toLowerCase().includes(filterComment.toLowerCase())) ||
+        (item.owner.username &&
+          item.owner.username
+            .toLowerCase()
+            .includes(filterComment.toLowerCase()))
     );
 
   return (
@@ -369,7 +361,7 @@ function VideoComments() {
                     >
                       <div className="leftside-viddata">
                         <img
-                          src={element.user_profile}
+                          src={element.owner.avatar}
                           alt="profile"
                           className="user-channelprofileee"
                         />
@@ -379,7 +371,7 @@ function VideoComments() {
                               theme ? "name-time" : "name-time text-light-mode2"
                             }
                           >
-                            <p>{element.username}</p>
+                            <p>{element.owner.username}</p>
                             <FiberManualRecordIcon
                               className="dot-seperate"
                               style={{
@@ -391,7 +383,7 @@ function VideoComments() {
                             <p>
                               {(() => {
                                 const timeDifference =
-                                  new Date() - new Date(element.time);
+                                  new Date() - new Date(element.createdAt);
                                 const minutes = Math.floor(
                                   timeDifference / 60000
                                 );
@@ -428,7 +420,7 @@ function VideoComments() {
                             className={theme ? "" : "text-light-mode"}
                             style={{ marginTop: "8px" }}
                           >
-                            {element.comment}
+                            {element.content}
                           </p>
                           <div className="comment-all-btns">
                             <div className="cmmt-like">
@@ -442,7 +434,7 @@ function VideoComments() {
                                   className="thiscomment-like-btn"
                                   style={{ color: theme ? "white" : "#606060" }}
                                   onClick={() => {
-                                    LikeComment(element.videoid, element._id);
+                                    LikeComment(element.video, element._id);
                                   }}
                                 />
                               </Tooltip>
@@ -464,7 +456,7 @@ function VideoComments() {
                                 style={{ color: theme ? "#aaa" : "#606060" }}
                                 className="deletethis-cmmt"
                                 onClick={() => {
-                                  DeleteComment(element.videoid, element._id);
+                                  DeleteComment(element._id);
                                 }}
                               />
                             </Tooltip>
@@ -491,7 +483,7 @@ function VideoComments() {
                   >
                     <div className="leftside-viddata">
                       <img
-                        src={element.user_profile}
+                        src={element.owner.avatar}
                         alt="profile"
                         className="user-channelprofileee"
                       />
@@ -513,7 +505,7 @@ function VideoComments() {
                           <p>
                             {(() => {
                               const timeDifference =
-                                new Date() - new Date(element.time);
+                                new Date() - new Date(element.createdAt);
                               const minutes = Math.floor(
                                 timeDifference / 60000
                               );
@@ -550,7 +542,7 @@ function VideoComments() {
                           className={theme ? "" : "text-light-mode"}
                           style={{ marginTop: "8px" }}
                         >
-                          {element.comment}
+                          {element.content}
                         </p>
                         <div className="comment-all-btns">
                           <div className="cmmt-like">
@@ -564,7 +556,7 @@ function VideoComments() {
                                 className="thiscomment-like-btn"
                                 style={{ color: theme ? "white" : "#606060" }}
                                 onClick={() => {
-                                  LikeComment(element.videoid, element._id);
+                                  LikeComment(element.video, element._id);
                                 }}
                               />
                             </Tooltip>
@@ -583,7 +575,7 @@ function VideoComments() {
                               style={{ color: theme ? "#aaa" : "#606060" }}
                               className="deletethis-cmmt"
                               onClick={() => {
-                                DeleteComment(element.videoid, element._id);
+                                DeleteComment(element.video, element._id);
                               }}
                             />
                           </Tooltip>
@@ -634,7 +626,6 @@ function VideoComments() {
                   </div>
                 </div>
               )}
-              
           </div>
         </div>
       </div>
