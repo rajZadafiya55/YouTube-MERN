@@ -1,5 +1,9 @@
 /* eslint-disable no-case-declarations */
-import { DELETE_COMMENT, GET_COMMENT_BY_ID } from "../types";
+import {
+  DELETE_COMMENT,
+  GET_COMMENT_BY_ID,
+  GET_USER_ALL_COMMENT,
+} from "../types";
 
 export const initialState = {
   commentsDetails: [], //for store all comment data
@@ -8,6 +12,11 @@ export const initialState = {
 
 const commentReducer = (state = initialState, action) => {
   switch (action.type) {
+    case GET_USER_ALL_COMMENT:
+      return {
+        ...state,
+        commentsDetails: action.payload,
+      };
     case GET_COMMENT_BY_ID:
       return {
         ...state,

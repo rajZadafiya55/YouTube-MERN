@@ -1,11 +1,32 @@
 import axios from "axios";
-import { DELETE_COMMENT, GET_COMMENT_BY_ID } from "../types";
+import {
+  DELETE_COMMENT,
+  GET_COMMENT_BY_ID,
+  GET_USER_ALL_COMMENT,
+} from "../types";
 import { APIHttp, Header, showErrorToast, showToast } from "../../constant/Api";
 import Swal from "sweetalert2";
 
-const getCommentById = (videos) => ({
+const getAllComment = (comment) => ({
+  type: GET_USER_ALL_COMMENT,
+  payload: comment,
+});
+
+export const getUserAllComments = () => (dispatch) => {
+  axios
+    .get(`${APIHttp}comments`, Header)
+    .then(async (res) => {
+      console.log("res data data ", res.data.data);
+      dispatch(getAllComment(res.data.data));
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+const getCommentById = (comment) => ({
   type: GET_COMMENT_BY_ID,
-  payload: videos,
+  payload: comment,
 });
 
 export const getSelectedComment = (id) => (dispatch) => {

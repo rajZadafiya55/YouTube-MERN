@@ -474,7 +474,7 @@ function VideoComments() {
                             theme ? "name-time" : "name-time text-light-mode2"
                           }
                         >
-                          <p>{element.username}</p>
+                          <p>{element.owner.username}</p>
                           <FiberManualRecordIcon
                             className="dot-seperate"
                             style={{

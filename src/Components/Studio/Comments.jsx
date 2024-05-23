@@ -11,9 +11,31 @@ import noImage from "../../img/no-comment.png";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteCoomentsDetails,
+  getUserAllComments,
+} from "../../redux/actions/commentAction.js";
+import { APIHttp } from "../../constant/Api.js";
+import { getSelectedVideo } from "../../redux/actions/videoAction.js";
+import { getLikeCommentToggle } from "../../redux/actions/likeAction.js";
 
-function Comments() {
+const Comments = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const AllCommentData = useSelector((state) => state.comments.commentsDetails);
+  console.log("AllCommentData", AllCommentData);
+
+  const selectedVideos = useSelector((state) => state.videos.selectedVideo);
+  console.log("selectedVideos", selectedVideos);
+
+  const isLiked = useSelector((state) => state.like.isLiked);
+
+  useEffect(() => {
+    console.log("Like status changed:", isLiked);
+  }, [isLiked]);
+
   const backendURL = "http://localhost:3000";
   const [Email, setEmail] = useState();
   const [AllComments, setAllComments] = useState([]);
@@ -130,72 +152,39 @@ function Comments() {
   }, [Email]);
 
   useEffect(() => {
-    const getComments = async () => {
-      try {
-        if (Email !== undefined) {
-          const response = await fetch(`${backendURL}/getallcomments/${Email}`);
-          const { comments } = await response.json();
+    dispatch(getUserAllComments());
+  }, []);
 
-          // Fetch video data for each comment
-          const commentsWithVideoData = await Promise.all(
-            comments.map(async (comment) => {
-              const videoResponse = await fetch(
-                `${backendURL}/getdeletevideodata/${comment.videoid}`
-              );
-              const videoData = await videoResponse.json();
+  useEffect(() => {
+    setAllComments(AllCommentData);
+  }, [AllCommentData]);
 
-              return {
-                ...comment,
-                videoData: videoData, // Add video data to the comment object
-              };
-            })
-          );
+  console.log("All video Data", AllComments);
+  // useEffect(() => {
+  //   dispatch(getSelectedVideo(AllComments.video));
+  // }, [dispatch, AllComments.video]);
 
-          setAllComments(commentsWithVideoData);
-        }
-      } catch (error) {
-        // Handle error
-      }
-    };
+  // useEffect(() => {
+  //   setVideoData(selectedVideos);
+  // }, [selectedVideos]);
 
-    const interval = setInterval(getComments, 500);
-    return () => clearInterval(interval);
-  }, [Email]);
+  // console.log("aLL video Dtata", videoData);
 
-  const LikeComment = async (id, commentId) => {
+  const LikeComment = async (id) => {
     try {
-      if (commentId !== undefined && id !== undefined && Email !== undefined) {
-        const response = await fetch(
-          `${backendURL}/likecomment/${id}/${commentId}/${Email}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        await response.json();
+      if (id !== undefined) {
+        dispatch(getLikeCommentToggle(id, isLiked));
       }
     } catch (error) {
-      //console.log(error.message);
+      console.log(error.message);
     }
   };
 
-  const DeleteComment = async (id, commentId) => {
+  const DeleteComment = async (commentId) => {
     try {
-      const response = await fetch(
-        `${backendURL}/deletecomment/${id}/${commentId}/${Email}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      await response.json();
-      // window.location.reload();
+      dispatch(deleteCoomentsDetails(commentId));
     } catch (error) {
-      //console.log(error.message);
+      console.log(error.message);
     }
   };
 
@@ -203,20 +192,12 @@ function Comments() {
     AllComments &&
     AllComments.filter(
       (item) =>
-        item.comment
-          .toLowerCase()
-          .includes(
-            filterComment !== undefined &&
-              filterComment !== "" &&
-              filterComment.toLowerCase()
-          ) ||
-        item.username
-          .toLowerCase()
-          .includes(
-            filterComment !== undefined &&
-              filterComment !== "" &&
-              filterComment.toLowerCase()
-          )
+        (item.content &&
+          item.content.toLowerCase().includes(filterComment.toLowerCase())) ||
+        (item.owner.username &&
+          item.owner.username
+            .toLowerCase()
+            .includes(filterComment.toLowerCase()))
     );
 
   return (
@@ -412,7 +393,7 @@ function Comments() {
                     >
                       <div className="leftside-viddata">
                         <img
-                          src={element.user_profile}
+                          src={element.owner.avatar}
                           alt="profile"
                           className="user-channelprofileee"
                         />
@@ -422,7 +403,7 @@ function Comments() {
                               theme ? "name-time" : "name-time text-light-mode2"
                             }
                           >
-                            <p>{element.username}</p>
+                            <p>{element.owner.username}</p>
                             <FiberManualRecordIcon
                               className="dot-seperate"
                               style={{
@@ -434,7 +415,7 @@ function Comments() {
                             <p>
                               {(() => {
                                 const timeDifference =
-                                  new Date() - new Date(element.time);
+                                  new Date() - new Date(element.createdAt);
                                 const minutes = Math.floor(
                                   timeDifference / 60000
                                 );
@@ -471,7 +452,7 @@ function Comments() {
                             className={theme ? "" : "text-light-mode"}
                             style={{ marginTop: "8px" }}
                           >
-                            {element.comment}
+                            {element.content}
                           </p>
                           <div className="comment-all-btns">
                             <div className="cmmt-like">
@@ -485,7 +466,7 @@ function Comments() {
                                   className="thiscomment-like-btn"
                                   style={{ color: theme ? "white" : "#606060" }}
                                   onClick={() => {
-                                    LikeComment(element.videoid, element._id);
+                                    LikeComment(element._id);
                                   }}
                                 />
                               </Tooltip>
@@ -507,7 +488,7 @@ function Comments() {
                                 style={{ color: theme ? "#aaa" : "#606060" }}
                                 className="deletethis-cmmt"
                                 onClick={() => {
-                                  DeleteComment(element.videoid, element._id);
+                                  DeleteComment(element._id);
                                 }}
                               />
                             </Tooltip>
@@ -520,9 +501,7 @@ function Comments() {
                         key={index}
                         onClick={() => {
                           if (element.videoData._id !== undefined) {
-                            navigate(
-                              `/studio/video/comments/${element.videoData._id}`
-                            );
+                            navigate(`/studio/video/comments/${element.video}`);
                           }
                         }}
                       >
@@ -540,12 +519,7 @@ function Comments() {
                               : "thiscomment-rightone text-light-mode"
                           }
                         >
-                          <p>
-                            {element.videoData &&
-                            element.videoData.Title.length <= 40
-                              ? element.videoData.Title
-                              : `${element.videoData.Title.slice(0, 40)}...`}
-                          </p>
+                          <p></p>
                         </div>
                       </div>
                     </div>
@@ -568,7 +542,7 @@ function Comments() {
                   >
                     <div className="leftside-viddata">
                       <img
-                        src={element.user_profile}
+                        src={element.owner.avatar}
                         alt="profile"
                         className="user-channelprofileee"
                       />
@@ -578,7 +552,7 @@ function Comments() {
                             theme ? "name-time" : "name-time text-light-mode2"
                           }
                         >
-                          <p>{element.username}</p>
+                          <p>{element.owner.username}</p>
                           <FiberManualRecordIcon
                             className="dot-seperate"
                             style={{
@@ -590,7 +564,7 @@ function Comments() {
                           <p>
                             {(() => {
                               const timeDifference =
-                                new Date() - new Date(element.time);
+                                new Date() - new Date(element.createdAt);
                               const minutes = Math.floor(
                                 timeDifference / 60000
                               );
@@ -627,7 +601,7 @@ function Comments() {
                           className={theme ? "" : "text-light-mode"}
                           style={{ marginTop: "8px" }}
                         >
-                          {element.comment}
+                          {element.content}
                         </p>
                         <div className="comment-all-btns">
                           <div className="cmmt-like">
@@ -641,7 +615,7 @@ function Comments() {
                                 className="thiscomment-like-btn"
                                 style={{ color: theme ? "white" : "#606060" }}
                                 onClick={() => {
-                                  LikeComment(element.videoid, element._id);
+                                  LikeComment(element._id);
                                 }}
                               />
                             </Tooltip>
@@ -663,13 +637,14 @@ function Comments() {
                               style={{ color: theme ? "#aaa" : "#606060" }}
                               className="deletethis-cmmt"
                               onClick={() => {
-                                DeleteComment(element.videoid, element._id);
+                                DeleteComment(element._id);
                               }}
                             />
                           </Tooltip>
                         </div>
                       </div>
                     </div>
+
                     <div
                       className="right-sidevideo"
                       key={index}
@@ -696,10 +671,10 @@ function Comments() {
                         }
                       >
                         <p>
-                          {element.videoData &&
+                          {/* {element.videoData &&
                           element.videoData.Title.length <= 40
                             ? element.videoData.Title
-                            : `${element.videoData.Title.slice(0, 40)}...`}
+                            : `${element.videoData.Title.slice(0, 40)}...`} */}
                         </p>
                       </div>
                     </div>
@@ -745,6 +720,6 @@ function Comments() {
       </div>
     </>
   );
-}
+};
 
 export default Comments;
