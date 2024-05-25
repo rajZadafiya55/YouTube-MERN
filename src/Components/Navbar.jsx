@@ -8,82 +8,36 @@ import "react-loading-skeleton/dist/skeleton.css";
 import "../Css/navbar.css";
 import Logo from "../img/logo1.png";
 import Logo2 from "../img/logo2.png";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Signup from "./Signup";
 import Signin from "./Signin";
-import avatar from "../img/avatar.png";
 import { useNavigate, useParams } from "react-router-dom";
-import jwtDecode from "jwt-decode";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import { FiSearch } from "react-icons/fi";
 import { IoIosSearch } from "react-icons/io";
 import { RxCross1 } from "react-icons/rx";
 import { AiOutlineVideoCameraAdd } from "react-icons/ai";
+import Uavatar from "../img/Uavatar.png";
+import { avatar, accessToken, showLoginToast } from "../constant/Api";
 
 function Navbar() {
   const navigate = useNavigate();
-  const backendURL = "http://localhost:3000";
+  const token = accessToken;
+
   const { data } = useParams();
   const [data2, setData] = useState(data);
   const [isbtnClicked, setisbtnClicked] = useState(false);
   const [isSwitch, setisSwitched] = useState(false);
-  const token = localStorage.getItem("userToken");
-  const [email, setEmail] = useState();
-  const [profilePic, setProfilePic] = useState();
   const [showPop, setShowPop] = useState(false);
   const [searchedData, setSearchedData] = useState();
   const [loading, setLoading] = useState(true);
   const [newSearch, setNewSearch] = useState(false);
+
   const [theme, setTheme] = useState(() => {
     const Dark = localStorage.getItem("Dark");
     return Dark ? JSON.parse(Dark) : true;
   });
-  const profileRef = useRef();
-  const searchRef = useRef();
-
-  useEffect(() => {
-    if (token) {
-      setisbtnClicked(false);
-      setEmail(jwtDecode(token).email);
-    }
-  }, [token]);
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (!profileRef.current.contains(e.target)) {
-        setShowPop(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handler);
-  }, []);
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (!searchRef.current.contains(e.target)) {
-        setNewSearch(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handler);
-  }, []);
-
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        if (email) {
-          const response = await fetch(`${backendURL}/getuserimage/${email}`);
-          const { channelIMG } = await response.json();
-          setProfilePic(channelIMG);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-
-    getData();
-  }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -143,6 +97,7 @@ function Navbar() {
             />
           </div>
         </div>
+
         <div
           className="right-bar"
           style={
@@ -170,8 +125,7 @@ function Navbar() {
                 if (token) {
                   navigate("/studio");
                 } else {
-                  setisbtnClicked(true);
-                  document.body.classList.add("bg-css");
+                  showLoginToast();
                 }
               }}
             />
@@ -219,7 +173,7 @@ function Navbar() {
             </div>
           </SkeletonTheme>
           <img
-            src={profilePic ? profilePic : avatar}
+            src={avatar ? avatar : Uavatar}
             alt="user profile pic"
             loading="lazy"
             className="profile-pic"
@@ -238,7 +192,9 @@ function Navbar() {
           />
         </div>
       </div>
-      
+
+      {/* ================(Log-in form)============================================ */}
+
       <div
         className={
           theme ? "auth-popup" : "auth-popup light-mode text-light-mode"
@@ -261,33 +217,15 @@ function Navbar() {
           fontSize="large"
           style={{ color: "gray" }}
         />
+        {/* ========(Registration form)========================================== */}
         <div
           className="signup-last"
           style={
             isSwitch === false ? { display: "block" } : { display: "none" }
           }
         >
-          <Signup />
-          <div className="already">
-            <p>Already have an account?</p>
-            <p
-              onClick={() => {
-                if (isSwitch === false) {
-                  setisSwitched(true);
-                } else {
-                  setisSwitched(false);
-                }
-              }}
-            >
-              Signin
-            </p>
-          </div>
-        </div>
-        <div
-          className="signin-last"
-          style={isSwitch === true ? { display: "block" } : { display: "none" }}
-        >
           <Signin close={isbtnClicked} switch={isSwitch} />
+
           <div className="already">
             <p>Don&apos;t have an account?</p>
             <p
@@ -303,10 +241,33 @@ function Navbar() {
             </p>
           </div>
         </div>
+
+        {/* ========(Registration form)========================================== */}
+        <div
+          className="signin-last"
+          style={isSwitch === true ? { display: "block" } : { display: "none" }}
+        >
+          <Signup />
+
+          <div className="already">
+            <p>Already have an account?</p>
+            <p
+              onClick={() => {
+                if (isSwitch === false) {
+                  setisSwitched(true);
+                } else {
+                  setisSwitched(false);
+                }
+              }}
+            >
+              Signin
+            </p>
+          </div>
+        </div>
       </div>
       <div
         className="ac-pop"
-        ref={profileRef}
+        // ref={profileRef}
         style={showPop === true ? { display: "block" } : { display: "none" }}
       >
         <AccountPop />
@@ -321,7 +282,7 @@ function Navbar() {
       >
         <div
           className="new-searchbar-component"
-          ref={searchRef}
+          // ref={searchRef}
           style={{
             display: newSearch && window.innerWidth <= 940 ? "flex" : "none",
           }}

@@ -8,11 +8,12 @@ import Box from "@mui/material/Box";
 import { useParams } from "react-router-dom";
 import ChannelVideos from "./ChannelVideos";
 import ChannelPlaylists from "./ChannelPlaylists";
-
 import ChannelAbout from "./ChannelAbout";
 import "../../Css/channel.css";
 import jwtDecode from "jwt-decode";
 import Subscription from "./Subscription";
+import { email } from "../../constant/Api";
+import { useDispatch, useSelector } from "react-redux";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -44,10 +45,13 @@ function a11yProps(index) {
 }
 
 export default function BasicTabs({ section, handleTabChange }) {
-  const backendURL = "http://localhost:3000";
+  const dispatch = useDispatch();
+
+  const AllVideo = useSelector((state) => state.videos.videosDetails);
+  console.log("allVideos", AllVideo);
+
   const { id } = useParams();
-  const [myVideos, setMyVideos] = useState([]);
-  const [Email, setEmail] = useState();
+  const [Email, setEmail] = useState(email);
   const [loggedInUser, setLoggedInUser] = useState("");
 
   const handleChange = (event, newValue) => {
@@ -55,18 +59,6 @@ export default function BasicTabs({ section, handleTabChange }) {
   };
 
   useEffect(() => {
-    const getUserMail = async () => {
-      try {
-        const response = await fetch(`${backendURL}/getotherchannel/${id}`);
-        const userEmail = await response.json();
-        setEmail(userEmail);
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-
-    getUserMail();
-
     // Fetch logged-in user's email
     const token = localStorage.getItem("userToken");
     if (token) {
@@ -74,19 +66,6 @@ export default function BasicTabs({ section, handleTabChange }) {
       setLoggedInUser(loggedInEmail);
     }
   }, [id]);
-
-  useEffect(() => {
-    const getUserVideos = async () => {
-      try {
-        const response = await fetch(`${backendURL}/getuservideos/${Email}`);
-        const myvideos = await response.json();
-        setMyVideos(myvideos);
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-    getUserVideos();
-  }, [Email]);
 
   return (
     <Box sx={{ width: "100%" }}>

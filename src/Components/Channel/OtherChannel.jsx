@@ -14,15 +14,16 @@ import { RiUserSettingsLine } from "react-icons/ri";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import BasicTabs from "./BasicTabs";
+import { avatar, coverImage, email, username } from "../../constant/Api";
 
 function OtherChannel() {
   const navigate = useNavigate();
   const backendURL = "http://localhost:3000";
   const { id } = useParams();
-  const [Email, setEmail] = useState();
+  const [Email, setEmail] = useState(email);
   const [newEmail, setnewEmail] = useState();
-  const [channelName, setChannelname] = useState();
-  const [ChannelProfile, setChannelProfile] = useState();
+  const [channelName, setChannelname] = useState(username);
+  const [ChannelProfile, setChannelProfile] = useState(avatar);
   const [myVideos, setMyVideos] = useState([]);
   const [isbtnClicked, setisbtnClicked] = useState(false);
   const [Section, setSection] = useState(
@@ -32,7 +33,7 @@ function OtherChannel() {
   const [isSubscribed, setIsSubscribed] = useState();
   const [Subscribers, setSubscribers] = useState();
   const [Top, setTop] = useState("155px");
-  const [coverIMG, setCoverIMG] = useState("");
+  const [coverIMG, setCoverIMG] = useState(coverImage);
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState(() => {
     const Dark = localStorage.getItem("Dark");
@@ -67,70 +68,26 @@ function OtherChannel() {
     }, 1200);
   }, []);
 
-  useEffect(() => {
-    const getUserMail = async () => {
-      try {
-        const response = await fetch(`${backendURL}/getotherchannel/${id}`);
-        const userEmail = await response.json();
-        setEmail(userEmail);
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-
-    getUserMail();
-  }, [id]);
-
-  useEffect(() => {
-    const getChannelData = async () => {
-      try {
-        const response = await fetch(`${backendURL}/getchannel/${Email}`);
-        const data = await response.json();
-        const { profile, ChannelName } = data;
-        setChannelProfile(profile);
-        setChannelname(ChannelName);
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-
-    getChannelData();
-  }, [Email]);
-
   document.title =
     channelName && channelName !== undefined
       ? `${channelName} - YouTube`
       : "YouTube";
 
-  useEffect(() => {
-    const getChannelCover = async () => {
-      try {
-        const response = await fetch(`${backendURL}/getcover/${Email}`);
-        const coverimg = await response.json();
-        setCoverIMG(coverimg);
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
+  // useEffect(() => {
+  //   const getSubscribers = async () => {
+  //     try {
+  //       const response = await fetch(`${backendURL}/getchannelid/${Email}`);
+  //       const { subscribers } = await response.json();
+  //       setSubscribers(subscribers);
+  //     } catch (error) {
+  //       // console.log(error.message);
+  //     }
+  //   };
 
-    getChannelCover();
-  }, [Email]);
+  //   const interval = setInterval(getSubscribers, 200);
 
-  useEffect(() => {
-    const getSubscribers = async () => {
-      try {
-        const response = await fetch(`${backendURL}/getchannelid/${Email}`);
-        const { subscribers } = await response.json();
-        setSubscribers(subscribers);
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-
-    const interval = setInterval(getSubscribers, 200);
-
-    return () => clearInterval(interval);
-  }, [Email]);
+  //   return () => clearInterval(interval);
+  // }, [Email]);
 
   useEffect(() => {
     if (Section === "Videos" && coverIMG !== "No data") {
@@ -152,62 +109,56 @@ function OtherChannel() {
     }
   }, [theme]);
 
-  useEffect(() => {
-    const checkSubscription = async () => {
-      try {
-        const response = await fetch(
-          `${backendURL}/checksubscription/${id}/${newEmail}`
-        );
-        const { existingChannelID } = await response.json();
-        if (existingChannelID !== undefined) {
-          setIsSubscribed(true);
-        } else {
-          setIsSubscribed(false);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
+  // useEffect(() => {
+  //   const checkSubscription = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         `${backendURL}/checksubscription/${id}/${newEmail}`
+  //       );
+  //       const { existingChannelID } = await response.json();
+  //       if (existingChannelID !== undefined) {
+  //         setIsSubscribed(true);
+  //       } else {
+  //         setIsSubscribed(false);
+  //       }
+  //     } catch (error) {
+  //       // console.log(error.message);
+  //     }
+  //   };
 
-    const interval = setInterval(checkSubscription, 200);
+  //   const interval = setInterval(checkSubscription, 200);
 
-    return () => clearInterval(interval);
-  }, [id, newEmail]);
-
-  const getUsername = (email) => {
-    return email.split("@")[0];
-  };
-
-  const username = Email && getUsername(Email);
+  //   return () => clearInterval(interval);
+  // }, [id, newEmail]);
 
   //POST REQUESTS
 
-  const SubscribeChannel = async () => {
-    try {
-      const channelData = {
-        youtuberName: channelName,
-        youtuberProfile: ChannelProfile,
-        youtubeChannelID: id,
-      };
+  // const SubscribeChannel = async () => {
+  //   try {
+  //     const channelData = {
+  //       youtuberName: channelName,
+  //       youtuberProfile: ChannelProfile,
+  //       youtubeChannelID: id,
+  //     };
 
-      const response = await fetch(
-        `${backendURL}/subscribe/${id}/${newEmail}/${Email}`,
-        {
-          method: "POST",
-          body: JSON.stringify(channelData),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      if (data === "Subscribed") {
-        SubscribeNotify();
-      }
-    } catch (error) {
-      // console.log(error.message);
-    }
-  };
+  //     const response = await fetch(
+  //       `${backendURL}/subscribe/${id}/${newEmail}/${Email}`,
+  //       {
+  //         method: "POST",
+  //         body: JSON.stringify(channelData),
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     const data = await response.json();
+  //     if (data === "Subscribed") {
+  //       SubscribeNotify();
+  //     }
+  //   } catch (error) {
+  //     // console.log(error.message);
+  //   }
+  // };
 
   // Function to handle tab changes
   const handleTabChange = (newSection) => {
@@ -369,13 +320,13 @@ function OtherChannel() {
                       theme ? "channel-extra" : "channel-extra text-light-mode2"
                     }
                   >
-                    <p className="channeluser">@{username && username}</p>
+                    <p className="channeluser">@{channelName && channelName}</p>
                     <p className="my-subs">
-                      {Subscribers && Subscribers} subscribers
+                      {/* {Subscribers && Subscribers} subscribers */}
                     </p>
                     {myVideos && myVideos.message !== "USER DOESN'T EXIST" ? (
                       <p className="my-videoscount">
-                        {myVideos && myVideos.length} videos
+                        {/* {myVideos && myVideos.length} videos */}
                       </p>
                     ) : (
                       <p className="my-videoscount">0 videos</p>
@@ -454,7 +405,7 @@ function OtherChannel() {
                       }
                       onClick={() => {
                         if (token) {
-                          SubscribeChannel();
+                          // SubscribeChannel();
                         } else {
                           setisbtnClicked(true);
                           document.body.classList.add("bg-css");
@@ -476,7 +427,7 @@ function OtherChannel() {
                       }
                       onClick={() => {
                         if (token) {
-                          SubscribeChannel();
+                          // SubscribeChannel();
                         } else {
                           setisbtnClicked(true);
                           document.body.classList.add("bg-css");
@@ -491,7 +442,7 @@ function OtherChannel() {
             </div>
           </div>
 
-          <div className="channel-mid-content" >
+          <div className="channel-mid-content">
             <BasicTabs section={Section} handleTabChange={handleTabChange} />
           </div>
           <br />

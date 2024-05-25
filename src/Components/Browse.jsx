@@ -7,7 +7,7 @@ import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import "../Css/theme.css";
 import { useNavigate } from "react-router-dom";
-import { APIHttp } from "../constant/Api";
+import { APIHttp, showLoginToast } from "../constant/Api";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllVideos } from "../redux/actions/videoAction";
 
@@ -17,16 +17,7 @@ function Browse() {
 
   const AllVideo = useSelector((state) => state.videos.videosDetails);
   const [videoDetails, setVideoDetails] = useState([]);
-  // const [thumbnails, setThumbnails] = useState([]);
-  // const [Titles, setTitles] = useState();
-  // const [uploader, setUploader] = useState();
-  // const [ProfilePic, setProfilePic] = useState();
-  // const [duration, setDuration] = useState();
-  // const [VideoID, setVideoID] = useState();
-  // const [Visibility, setVisibility] = useState();
-  // const [publishDate, setPublishDate] = useState();
-  // const [VideoViews, setVideoViews] = useState();
-  // const [VideoData, setVideoData] = useState([]);
+
 
   const [menuClicked, setMenuClicked] = useState(() => {
     const menu = localStorage.getItem("menuClicked");
@@ -126,22 +117,6 @@ function Browse() {
       document.body.style.backgroundColor = "0f0f0f";
     }
   }, [theme]);
-
-  //UPDATE VIEWS
-
-  // const updateViews = async (id) => {
-  //   try {
-  //     const response = await fetch(`${APIHttp}/videos/${id}`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-  //     await response.json();
-  //   } catch (error) {
-  //     // console.log(error.message);
-  //   }
-  // };
 
   useEffect(() => {
     dispatch(getAllVideos());
@@ -304,7 +279,6 @@ function Browse() {
                 videoDetails.length > 0 &&
                 videoDetails.map((element, index) => {
                   const {
-                    videoFile,
                     thumbnail,
                     title,
                     views,
@@ -343,12 +317,11 @@ function Browse() {
                       }}
                       onClick={() => {
                         if (token) {
-                          // updateViews(element._id);
                           setTimeout(() => {
                             navigate(`/video/${element._id}`);
                           }, 400);
                         } else {
-                          navigate(`/video/${element._id}`);
+                          showLoginToast();
                         }
                       }}
                     >

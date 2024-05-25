@@ -21,84 +21,84 @@ function generateRandomColors(count) {
 }
 
 function ChannelPlaylists(prop) {
-  const navigate = useNavigate();
-  const backendURL = "http://localhost:3000";
-  const [PlaylistData, setPlaylistData] = useState([]);
-  const [email, setEmail] = useState();
-  const [playlistColors, setPlaylistColors] = useState([]);
-  const token = localStorage.getItem("userToken");
-  const [loading, setLoading] = useState(true);
-  const sampleArr = [1, 2, 3, 4];
-  const [theme, setTheme] = useState(() => {
-    const Dark = localStorage.getItem("Dark");
-    return Dark ? JSON.parse(Dark) : true;
-  });
+  // const navigate = useNavigate();
+  // const backendURL = "http://localhost:3000";
+  // const [PlaylistData, setPlaylistData] = useState([]);
+  // const [email, setEmail] = useState();
+  // const [playlistColors, setPlaylistColors] = useState([]);
+  // const token = localStorage.getItem("userToken");
+  // const [loading, setLoading] = useState(true);
+  // const sampleArr = [1, 2, 3, 4];
+  // const [theme, setTheme] = useState(() => {
+  //   const Dark = localStorage.getItem("Dark");
+  //   return Dark ? JSON.parse(Dark) : true;
+  // });
 
-  useEffect(() => {
-    if (token) {
-      setEmail(jwtDecode(token).email);
-    }
-  }, [token]);
+  // useEffect(() => {
+  //   if (token) {
+  //     setEmail(jwtDecode(token).email);
+  //   }
+  // }, [token]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1200);
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setLoading(false);
+  //   }, 1200);
+  // }, []);
 
-  useEffect(() => {
-    // Generate colors based on the length of PlaylistData array
-    const colors = generateRandomColors(Math.max(1, PlaylistData.length));
-    setPlaylistColors(colors);
-  }, [PlaylistData]);
+  // useEffect(() => {
+  //   // Generate colors based on the length of PlaylistData array
+  //   const colors = generateRandomColors(Math.max(1, PlaylistData.length));
+  //   setPlaylistColors(colors);
+  // }, [PlaylistData]);
 
-  useEffect(() => {
-    const getPlaylistData = async () => {
-      try {
-        if (prop.newmail !== undefined) {
-          const response = await fetch(
-            `${backendURL}/getplaylistdata/${prop.newmail}`
-          );
-          const playlistData = await response.json();
-          setPlaylistData(playlistData);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-    getPlaylistData();
-  }, [prop.newmail]);
+  // useEffect(() => {
+  //   const getPlaylistData = async () => {
+  //     try {
+  //       if (prop.newmail !== undefined) {
+  //         const response = await fetch(
+  //           `${backendURL}/getplaylistdata/${prop.newmail}`
+  //         );
+  //         const playlistData = await response.json();
+  //         setPlaylistData(playlistData);
+  //       }
+  //     } catch (error) {
+  //       // console.log(error.message);
+  //     }
+  //   };
+  //   getPlaylistData();
+  // }, [prop.newmail]);
 
-  const publicPlaylists =
-    PlaylistData &&
-    PlaylistData !== "No playlists available..." &&
-    PlaylistData.filter((item) => item.playlist_privacy === "Public");
+  // const publicPlaylists =
+  //   PlaylistData &&
+  //   PlaylistData !== "No playlists available..." &&
+  //   PlaylistData.filter((item) => item.playlist_privacy === "Public");
 
-  const noPublicPlaylists = publicPlaylists.length === 0;
+  // const noPublicPlaylists = publicPlaylists.length === 0;
 
-  if (
-    (loading === false && PlaylistData === "No playlists available...") ||
-    (loading === false && PlaylistData.length === 0) ||
-    (email !== prop.newmail && noPublicPlaylists)
-  ) {
-    return (
-      <p
-        className={theme ? "" : " text-light-mode "}
-        style={{
-          color: "white",
-          fontSize: "16px",
-          textAlign: "center",
-          margin: "100px 0px",
-        }}
-      >
-        This channel doesn&apos;t have any playlists.
-      </p>
-    );
-  }
+  // if (
+  //   (loading === false && PlaylistData === "No playlists available...") ||
+  //   (loading === false && PlaylistData.length === 0) ||
+  //   (email !== prop.newmail && noPublicPlaylists)
+  // ) {
+  //   return (
+  //     <p
+  //       className={theme ? "" : " text-light-mode "}
+  //       style={{
+  //         color: "white",
+  //         fontSize: "16px",
+  //         textAlign: "center",
+  //         margin: "100px 0px",
+  //       }}
+  //     >
+  //       This channel doesn&apos;t have any playlists.
+  //     </p>
+  //   );
+  // }
 
   return (
     <>
-      <SkeletonTheme
+      {/* <SkeletonTheme
         baseColor={theme ? "#353535" : "#aaaaaa"}
         highlightColor={theme ? "#444" : "#b6b6b6"}
       >
@@ -261,7 +261,7 @@ function ChannelPlaylists(prop) {
               })}
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

@@ -28,6 +28,7 @@ import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
 import WatchLaterIcon from "@mui/icons-material/WatchLater";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { MdVideoLibrary } from "react-icons/md";
+import { showLoginToast } from "../constant/Api";
 
 function LeftPanel() {
   const navigate = useNavigate();
@@ -173,7 +174,7 @@ function LeftPanel() {
                 localStorage.setItem("selected", "subscription");
                 navigate("/subscriptions");
               } else {
-                document.body.classList.add("bg-css");
+                showLoginToast();
               }
             }}
           >
@@ -204,7 +205,7 @@ function LeftPanel() {
                 localStorage.setItem("selected", "library");
                 navigate("/library");
               } else {
-                document.body.classList.add("bg-css");
+                showLoginToast();
               }
             }}
           >
@@ -235,7 +236,7 @@ function LeftPanel() {
                 localStorage.setItem("selected", "watch-later");
                 navigate("/watchlater");
               } else {
-                document.body.classList.add("bg-css");
+                showLoginToast();
               }
             }}
           >
@@ -265,7 +266,7 @@ function LeftPanel() {
                 localStorage.setItem("selected", "liked-video");
                 navigate("/likedVideos");
               } else {
-                document.body.classList.add("bg-css");
+                showLoginToast();
               }
             }}
           >
@@ -286,7 +287,7 @@ function LeftPanel() {
           <hr className={theme ? "seperate" : "seperate-light"} />
           <Tooltip
             TransitionComponent={Zoom}
-            title="Made with 💖 by Shubhojeet"
+            title="Made with 💖 by Raj"
             placement="bottom"
           >
             <div className="developer">
@@ -328,7 +329,6 @@ function LeftPanel() {
             }
             onClick={() => {
               localStorage.setItem("selected", "home");
-
               navigate("/");
             }}
           >
@@ -383,7 +383,7 @@ function LeftPanel() {
                 localStorage.setItem("selected", "subscription");
                 navigate("/subscriptions");
               } else {
-                document.body.classList.add("bg-css");
+                showLoginToast();
               }
             }}
           >
@@ -415,7 +415,7 @@ function LeftPanel() {
                 localStorage.setItem("selected", "library");
                 navigate("/library");
               } else {
-                document.body.classList.add("bg-css");
+                showLoginToast();
               }
             }}
           >
@@ -444,7 +444,7 @@ function LeftPanel() {
                 localStorage.setItem("selected", "watch-later");
                 navigate("/watchlater");
               } else {
-                document.body.classList.add("bg-css");
+                showLoginToast();
               }
             }}
           >
@@ -474,7 +474,7 @@ function LeftPanel() {
 
                 navigate("/likedVideos");
               } else {
-                document.body.classList.add("bg-css");
+                showLoginToast();
               }
             }}
           >
@@ -558,7 +558,7 @@ function LeftPanel() {
               if (token) {
                 navigate("/studio");
               } else {
-                document.body.classList.add("bg-css");
+                showLoginToast();
               }
             }}
           />
@@ -573,7 +573,7 @@ function LeftPanel() {
                 localStorage.setItem("selected", "subscription");
                 navigate("/subscriptions");
               } else {
-                document.body.classList.add("bg-css");
+                showLoginToast();
               }
             }}
           >
@@ -601,7 +601,7 @@ function LeftPanel() {
                 localStorage.setItem("selected", "library");
                 navigate("/library");
               } else {
-                document.body.classList.add("bg-css");
+                showLoginToast();
               }
             }}
           >

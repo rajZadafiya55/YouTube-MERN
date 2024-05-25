@@ -1,13 +1,28 @@
 import { useEffect, useState } from "react";
 import "../Css/navbar.css";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import Reset from "./Reset";
 import axios from "axios";
+import { Grid, styled, Button } from "@mui/material";
+import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
+import { toast } from "react-toastify";
+import { APIHttp } from "../constant/Api";
+import ClipLoader from "react-spinners/ClipLoader";
+ 
+const TextField = styled(TextValidator)(() => ({
+  width: "100%",
+  marginBottom: "16px",
+}));
 
 function Signin(prop) {
-  const backendURL = "http://localhost:3000";
-  const [data, setData] = useState({});
+  const [loading, setLoading] = useState(false); // State for loading
+
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+  });
+
+  // ===============================================================
+
   const [showReset, setShowReset] = useState(false);
   const [theme, setTheme] = useState(() => {
     const Dark = localStorage.getItem("Dark");
@@ -26,88 +41,38 @@ function Signin(prop) {
     }
   }, [prop.switch]);
 
-  // TOASTS
+  // ================(form handler)===============================================
 
-  const LoginNotify = () =>
-    toast.success("Login successful!", {
-      position: "top-center",
-      autoClose: 1200,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const InvalidNotify = () =>
-    toast.error("Invalid Credentials!", {
-      position: "top-center",
-      autoClose: 1200,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const ErrorNotify = () =>
-    toast.error("Input fields can't be empty.", {
-      position: "top-center",
-      autoClose: 1200,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const NoUserNotify = () =>
-    toast.error("User doesn't exist.", {
-      position: "top-center",
-      autoClose: 1200,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const handleInputs = (e) => {
-    setData({
-      ...data,
-      [e.target.name]: e.target.value,
-    });
+  const handleChange = (e) => {
+    e.persist();
+    setData({ ...data, [e.target.name]: e.target.value });
   };
 
-  const SubmitData = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!data.email1 || !data.password1) {
-      ErrorNotify();
-      return;
-    }
+    setLoading(true);
     try {
-      const response = await axios.post(`${backendURL}/login`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const { message, token } = response.data;
-      if (message === "LOGIN SUCCESSFUL") {
-        LoginNotify();
-        localStorage.setItem("userToken", token);
-        setTimeout(() => {
-          window.location.reload();
-          document.body.classList.remove("bg-class");
-        }, 2000);
-      } else if (message === "INVALID CREDENTIALS") {
-        InvalidNotify();
-      } else if (message === "USER DOESN'T EXIST") {
-        NoUserNotify();
-      }
+      axios
+        .post(`${APIHttp}users/login`, data)
+        .then((y) => {
+          const userToken = y.data.data.accessToken;
+          const refreshToken = y.data.data.refreshToken;
+          const userData = JSON.stringify(y.data.data.user);
+          localStorage.setItem("userToken", userToken);
+          localStorage.setItem("refreshToken", refreshToken);
+          localStorage.setItem("userData", userData);
+          toast.success("login successfully");
+          setLoading(false);
+
+          setTimeout(() => {
+            window.location.reload();
+            document.body.classList.remove("bg-class");
+          }, 1000);
+        })
+        .catch((y) => {
+          toast.error("your credentials are invalid");
+          setLoading(false);
+        });
     } catch (error) {
       alert(error.message);
     }
@@ -125,54 +90,70 @@ function Signin(prop) {
           the YouTube Community
         </p>
       </div>
-      <div
+      <ValidatorForm
+        onSubmit={handleSubmit}
+        onError={() => null}
         className="signup-form"
         style={{ display: showReset ? "none" : "flex" }}
       >
-        <form onSubmit={SubmitData}>
-          <input
-            type="email"
-            name="email1"
-            className={
-              theme ? "email" : "email email-light light-mode text-light-mode"
-            }
-            placeholder="Email Address"
-            onChange={handleInputs}
-            required
-          />
-          <input
-            type="password"
-            name="password1"
-            className={
-              theme
-                ? "password"
-                : "password email-light light-mode text-light-mode"
-            }
-            placeholder="Passcode"
-            onChange={handleInputs}
-            required
-          />
-          <p
-            className={
-              theme ? "forgot-password" : "forgot-password text-light-mode"
-            }
-            onClick={() => setShowReset(true)}
-          >
-            Forgot password?
-          </p>
-          <button
-            className={theme ? "signup-btn" : "signup-btn signin-btn-light"}
-            type="submit"
-          >
-            Login to Your Account
-          </button>
-        </form>
-      </div>
+        <Grid container spacing={0}>
+          <Grid item sm={12} xs={12}>
+            <TextField
+              type="email"
+              name="email"
+              label="Email"
+              value={data.email || ""}
+              onChange={handleChange}
+              validators={["required", "isEmail"]}
+              errorMessages={["Email is required", "Email is not valid"]}
+            />
+          </Grid>
+          <Grid item sm={12} xs={12}>
+            <TextField
+              type="password"
+              name="password"
+              id="standard-basic"
+              value={data.password || ""}
+              onChange={handleChange}
+              label="Password"
+              errorMessages={["Password is required"]}
+              validators={["required"]}
+            />
+          </Grid>
+        </Grid>
+        <p
+          className={
+            theme ? "forgot-password" : "forgot-password text-light-mode"
+          }
+          style={{ marginBottom: "20px" }}
+          onClick={() => setShowReset(true)}
+        >
+          Forgot password?
+        </p>
+
+        <Button
+          className={theme ? "signup-btn" : "signup-btn signin-btn-light"}
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={loading}
+        >
+          {loading ? (
+            <ClipLoader size={24} color={"#fff"} />
+          ) : (
+            "Login to Your Account"
+          )}
+        </Button>
+      </ValidatorForm>
       <div
         className="password-reset"
         style={{ display: showReset ? "block" : "none" }}
       >
+        {/* ============(Forgot Password)====================================== */}
+
         <Reset />
+
+        {/* ================================================================== */}
       </div>
     </>
   );

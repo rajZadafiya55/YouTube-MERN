@@ -91,22 +91,6 @@ function Studio() {
   }, [theme]);
 
   useEffect(() => {
-    const getVideos = async () => {
-      try {
-        if (email !== undefined) {
-          const response = await fetch(`${backendURL}/getuservideos/${email}`);
-          const data = await response.json();
-          setMyVideos(data);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-
-    getVideos();
-  }, [email]);
-
-  useEffect(() => {
     const handleClick = () => {
       setIsClicked(true);
     };
@@ -177,20 +161,6 @@ function Studio() {
 
   //GET CHANNEL'S DATA
 
-  useEffect(() => {
-    const ChannelAvailable = async () => {
-      try {
-        const response = await fetch(`${backendURL}/getchannel/${email}`);
-        const { channel } = await response.json();
-        setisChannel(channel);
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-
-    ChannelAvailable();
-  }, [email]);
-
   //IMAGE UPLOAD
 
   const handleImageChange = (e) => {
@@ -209,7 +179,6 @@ function Studio() {
     setChannelAbout(e.target.value);
   };
 
-  
   const clearFormState = () => {
     setFormData({
       title: "",
@@ -224,7 +193,6 @@ function Studio() {
     setIsVisibilityClicked(false);
     setIsClicked(false);
   };
-
 
   //ON VIDEO DROP
 
@@ -311,7 +279,7 @@ function Studio() {
   const PublishData = async (e) => {
     e.preventDefault();
 
-    await dispatch(addVideoData(formData, setLoading,setIsClicked));
+    await dispatch(addVideoData(formData, setLoading, setIsClicked));
 
     clearFormState();
   };

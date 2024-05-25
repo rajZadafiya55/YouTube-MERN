@@ -13,6 +13,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import { useNavigate } from "react-router-dom";
+import { _id } from "../constant/Api";
 
 function AccountPop() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ function AccountPop() {
     const Dark = localStorage.getItem("Dark");
     return Dark ? JSON.parse(Dark) : true;
   });
-  const [ChannelID, setChannelID] = useState();
+  const [ChannelID, setChannelID] = useState(_id);
   const [isBtnClicked, setIsBtnClicked] = useState(false);
 
   useEffect(() => {
@@ -44,39 +45,6 @@ function AccountPop() {
   useEffect(() => {
     localStorage.setItem("Dark", JSON.stringify(theme));
   }, [theme]);
-
-  useEffect(() => {
-    const getUserData = async () => {
-      try {
-        if (email) {
-          const response = await fetch(`${backendURL}/getuserimage/${email}`);
-          const { channelIMG } = await response.json();
-          setProfile(channelIMG);
-        }
-      } catch (error) {
-        console.log("Error fetching user data:", error.message);
-      }
-    };
-
-    getUserData();
-  }, [email]);
-
-  useEffect(() => {
-    const getChannelID = async () => {
-      try {
-        if (email) {
-          const response = await fetch(`${backendURL}/getchannelid/${email}`);
-          const { channelID } = await response.json();
-          setChannelID(channelID);
-        }
-      } catch (error) {
-        console.log("Error fetching user data:", error.message);
-      }
-    };
-
-    getChannelID();
-  }, [email]);
-
   return (
     <>
       <div

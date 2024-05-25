@@ -3,13 +3,17 @@ import jwtDecode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllVideos } from "../../redux/actions/videoAction.js";
 
-function ChannelVideos(prop) {
-  const backendURL = "http://localhost:3000";
-  const [myVideos, setMyVideos] = useState([]);
-  const [Email, setEmail] = useState();
-  const [videosort, setVideoSort] = useState();
+function ChannelVideos() {
+  const dispatch = useDispatch();
+  const AllVideo = useSelector((state) => state.videos.videosDetails);
+
   const token = localStorage.getItem("userToken");
+
+  const [myVideos, setMyVideos] = useState([]);
+  const [videosort, setVideoSort] = useState();
   const [loading, setLoading] = useState(true);
   const [showDiv, setShowDiv] = useState(false);
   const [theme, setTheme] = useState(() => {
@@ -18,13 +22,6 @@ function ChannelVideos(prop) {
   });
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (token) {
-      setEmail(jwtDecode(token).email);
-    }
-  }, [token]);
-
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
@@ -42,40 +39,14 @@ function ChannelVideos(prop) {
   }, []);
 
   useEffect(() => {
-    const getUserVideos = async () => {
-      try {
-        if (Email === prop.newmail) {
-          const response = await fetch(`${backendURL}/getuservideos/${Email}`);
-          const myvideos = await response.json();
-          setMyVideos(myvideos);
-        } else {
-          const response = await fetch(
-            `${backendURL}/getuservideos/${prop.newmail}`
-          );
-          const myvideos = await response.json();
-          setMyVideos(myvideos);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
+    dispatch(getAllVideos());
+  }, [dispatch]);
 
-    getUserVideos();
-  }, [Email, prop.newmail]);
+  useEffect(() => {
+    setMyVideos(AllVideo);
+  }, [AllVideo]);
 
-  const updateViews = async (id) => {
-    try {
-      const response = await fetch(`${backendURL}/updateview/${id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      await response.json();
-    } catch (error) {
-      // console.log(error.message);
-    }
-  };
+  console.log("my videos ", myVideos);
 
   useEffect(() => {
     const sortVideos = () => {
@@ -83,7 +54,7 @@ function ChannelVideos(prop) {
         case "Latest":
           setMyVideos((prevVideos) =>
             [...prevVideos].sort(
-              (a, b) => new Date(b.uploaded_date) - new Date(a.uploaded_date)
+              (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
             )
           );
           break;
@@ -95,7 +66,7 @@ function ChannelVideos(prop) {
         case "Oldest":
           setMyVideos((prevVideos) =>
             [...prevVideos].sort(
-              (a, b) => new Date(a.uploaded_date) - new Date(b.uploaded_date)
+              (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
             )
           );
           break;
@@ -169,8 +140,7 @@ function ChannelVideos(prop) {
                     className="uploaded-video-contents sk-uploadcontent"
                     key={index}
                     style={{
-                      display:
-                        element.visibility === "Public" ? "block" : "none",
+                      display: element.isPublished === true ? "block" : "none",
                     }}
                   >
                     <Skeleton
@@ -220,8 +190,7 @@ function ChannelVideos(prop) {
                     className="uploaded-video-contents sk-uploadcontent"
                     key={index}
                     style={{
-                      display:
-                        element.visibility === "Public" ? "block" : "none",
+                      display: element.isPublished === true ? "block" : "none",
                     }}
                   >
                     <Skeleton
@@ -270,39 +239,36 @@ function ChannelVideos(prop) {
               return (
                 <div
                   className={`${
-                    element.visibility === "Private"
+                    element.isPublished === false
                       ? "not-thiss"
                       : "uploaded-video-contents"
                   }`}
                   key={index}
                   style={{
-                    display: element.visibility === "Public" ? "block" : "none",
+                    display: element.isPublished === true ? "block" : "none",
                   }}
                   onClick={() => {
                     if (token) {
-                      updateViews(element._id);
                       setTimeout(() => {
                         navigate(`/video/${element._id}`);
-                        window.location.reload();
                       }, 400);
                     } else {
                       navigate(`/video/${element._id}`);
-                      window.location.reload();
                     }
                   }}
                 >
                   <img
-                    src={element.thumbnailURL}
+                    src={element.thumbnail.url}
                     alt="Thumbnail"
                     className="myvidthumbnail"
                     loading="lazy"
                   />
                   <p className="myvideo-duration2 duration-new">
-                    {Math.floor(element.videoLength / 60) +
+                    {Math.floor(element.duration / 60) +
                       ":" +
-                      (Math.round(element.videoLength % 60) < 10
-                        ? "0" + Math.round(element.videoLength % 60)
-                        : Math.round(element.videoLength % 60))}
+                      (Math.round(element.duration % 60) < 10
+                        ? "0" + Math.round(element.duration % 60)
+                        : Math.round(element.duration % 60))}
                   </p>
                   <div
                     className={
@@ -312,9 +278,9 @@ function ChannelVideos(prop) {
                     }
                   >
                     <p>
-                      {element.Title.length <= 50
-                        ? element.Title
-                        : `${element.Title.slice(0, 50)}...`}
+                      {element.title.length <= 50
+                        ? element.title
+                        : `${element.title.slice(0, 50)}...`}
                     </p>
                     <div
                       className={
@@ -337,7 +303,7 @@ function ChannelVideos(prop) {
                       <p className="video_published-date">
                         {(() => {
                           const timeDifference =
-                            new Date() - new Date(element.uploaded_date);
+                            new Date() - new Date(element.createdAt);
                           const minutes = Math.floor(timeDifference / 60000);
                           const hours = Math.floor(timeDifference / 3600000);
                           const days = Math.floor(timeDifference / 86400000);

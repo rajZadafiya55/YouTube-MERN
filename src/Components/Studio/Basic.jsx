@@ -1,221 +1,88 @@
 import { useState, useEffect, useRef } from "react";
-import jwtDecode from "jwt-decode";
 import ContentCopyOutlinedIcon from "@mui/icons-material/ContentCopyOutlined";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
+import { Grid, styled, Button } from "@mui/material";
+import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
+import ClipLoader from "react-spinners/ClipLoader";
+import {
+  avatar,
+  coverImage,
+  email as initialEmail,
+  fullName as initialFullName,
+  username,
+  _id,
+  APIHttp,
+  Header,
+} from "../../constant/Api";
+
+const TextField = styled(TextValidator)(() => ({
+  width: "100%",
+  marginBottom: "16px",
+}));
 
 function Basic() {
-  const backendURL = "http://localhost:3000";
-  const [Email, setEmail] = useState("");
-  const [channelName, setChannelName] = useState();
-  const [channelDescription, setChannelDescription] = useState();
-  const [channelID, setChannelID] = useState("");
-  const channelUrl = "https://shubho-youtube-mern.netlify.app/channel";
-  const channelIDInputRef = useRef(null);
-  const [Basicchanges, setBasicChanges] = useState(false);
-  const [Linkchanges, setLinkChanges] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [instalink, setInstaLink] = useState("");
-  const [fblink, setfbLink] = useState("");
-  const [twitterlink, settwitterLink] = useState("");
-  const [weblink, setwebLink] = useState("");
-  const [copy, setCopy] = useState(false);
-  const [theme, setTheme] = useState(() => {
-    const Dark = localStorage.getItem("Dark");
-    return Dark ? JSON.parse(Dark) : true;
+  const [showReset, setShowReset] = useState(false);
+
+  const [data, setData] = useState({
+    email: initialEmail,
+    fullName: initialFullName,
   });
 
-  //TOASTS
+  const [channelID, setChannelID] = useState(_id);
+  const channelUrl = `${APIHttp}channel`;
+  const channelIDInputRef = useRef(null);
+  const [copy, setCopy] = useState(false);
 
-  const CopiedNotify = () =>
-    toast.success("Link Copied!", {
-      position: "bottom-center",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const ErrorNotify = () =>
-    toast.error("Input fields can't be empty.", {
-      position: "top-center",
-      autoClose: 1200,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  //USE EFFECTS
-
-  useEffect(() => {
-    const token = localStorage.getItem("userToken");
-    if (token) {
-      setEmail(jwtDecode(token).email);
-    }
-  }, []);
-
-  const handleChannelIDClick = () => {
-    if (channelIDInputRef.current) {
-      channelIDInputRef.current.select();
-    }
-  };
-
-  useEffect(() => {
-    const getChannelData = async () => {
-      try {
-        const response = await fetch(`${backendURL}/getchannel/${Email}`);
-        const { ChannelName } = await response.json();
-        setChannelName(ChannelName);
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-
-    const getChannelData2 = async () => {
-      try {
-        const response = await fetch(`${backendURL}/getchannelid/${Email}`);
-        const data = await response.json();
-        const { channelDescription, channelID, links } = data;
-        setChannelDescription(channelDescription);
-        setChannelID(channelID);
-        // setLinks(links);
-        setInstaLink(links[0].instagram ? links[0].instagram : "");
-        setfbLink(links[0].facebook ? links[0].facebook : "");
-        settwitterLink(links[0].twitter ? links[0].twitter : "");
-        setwebLink(links[0].website ? links[0].website : "");
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-
-    getChannelData();
-    getChannelData2();
-  }, [Email]);
+  const [theme, setTheme] = useState(false);
 
   const handleCopyLink = () => {
     navigator.clipboard
-      .writeText(`${channelUrl}/${channelID}`)
+      .writeText(`${channelUrl}/${_id}`)
       .then(() => {
-        handleChannelIDClick();
-        CopiedNotify();
+        toast("Link copied !", {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
       })
       .catch((error) => {
         console.log("Error copying link to clipboard:", error);
       });
   };
 
-  useEffect(() => {
-    function handleResize() {
-      setCopy(window.innerWidth <= 930);
-    }
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  //POST REQUEST
-
-  const SaveLinksData = async () => {
-    try {
-      setLoading(true);
-
-      if (Email !== undefined) {
-        const data = {
-          fblink: fblink,
-          instalink: instalink,
-          twitterlink: twitterlink,
-          websitelink: weblink,
-          channelID: channelID,
-        };
-        const response = await fetch(`${backendURL}/savelinksdata/${Email}`, {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        await response.json();
-      }
-    } catch (error) {
-      // console.log(error.message);
-    }
+  const handleChange = (e) => {
+    e.persist();
+    setData({ ...data, [e.target.name]: e.target.value });
   };
 
-  const saveData = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
     try {
-      setLoading(true);
-      if (
-        Email !== undefined &&
-        channelName !== undefined &&
-        channelDescription !== undefined &&
-        channelID !== undefined
-      ) {
-        const data = {
-          channelName,
-          channelDescription,
-          channelID,
+      const response = await axios.patch(
+        `${APIHttp}users/update-account`,
+        data,
+        Header
+      );
+      if (response.status === 200) {
+        toast.success("Info updated successfully");
+
+        const updatedUserData = {
+          ...JSON.parse(localStorage.getItem("userData")),
+          email: data.email,
+          fullName: data.fullName,
         };
-        const response = await fetch(
-          `${backendURL}/updatechanneldata/${Email}`,
-          {
-            method: "POST",
-            body: JSON.stringify(data),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        await response.json();
-      }
-    } catch (error) {
-      setLoading(false);
-      // console.log(error.message);
-    }
-  };
-
-  useEffect(() => {
-    const publishBtn = document.querySelector(".save-customize");
-
-    const handleMenuButtonClick = () => {
-      if (channelDescription === "" || channelName === "") {
-        ErrorNotify();
+        localStorage.setItem("userData", JSON.stringify(updatedUserData));
+        window.location.reload();
+        setLoading(false);
       } else {
-        if (Basicchanges) {
-          saveData();
-        }
-        if (Linkchanges) {
-          SaveLinksData();
-        }
-
-        setTimeout(() => {
-          setLoading(false);
-          setBasicChanges(false);
-          setLinkChanges(false);
-          window.location.reload();
-        }, 3800);
+        throw new Error("Update failed");
       }
-    };
-
-    if ((Basicchanges === false && Linkchanges === false) || loading) {
-      publishBtn.classList.add("disable-btn");
-    } else {
-      publishBtn.classList.remove("disable-btn");
-
-      publishBtn.addEventListener("click", handleMenuButtonClick);
-
-      return () => {
-        publishBtn.removeEventListener("click", handleMenuButtonClick);
-      };
+    } catch (error) {
+      toast.error("Oops, something went wrong");
+      setLoading(false);
     }
-  });
+  };
 
   return (
     <>
@@ -228,97 +95,52 @@ function Basic() {
           pointerEvents: loading ? "none" : "auto",
         }}
       >
-        <div className="basic-name-section">
-          <p
-            className={
-              theme ? "basic-name-head" : "basic-name-head text-light-mode"
-            }
+        <ValidatorForm
+          onSubmit={handleSubmit}
+          onError={() => null}
+          className="signup-form"
+          style={{ display: showReset ? "none" : "flex" }}
+        >
+          <Grid container spacing={0}>
+            <Grid item sm={12} xs={12}>
+              <TextField
+                type="email"
+                name="email"
+                label="Email"
+                value={data.email}
+                onChange={handleChange}
+                validators={["required", "isEmail"]}
+                errorMessages={["Email is required", "Email is not valid"]}
+              />
+            </Grid>
+            <Grid item sm={12} xs={12}>
+              <TextField
+                type="text"
+                name="fullName"
+                id="standard-basic"
+                value={data.fullName}
+                onChange={handleChange}
+                label="Full Name"
+                errorMessages={["Full Name is required"]}
+                validators={["required"]}
+              />
+            </Grid>
+          </Grid>
+
+          <Button
+            className={theme ? "signup-btn" : "signup-btn signin-btn-light"}
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={loading}
           >
-            Name
-          </p>
-          <p
-            className={
-              theme ? "basic-name-desc" : "basic-name-desc text-light-mode2"
-            }
-          >
-            Choose a channel name that represents you and your content. Changes
-            made to your name and picture are visible only on YouTube.
-          </p>
-          {channelName === undefined ? (
-            <input
-              type="text"
-              className={
-                theme ? "channel-name-inp" : "channel-name-inp text-light-mode"
-              }
-              value="Loading..."
-              style={{ pointerEvents: "none", cursor: "wait" }}
-              placeholder="Enter channel name"
-            />
-          ) : (
-            <input
-              type="text"
-              className={
-                theme ? "channel-name-inp" : "channel-name-inp text-light-mode"
-              }
-              value={channelName}
-              required
-              placeholder="Enter channel name"
-              onChange={(e) => {
-                setChannelName(e.target.value);
-                setBasicChanges(true);
-              }}
-            />
-          )}
-        </div>
-        <div className="basic-description-section">
-          <p
-            className={
-              theme ? "basic-desc-head" : "basic-desc-head text-light-mode"
-            }
-          >
-            Description
-          </p>
-          {channelDescription === undefined ? (
-            <textarea
-              name="channel-desc"
-              className={
-                theme
-                  ? "basic-channel-desc"
-                  : "basic-channel-desc text-light-mode"
-              }
-              style={{ pointerEvents: "none", cursor: "wait" }}
-              value="Loading..."
-              cols="30"
-              rows="10"
-              maxLength={1000}
-            ></textarea>
-          ) : (
-            <textarea
-              name="channel-desc"
-              className={
-                theme
-                  ? "basic-channel-desc"
-                  : "basic-channel-desc text-light-mode"
-              }
-              required
-              value={channelDescription}
-              style={{
-                height: channelDescription === "" ? "80px" : "max-content",
-                cursor: channelName === undefined ? "not-allowed" : "auto",
-              }}
-              onChange={(e) => {
-                if (channelName !== undefined) {
-                  setChannelDescription(e.target.value);
-                  setBasicChanges(true);
-                }
-              }}
-              cols="30"
-              rows="10"
-              maxLength={1000}
-              placeholder="Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places."
-            ></textarea>
-          )}
-        </div>
+            {loading ? (
+              <ClipLoader size={24} color={"#fff"} />
+            ) : (
+              "Change Basic Info"
+            )}
+          </Button>
+        </ValidatorForm>
         <div className="basic-channelurl-section">
           <p
             className={

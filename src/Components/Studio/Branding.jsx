@@ -1,12 +1,13 @@
 import jwtDecode from "jwt-decode";
 import { useState, useEffect } from "react";
-import defaultimg from "../../img/avatar.png";
+import defaultimg from "../../img/Uavatar.png";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "../../Firebase";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { avatar, coverImage } from "../../constant/Api.js";
 
 function Branding() {
   const backendURL = "http://localhost:3000";
@@ -345,11 +346,7 @@ function Branding() {
                   : { visibility: "hidden", display: "none" }
               }
             >
-              <img
-                src={previewProfile}
-                alt="profile"
-                className="channel-image"
-              />
+              <img src={avatar} alt="profile" className="channel-image" />
             </div>
             <div
               className={
@@ -424,7 +421,7 @@ function Branding() {
             >
               {previewBanner ? (
                 <img
-                  src={previewBanner}
+                  src={coverImage}
                   alt="banner"
                   className="banner-image"
                 />
@@ -457,7 +454,6 @@ function Branding() {
             </div>
           </div>
         </div>
-        
       </div>
     </>
   );

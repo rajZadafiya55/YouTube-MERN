@@ -1,109 +1,135 @@
-import { useState } from "react";
-import "../Css/reset.css";
+import { useEffect, useState } from "react";
+import "../Css/navbar.css";
+import axios from "axios";
+import { Grid, styled, Button } from "@mui/material";
+import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { APIHttp } from "../constant/Api";
+import ClipLoader from "react-spinners/ClipLoader";
+
+const TextField = styled(TextValidator)(() => ({
+  width: "100%",
+  marginBottom: "16px",
+}));
 
 function Reset() {
-  const backendURL = "http://localhost:3000";
-  const [email, setEmail] = useState("");
-  const [BtnLoading, setBtnLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // State for loading
+
+  const [data, setData] = useState({
+    email: "",
+    oldPassword: "",
+    newPassword: "",
+  });
+
+  // ===============================================================
+
+  const [showReset, setShowReset] = useState(false);
   const [theme, setTheme] = useState(() => {
     const Dark = localStorage.getItem("Dark");
     return Dark ? JSON.parse(Dark) : true;
   });
 
-  //TOASTS
+  // ================(form handler)===============================================
 
-  const LinkNotify = () =>
-    toast.success("Link sent successfully!", {
-      position: "top-center",
-      autoClose: 1200,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
+  const handleChange = (e) => {
+    e.persist();
+    setData({ ...data, [e.target.name]: e.target.value });
+  };
 
-  const ErrorNotify = () =>
-    toast.error("Input fields can't be empty.", {
-      position: "top-center",
-      autoClose: 1200,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const ResetData = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email === "") {
-      ErrorNotify();
-      return;
-    } else {
-      setBtnLoading(true);
-      const response = await fetch(`${backendURL}/resetlink`, {
-        method: "POST",
-        body: JSON.stringify({ email }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      if (data.message !== "USER DOESN'T EXIST") {
-        setBtnLoading(false);
-        LinkNotify();
-      } else {
-        alert(data.message);
-      }
+    setLoading(true);
+    try {
+      axios
+        .post(`${APIHttp}users/change-password`, data)
+        .then((y) => {
+          toast.success("Password change successfully !");
+          setLoading(false);
+          // setTimeout(() => {
+          //   window.location.reload();
+          //   document.body.classList.remove("bg-class");
+          // }, 1000);
+        })
+        .catch((y) => {
+          toast.error("your credentials are invalid");
+          setLoading(false);
+        });
+    } catch (error) {
+      alert(error.message);
     }
   };
 
   return (
     <>
-      <div className="reset-old-password">
-        <div className="top-reset">
-          <p>Forgot Password</p>
-          <p>
-            Don&apos;t remember your password? No worries, we can help you to
-            reset your password.
-          </p>
-        </div>
-        <div className="reset-option">
-          <form onSubmit={ResetData}>
-            <input
-              type="email"
-              name="email2"
-              className={
-                theme ? "email" : "email email-light light-mode text-light-mode"
-              }
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email Address"
-              required
-            />
-            {BtnLoading ? (
-              <button
-                className={theme ? "signup-btn" : "signup-btn signin-btn-light"}
-                type="submit"
-                disabled={BtnLoading ? true : false}
-              >
-                <span className="loader3"></span>
-              </button>
-            ) : (
-              <button
-                className={theme ? "signup-btn" : "signup-btn signin-btn-light"}
-                type="submit"
-                disabled={BtnLoading ? true : false}
-              >
-                Send Reset Link
-              </button>
-            )}
-          </form>
-        </div>
+      <div
+        className="above-data"
+        style={{ display: showReset ? "none" : "block" }}
+      >
+        <p className="signup-head">Forgot Password</p>
+        <p className="signup-desc">
+          Don&apos;t remember your password? No worries, we can help you to
+          reset your password.
+        </p>
       </div>
+
+      <ValidatorForm
+        onSubmit={handleSubmit}
+        onError={() => null}
+        className="signup-form"
+        style={{ display: showReset ? "none" : "flex" }}
+      >
+        <Grid container spacing={0}>
+          <Grid item sm={12} xs={12}>
+            <TextField
+              type="email"
+              name="email"
+              label="Email"
+              value={data.email || ""}
+              onChange={handleChange}
+              validators={["required", "isEmail"]}
+              errorMessages={["Email is required", "Email is not valid"]}
+            />
+          </Grid>
+          <Grid item sm={12} xs={12}>
+            <TextField
+              type="password"
+              name="oldPassword"
+              id="standard-basic"
+              value={data.oldPassword || ""}
+              onChange={handleChange}
+              label="Password"
+              errorMessages={["Old password is required"]}
+              validators={["required"]}
+            />
+          </Grid>
+          <Grid item sm={12} xs={12}>
+            <TextField
+              type="password"
+              name="newPassword"
+              id="standard-basic"
+              value={data.newPassword || ""}
+              onChange={handleChange}
+              label="New Password"
+              errorMessages={["New password is required"]}
+              validators={["required"]}
+            />
+          </Grid>
+        </Grid>
+
+        <Button
+          className={theme ? "signup-btn" : "signup-btn signin-btn-light"}
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={loading}
+        >
+          {loading ? (
+            <ClipLoader size={24} color={"#fff"} />
+          ) : (
+            "Reset Your Password"
+          )}
+        </Button>
+      </ValidatorForm>
     </>
   );
 }

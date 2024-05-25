@@ -6,12 +6,13 @@ import VideoLibraryOutlinedIcon from "@mui/icons-material/VideoLibraryOutlined";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import AutoFixHighOutlinedIcon from "@mui/icons-material/AutoFixHighOutlined";
 import { useLocation, useNavigate } from "react-router-dom";
-import avatar from "../img/avatar.png";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { CiShare1 } from "react-icons/ci";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
+import { avatar } from "../constant/Api";
+import Uavatar from "../img/Uavatar.png";
 
 // REACT ICONS
 
@@ -87,38 +88,7 @@ const LeftPanel2 = () => {
     setEmail(jwtDecode(token).email);
   }, [token]);
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        if (email !== undefined) {
-          const response = await fetch(`${backendURL}/getchannel/${email}`);
-          const { profile, ChannelName } = await response.json();
-          setProfileIMG(profile);
-          setChannel(ChannelName);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
 
-    getData();
-  }, []);
-
-  useEffect(() => {
-    const getChannelId = async () => {
-      try {
-        if (email !== undefined) {
-          const response = await fetch(`${backendURL}/getchannelid/${email}`);
-          const { channelID } = await response.json();
-          setChannelId(channelID);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-
-    getChannelId();
-  }, [email]);
 
   return (
     <>
@@ -177,7 +147,7 @@ const LeftPanel2 = () => {
             placement="top"
           >
             <img
-              src={profileIMG ? profileIMG : avatar}
+              src={avatar || Uavatar}
               alt=""
               className="profile_img"
               onClick={() => {

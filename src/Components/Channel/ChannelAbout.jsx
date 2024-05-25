@@ -36,21 +36,21 @@ function ChannelAbout(prop) {
       theme: theme ? "dark" : "light",
     });
 
-  useEffect(() => {
-    const getUserMail = async () => {
-      try {
-        const response = await fetch(
-          `${backendURL}/getotherchannel/${prop.channelid}`
-        );
-        const userEmail = await response.json();
-        setEmail(userEmail);
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
+  // useEffect(() => {
+  //   const getUserMail = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         `${backendURL}/getotherchannel/${prop.channelid}`
+  //       );
+  //       const userEmail = await response.json();
+  //       setEmail(userEmail);
+  //     } catch (error) {
+  //       // console.log(error.message);
+  //     }
+  //   };
 
-    getUserMail();
-  }, [prop.channelid]);
+  //   getUserMail();
+  // }, [prop.channelid]);
 
   useEffect(() => {
     setTimeout(() => {
