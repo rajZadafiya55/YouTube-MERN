@@ -9,12 +9,12 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { APIHttp, Header } from "../../constant/Api";
 
-const StyledCard = styled(Card)(({ theme }) => ({
+const StyledCard = styled(Card)(() => ({
   boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
   borderRadius: "16px",
 }));
 
-const StyledCardContent = styled(CardContent)(({ theme }) => ({
+const StyledCardContent = styled(CardContent)(() => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -22,13 +22,12 @@ const StyledCardContent = styled(CardContent)(({ theme }) => ({
   height: "100%",
 }));
 
-const StyledAvatar = styled(Avatar)(({ theme }) => ({
+const StyledAvatar = styled(Avatar)(() => ({
   backgroundColor: "#2196f3",
   color: "white",
 }));
 
 const Dashboard = () => {
-  const [statsData, setStatsData] = useState([]);
   const [menu, setMenu] = useState(() => {
     const menu = localStorage.getItem("studioMenuClicked");
     return menu ? JSON.parse(menu) : false;
@@ -57,25 +56,24 @@ const Dashboard = () => {
     localStorage.setItem("studioMenuClicked", JSON.stringify(menu));
   }, [menu]);
 
+  // api integrate
   const getAllStats = async () => {
-    await axios
-      .get(`${APIHttp}dashboard/stats`, Header)
-      .then((res) => {
-        setStatsData(res.data.data);
-        console.log("rtes data", res.data.data);
-        return statsData;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const response = await axios.get(`${APIHttp}dashboard/stats`, Header);
+    return response.data.data;
   };
 
-  const { error, isLoading, data } = useQuery({
+  const {
+    data: statsData,
+    error,
+    isLoading,
+  } = useQuery({
     queryKey: ["stats"],
     queryFn: getAllStats,
   });
 
-  console.log("stats Data", statsData);
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading stats</div>;
+
   return (
     <>
       <div className="studio-dashboard-section">
@@ -86,14 +84,12 @@ const Dashboard = () => {
             transition: menu ? "all .1s ease" : "none",
           }}
         >
-          {/* section total like subscriber and videos  */}
           <Grid
-            container 
+            container
             spacing={2}
             justifyContent="center"
             style={{ marginTop: "20px" }}
           >
-           
             <Grid item xs={12} sm={6} md={4}>
               <StyledCard>
                 <StyledCardContent>
@@ -108,7 +104,7 @@ const Dashboard = () => {
                     Total Views
                   </Typography>
                   <Typography variant="h3" sx={{ marginTop: 1 }}>
-                    20,000
+                    {statsData?.totalViews || 0}
                   </Typography>
                 </StyledCardContent>
               </StyledCard>
@@ -127,7 +123,7 @@ const Dashboard = () => {
                     Total Subscribers
                   </Typography>
                   <Typography variant="h3" sx={{ marginTop: 1 }}>
-                    60,000
+                    {statsData?.totalSubscribers || 0}
                   </Typography>
                 </StyledCardContent>
               </StyledCard>
@@ -146,7 +142,7 @@ const Dashboard = () => {
                     Total Likes
                   </Typography>
                   <Typography variant="h3" sx={{ marginTop: 1 }}>
-                    80,000
+                    {statsData?.totalLikes || 0}
                   </Typography>
                 </StyledCardContent>
               </StyledCard>

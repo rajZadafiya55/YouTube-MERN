@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
-import jwtDecode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllVideos } from "../../redux/actions/videoAction.js";
+import { getAllChannelVideos } from "../../redux/actions/dashboardAction.js";
 
 function ChannelVideos() {
   const dispatch = useDispatch();
-  const AllVideo = useSelector((state) => state.videos.videosDetails);
+  const AllVideo = useSelector((state) => state.dashboard.videosDetails);
 
   const token = localStorage.getItem("userToken");
 
@@ -39,7 +38,7 @@ function ChannelVideos() {
   }, []);
 
   useEffect(() => {
-    dispatch(getAllVideos());
+    dispatch(getAllChannelVideos());
   }, [dispatch]);
 
   useEffect(() => {
