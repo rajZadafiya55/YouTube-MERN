@@ -88,7 +88,7 @@ const Dashboard = () => {
         >
           {/* section total like subscriber and videos  */}
           <Grid
-            container
+            container 
             spacing={2}
             justifyContent="center"
             style={{ marginTop: "20px" }}
