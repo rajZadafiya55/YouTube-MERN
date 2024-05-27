@@ -1,4 +1,5 @@
 import "../../Css/Studio/content.css";
+import "../../Css/studio.css";
 import SouthIcon from "@mui/icons-material/South";
 import { useEffect, useState } from "react";
 import jwtDecode from "jwt-decode";
@@ -25,10 +26,21 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllChannelVideos } from "../../redux/actions/dashboardAction";
 import {
+  addVideoData,
   deleteVideoDetails,
   getSelectedVideo,
 } from "../../redux/actions/videoAction";
-import { APIHttp } from "../../constant/Api";
+import { APIHttp, avatar } from "../../constant/Api";
+import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import SdIcon from "@mui/icons-material/Sd";
+import HdIcon from "@mui/icons-material/Hd";
+import CloudDoneRoundedIcon from "@mui/icons-material/CloudDoneRounded";
+import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
+import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
+
+import Upload from "../../img/upload.png";
 
 const Content = () => {
   const dispatch = useDispatch();
@@ -37,7 +49,6 @@ const Content = () => {
   const AllVideos = useSelector((state) => state.dashboard.videosDetails);
 
   const selectedVideos = useSelector((state) => state.videos.selectedVideo);
-
 
   const [userVideos, setUserVideos] = useState([]);
   const [sortByDateAsc, setSortByDateAsc] = useState(true);
@@ -48,6 +59,7 @@ const Content = () => {
   const [isDeleteClicked, setIsDeleteClicked] = useState(false);
   const [DeleteVideoData, setDeleteVideoData] = useState();
   const [boxclicked, setBoxClicked] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
   const videoUrl = `${APIHttp}videos`;
   const [loading, setLoading] = useState(true);
   const [menu, setmenu] = useState(() => {
@@ -59,9 +71,35 @@ const Content = () => {
     return Dark ? JSON.parse(Dark) : true;
   });
 
+  // upload video
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [previewImage, setPreviewImage] = useState(avatar);
+  const [videoName, setVideoName] = useState("Upload videos");
+  const [VideoURL, setVideoURL] = useState("");
+  const [Progress, setProgress] = useState(0);
+  const [previewThumbnail, setPreviewThumbnail] = useState(null);
+
+  const [isVideoSelected, setIsVideoSelected] = useState(false);
+  const [isThumbnailSelected, setIsThumbnailSelected] = useState(false);
+  const [visibility, setVisibility] = useState("Private");
+  const [isVisibilityClicked, setIsVisibilityClicked] = useState(false);
+
   document.title = "Channel content - YouTube Studio";
 
   //TOASTS
+
+  const CancelNotify = () =>
+    toast.warning("Video upload was cancelled!", {
+      position: "bottom-center",
+      autoClose: 950,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: theme ? "dark" : "light",
+    });
 
   const CopiedNotify = () =>
     toast.success("Link Copied!", {
@@ -81,6 +119,129 @@ const Content = () => {
     const token = localStorage.getItem("userToken");
     setEmail(jwtDecode(token).email);
   }, []);
+
+  //IMAGE UPLOAD
+  useEffect(() => {
+    const handleClick = () => {
+      setIsClicked(true);
+    };
+
+    const uploadBtn = document.querySelector(".uploadnewone-video");
+    if (uploadBtn) {
+      uploadBtn.addEventListener("click", handleClick);
+
+      return () => {
+        if (uploadBtn) {
+          uploadBtn.removeEventListener("click", handleClick);
+        }
+      };
+    }
+  }, []);
+
+  const clearFormState = () => {
+    setFormData({
+      title: "",
+      description: "",
+      videoFile: null,
+      thumbnail: null,
+      isPublished: false,
+    });
+    setIsVideoSelected(false);
+    setIsThumbnailSelected(false);
+    setVisibility("Private");
+    setIsVisibilityClicked(false);
+    setIsClicked(false);
+  };
+
+  //ON VIDEO DROP
+
+  const handleUploadImageClick = () => {
+    const fileInput = document.getElementById("videoFileInput");
+    fileInput.click();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    const fileSizeInMB = file.size / (1024 * 1024);
+
+    if (fileSizeInMB > 30) {
+      alert("Please select a video file with a size of up to 30MB.");
+      return;
+    }
+
+    setSelectedVideo(file);
+    setIsVideoSelected(true);
+    const fileName = file.name;
+    setVideoName(fileName.substring(0, fileName.lastIndexOf(".")));
+  };
+
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    videoFile: null,
+    thumbnail: null,
+    isPublished: false,
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "isPublished") {
+      // Update isPublished based on visibility
+      setFormData({
+        ...formData,
+        visibility: value,
+        isPublished: value === "public" ? true : false,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
+
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    setFormData({
+      ...formData,
+      videoFile: file,
+    });
+    setIsVideoSelected(true);
+    setVideoName(file.name);
+    setSelectedVideo(file);
+    setProgress(100);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setVideoURL(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files[0];
+    setFormData({
+      ...formData,
+      thumbnail: file,
+    });
+    setIsThumbnailSelected(!!file);
+    setPreviewThumbnail(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewThumbnail(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const PublishData = async (e) => {
+    e.preventDefault();
+
+    await dispatch(addVideoData(formData, setLoading, setIsClicked));
+
+    clearFormState();
+  };
 
   useEffect(() => {
     if (theme === false && window.location.href.includes("/studio/video")) {
@@ -243,17 +404,434 @@ const Content = () => {
   return (
     <>
       <div className="channel-content-section">
-        <div
-          className="channel-content-top"
-          style={{ left: menu ? "125px" : "310px" }}
-        >
-          <p className={theme ? "" : "text-light-mode"}>Channel content</p>
-          <p
-            className={theme ? "channel-videosss" : "channel-videosss blue-txt"}
+        <div className="d-flex flex-column">
+          <div
+            className="channel-content-top"
+            style={{ left: menu ? "125px" : "310px" }}
           >
-            Videos
-          </p>
+            <p className={theme ? "" : "text-light-mode"}>Channel content</p>
+
+            <p
+              className={
+                theme ? "channel-videosss" : "channel-videosss blue-txt"
+              }
+            >
+              Videos
+            </p>
+          </div>
+
+          {/* create video section */}
+
+          <div
+            className={theme ? "create-btn" : "create-btn create-btn-light"}
+            onClick={() => setIsClicked(true)}
+          >
+            <VideoCallOutlinedIcon
+              className=""
+              fontSize="large"
+              style={{ color: "#FF4E45" }}
+            />
+            <p className={theme ? "" : "text-light-mode"}>CREATE</p>
+          </div>
+          <div
+            className={theme ? "create-btn2" : "create-btn2 create-btn-light"}
+            onClick={() => setIsClicked(true)}
+          >
+            CREATE
+          </div>
         </div>
+
+        {/* ============================== video upload form ============================= */}
+
+        <div
+          className={
+            theme
+              ? "upload-content"
+              : "upload-content light-mode text-light-mode"
+          }
+          id="modal"
+          onDrop={handleDrop}
+          onDragOver={(e) => e.preventDefault()}
+          style={isClicked === true ? { display: "flex" } : { display: "none" }}
+        >
+          <div className="top-head">
+            {videoName.length <= 70
+              ? videoName
+              : `${videoName.slice(0, 40)}...`}{" "}
+            <CloseRoundedIcon
+              className="close"
+              fontSize="large"
+              style={{ color: "gray" }}
+              onClick={() => {
+                if (Progress !== 100) {
+                  CancelNotify();
+                  setIsClicked(false);
+
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 1000);
+                } else if (
+                  Progress === 100 &&
+                  formData.isPublished === "true"
+                ) {
+                  CancelNotify();
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 1000);
+                }
+                if (isClicked === true) {
+                  clearFormState();
+                }
+              }}
+            />
+          </div>
+
+          <hr
+            className={
+              theme ? "seperate seperate2" : "seperate seperate2 seperate-light"
+            }
+          />
+          <div
+            className="middle-data"
+            style={!isVideoSelected ? { display: "flex" } : { display: "none" }}
+          >
+            <img
+              src={Upload}
+              className={theme ? "upload-img" : "upload-img upload-img-light"}
+              onClick={handleUploadImageClick}
+              onDrop={handleDrop}
+              onDragOver={(e) => e.preventDefault()}
+            />
+            <p>Drag and drop video files to upload</p>
+            <p>Your videos will be private until you publish them.</p>
+            <div className="upload-btn-wrapper">
+              <button className={theme ? "btn" : "btn text-dark-mode"}>
+                SELECT FILES
+              </button>
+              <input
+                id="videoFileInput"
+                type="file"
+                name="videoFile"
+                accept="video/mp4"
+                onChange={handleVideoChange}
+              />
+            </div>
+          </div>
+
+          {/* =================== video details section ================== */}
+          <div
+            className="uploading-video-data"
+            style={isVideoSelected ? { display: "flex" } : { display: "none" }}
+          >
+            <div className="left-video-section">
+              <form className="details-form">
+                <div className="details-section">
+                  <p>Details</p>
+                  <input
+                    type="text"
+                    className={theme ? "video-title" : "video-title light-mode"}
+                    name="title"
+                    value={formData.title}
+                    placeholder="Title (required)"
+                    required
+                    onChange={handleInputChange}
+                  />
+                  <textarea
+                    className={
+                      theme
+                        ? "video-description"
+                        : "video-description light-mode"
+                    }
+                    name="description"
+                    placeholder="Description"
+                    onChange={handleInputChange}
+                    spellCheck="true"
+                    value={formData.description}
+                  />
+                </div>
+              </form>
+
+              <div
+                className="thumbnail-section"
+                style={
+                  !isThumbnailSelected
+                    ? { display: "flex" }
+                    : { display: "none" }
+                }
+              >
+                <p>Thumbnail</p>
+                <p>
+                  Select or upload a picture that shows what&apos;s in your
+                  video. A good thumbnail stands out and draws viewer&apos;s
+                  attention.
+                </p>
+                <label htmlFor="thumbnail-input" className="upload-thumbnail">
+                  <AddPhotoAlternateOutlinedIcon
+                    fontSize="medium"
+                    style={{ color: "#808080" }}
+                  />
+                  <p>Upload thumbnail</p>
+                </label>
+                <input
+                  id="thumbnail-input"
+                  type="file"
+                  name="thumbnail"
+                  accept=".jpg, .png"
+                  style={{ display: "none" }}
+                  onChange={handleThumbnailChange}
+                />
+              </div>
+              <div
+                className="thumbnail-section thumb2"
+                style={
+                  isThumbnailSelected
+                    ? { display: "flex" }
+                    : { display: "none" }
+                }
+              >
+                <p>Thumbnail</p>
+                <p>
+                  Select or upload a picture that shows what&apos;s in your
+                  video. A good thumbnail stands out and draws viewer&apos;s
+                  attention.
+                </p>
+                <div className="thumb2-img">
+                  <CloseRoundedIcon
+                    className="close close2"
+                    fontSize="medium"
+                    style={{ color: theme ? "gray" : "white" }}
+                    onClick={() => {
+                      setIsThumbnailSelected(false);
+                    }}
+                  />
+                  <img
+                    className="prevThumbnail"
+                    src={previewThumbnail}
+                    alt=""
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="right-video-section">
+              <div
+                className={
+                  theme ? "preview-video" : "preview-video preview-light"
+                }
+              >
+                <div
+                  className="preview-img"
+                  style={
+                    Progress === 100 && VideoURL !== ""
+                      ? { display: "none" }
+                      : { display: "block" }
+                  }
+                >
+                  <p className={theme ? "" : "text-light-mode"}>
+                    Uploading video...
+                  </p>
+                </div>
+                {Progress === 100 && VideoURL !== "" ? (
+                  <video controls width="280" height="240">
+                    <source
+                      src={URL.createObjectURL(selectedVideo)}
+                      type="video/mp4"
+                    />
+                    Your browser does not support the video tag.
+                  </video>
+                ) : null}
+              </div>
+
+              <div
+                className={
+                  theme ? "preview-bottom" : "preview-bottom preview-light2"
+                }
+              >
+                <div className="file-details">
+                  <p>Filename</p>
+                  <p>{videoName}</p>
+                </div>
+              </div>
+
+              <div className="video-visibility">
+                <p>Visibility</p>
+                <div
+                  className={
+                    theme
+                      ? "selected-visibility"
+                      : "selected-visibility text-light-mode"
+                  }
+                  onClick={() => {
+                    setIsVisibilityClicked(!isVisibilityClicked);
+                  }}
+                >
+                  <p>{visibility}</p>
+                  <ArrowDropDownRoundedIcon
+                    fontSize="large"
+                    style={{ color: theme ? "white" : "black" }}
+                  />
+                </div>
+                {isVisibilityClicked && (
+                  <div
+                    className={
+                      theme ? "show-visibility" : "show-visibility studio-light"
+                    }
+                  >
+                    <p
+                      className="public"
+                      style={
+                        visibility === "Public"
+                          ? { backgroundColor: "rgba(255, 255, 255, 0.134)" }
+                          : { backgroundColor: "rgba(255, 255, 255, 0)" }
+                      }
+                      onClick={() => {
+                        setVisibility("Public");
+                        setIsVisibilityClicked(false);
+                        handleInputChange({
+                          target: { name: "isPublished", value: true },
+                        });
+                      }}
+                    >
+                      Public
+                    </p>
+                    <hr className="separatee" />
+                    <p
+                      className="private"
+                      style={
+                        visibility === "Private"
+                          ? { backgroundColor: "rgba(255, 255, 255, 0.134)" }
+                          : { backgroundColor: "rgba(255, 255, 255, 0)" }
+                      }
+                      onClick={() => {
+                        setVisibility("Private");
+                        setIsVisibilityClicked(false);
+                        handleInputChange({
+                          target: { name: "isPublished", value: false },
+                        });
+                      }}
+                    >
+                      Private
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div
+            className="last-segment"
+            style={
+              isVideoSelected === true
+                ? { display: "block" }
+                : { display: "none" }
+            }
+          >
+            <hr
+              className={
+                theme
+                  ? "seperate seperate2"
+                  : "seperate seperate2 seperate-light"
+              }
+            />
+            <div className="last-btn">
+              <div className="left-icons">
+                <CloudUploadIcon
+                  className="left-ic"
+                  fontSize="large"
+                  style={
+                    Progress === 100
+                      ? { display: "none" }
+                      : { color: "gray", marginRight: "6px" }
+                  }
+                />
+                <SdIcon
+                  className="left-ic"
+                  fontSize="large"
+                  style={
+                    Progress >= 60
+                      ? { display: "none" }
+                      : { color: "gray", marginLeft: "6px" }
+                  }
+                />
+                <CloudDoneRoundedIcon
+                  className="left-ic"
+                  fontSize="large"
+                  style={
+                    Progress === 100
+                      ? {
+                          display: "block",
+                          color: "#3ea6ff",
+                          marginRight: "6px",
+                          animation: "none",
+                        }
+                      : { display: "none" }
+                  }
+                />
+                <HdIcon
+                  className="left-ic"
+                  fontSize="large"
+                  style={
+                    Progress >= 60
+                      ? {
+                          display: "block",
+                          color: "#3ea6ff",
+                          marginLeft: "6px",
+                          animation: "none",
+                        }
+                      : { display: "none" }
+                  }
+                />
+                <p
+                  style={
+                    Progress === 100
+                      ? { display: "none" }
+                      : { marginLeft: "12px" }
+                  }
+                >
+                  Uploading {Progress}% ...
+                </p>
+                <p
+                  style={
+                    Progress === 100
+                      ? { marginLeft: "12px" }
+                      : { display: "none" }
+                  }
+                >
+                  Video uploaded
+                </p>
+              </div>
+              {loading ? (
+                <button
+                  className={
+                    loading || Progress !== 100
+                      ? "save-video-data-disable"
+                      : "save-video-data"
+                  }
+                  onClick={PublishData}
+                  disabled={loading === true || Progress !== 100 ? true : false}
+                >
+                  <span className="loader3"></span>
+                </button>
+              ) : (
+                <button
+                  className={
+                    loading || Progress !== 100
+                      ? `save-video-data-disable ${
+                          theme ? "" : "text-dark-mode"
+                        }`
+                      : `save-video-data ${theme ? "" : "text-dark-mode"}`
+                  }
+                  onClick={PublishData}
+                  disabled={loading === true || Progress !== 100 ? true : false}
+                >
+                  PUBLISH
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* video table list section  */}
         <hr
           className="breakk2 breakkk"
           style={{ left: menu ? "88px" : "262px" }}

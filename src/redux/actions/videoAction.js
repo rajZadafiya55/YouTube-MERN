@@ -6,9 +6,13 @@ import {
   GET_VIDEO_BY_ID,
   UPDATE_VIDEO,
 } from "../types";
-import { APIHttp, Header, VideoHeader, showErrorToast, showToast } from "../../constant/Api";
-
-
+import {
+  APIHttp,
+  Header,
+  VideoHeader,
+  showErrorToast,
+  showToast,
+} from "../../constant/Api";
 
 // Action creators
 const addVideo = () => ({ type: ADD_VIDEOS });
@@ -68,13 +72,13 @@ export const addVideoData = (formData, setLoading, setIsClicked) => {
 
     axios
       .post(`${APIHttp}videos`, formDataToSend, VideoHeader)
-      .then((res) => {
+      .then(async (res) => {
         if (res.data.success === true) {
           showToast("Video added successfully!");
           setLoading(false);
           setIsClicked(false);
-          dispatch(addVideo());
-          dispatch(getAllVideos());
+          await dispatch(addVideo());
+          await dispatch(getAllVideos());
         } else {
           showErrorToast("Failed to upload video");
           setLoading(true);
