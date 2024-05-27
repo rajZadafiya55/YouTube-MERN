@@ -32,6 +32,16 @@ function Trending() {
       <h1>Raj Zadafiya</h1>
       <h1>Raj Zadafiya</h1>
       <h1>Raj Zadafiya</h1>
+      <h1>Raj Zadafiya</h1>
+      <h1>Raj Zadafiya</h1>
+      <h1>Raj Zadafiya</h1>
+      <h1>Raj Zadafiya</h1>
+      <h1>Raj Zadafiya</h1>
+      <h1>Raj Zadafiya</h1>
+      <h1>Raj Zadafiya</h1>
+      <h1>Raj Zadafiya</h1>
+      <h1>Raj Zadafiya</h1>
+      <h1>Raj Zadafiya</h1>
     </>
   );
 }
