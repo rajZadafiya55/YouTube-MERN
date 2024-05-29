@@ -1,8 +1,13 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import axios from "axios";
-import { GET_LIKED_VIDEOS, TOGGLE_COMMENT_LIKE } from "../types";
-import { APIHttp, Header, showToast } from "../../constant/Api";
+import {
+  GET_LIKED_VIDEOS,
+  TOGGLE_COMMENT_LIKE,
+  TOGGLE_VIDEO_LIKE,
+} from "../types";
+import { APIHttp, Header, showToast, commonNotify } from "../../constant/Api";
 import { getSelectedComment } from "./commentAction";
+import { getSelectedVideo } from "./videoAction";
 
 const getLikeVideo = (video) => ({
   type: GET_LIKED_VIDEOS,
@@ -40,6 +45,32 @@ export const getLikeCommentToggle = (id, isLiked) => {
           showToast("Comment liked successfully!");
         } else {
           showToast("Comment dislike successfully!");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+};
+
+const getLikevideo = (isLiked) => ({
+  type: TOGGLE_VIDEO_LIKE,
+  payload: isLiked,
+});
+
+export const getLikeVideoToggle = (id, isLiked) => {
+  return (dispatch) => {
+    axios
+      .post(`${APIHttp}likes/toggle/v/${id}`, { isLiked }, Header)
+      .then(async (res) => {
+        const updatedLikeStatus = res.data.data.isLiked;
+        await dispatch(getLikevideo(updatedLikeStatus));
+        await dispatch(getSelectedVideo());
+
+        if (updatedLikeStatus == true) { 
+          commonNotify("Video liked successfully!");
+        } else {
+          commonNotify("Video dislike successfully!");
         }
       })
       .catch((err) => {

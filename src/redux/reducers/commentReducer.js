@@ -1,5 +1,6 @@
 /* eslint-disable no-case-declarations */
 import {
+  CREATE_COMMENT,
   DELETE_COMMENT,
   GET_COMMENT_BY_ID,
   GET_USER_ALL_COMMENT,
@@ -29,6 +30,11 @@ const commentReducer = (state = initialState, action) => {
       return {
         ...state,
         selectedComment: updatedComments,
+      };
+
+    case CREATE_COMMENT:
+      return {
+        ...state,
       };
 
     default:

@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+  CREATE_COMMENT,
   DELETE_COMMENT,
   GET_COMMENT_BY_ID,
   GET_USER_ALL_COMMENT,
@@ -75,4 +76,22 @@ export const deleteCoomentsDetails = (commentId) => async (dispatch) => {
   } catch (error) {
     console.log(error.message);
   }
+};
+
+const addComment = () => ({
+  type: CREATE_COMMENT,
+});
+
+export const createComment = (id, commentData) => (dispatch) => {
+  axios
+    .post(`${APIHttp}comments/${id}`, commentData, Header)
+    .then(async (res) => {
+      await dispatch(addComment(res.data.data));
+      await dispatch(getSelectedComment());
+
+      console.log("res data data", res.data.data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };

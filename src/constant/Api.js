@@ -49,15 +49,59 @@ export const VideoHeader = {
 
 // Toast messages
 export const showToast = (message) => {
-  toast.success(message, { position: "top-right" });
+  toast.success(message, {
+    position: "top-right",
+    autoClose: 2000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  });
 };
 
 export const showErrorToast = (message) => {
-  toast.error(message, { position: "top-right" });
+  toast.error(message, {
+    position: "top-right",
+    autoClose: 2000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  });
 };
 
 export const showLoginToast = () => {
   toast.info("Would you please login !", {
     position: toast.POSITION.BOTTOM_CENTER,
+    autoClose: 2000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
   });
 };
+
+export const EmptyMessage = (message) =>
+  toast.error(message, {
+    position: "bottom-center",
+    autoClose: 2000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  });
+
+export const commonNotify = (message) =>
+  toast.success(message, {
+    position: "bottom-center",
+    autoClose: 2000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  });

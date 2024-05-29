@@ -16,7 +16,7 @@ import ThumbDownOutlinedIcon from "@mui/icons-material/ThumbDownOutlined";
 import ReplyIcon from "@mui/icons-material/Reply";
 import { LiaDownloadSolid } from "react-icons/lia";
 import BookmarkAddOutlinedIcon from "@mui/icons-material/BookmarkAddOutlined";
-import avatar from "../img/avatar.png";
+import Uavatar from "../img/avatar.png";
 import BookmarkAddedIcon from "@mui/icons-material/BookmarkAdded";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
@@ -34,21 +34,42 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LeftPanel from "./LeftPanel";
 import Error from "./Error";
-import { APIHttp, Header } from "../constant/Api";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllVideos, getSelectedVideo } from "../redux/actions/videoAction";
+import {
+  createComment,
+  getSelectedComment,
+} from "../redux/actions/commentAction";
+import { EmptyMessage, avatar, commonNotify } from "../constant/Api";
+import { getLikeVideoToggle } from "../redux/actions/likeAction";
 
 const VideoSection = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // get state
+  const selectedVideo = useSelector((state) => state.videos.selectedVideo);
+  const selectedComment = useSelector(
+    (state) => state.comments.selectedComment
+  );
+  const listVideo = useSelector((state) => state.videos.videosDetails);
+  const isLikedStatus = useSelector((state) => state.like.isLiked);
+
+  useEffect(() => {
+    console.log("Like status changed:", isLikedStatus);
+  }, [isLikedStatus]);
+
+  const [listVideoDetails, setListVideoDetails] = useState([]);
+
   const backendURL = "http://localhost:3000";
   const { id } = useParams();
-  const [videoData, setVideoData] = useState(null);
+  const [videoData, setVideoData] = useState([]);
   const [email, setEmail] = useState();
   const [channelName, setChannelName] = useState();
   const [plyrInitialized, setPlyrInitialized] = useState(false);
   const [Display, setDisplay] = useState("none");
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
-  const [isChannel, setisChannel] = useState();
   const [shareClicked, setShareClicked] = useState(false);
   const [usermail, setUserMail] = useState();
   const [channelID, setChannelID] = useState();
@@ -72,13 +93,6 @@ const VideoSection = () => {
 
   //EXTRAS
 
-  const [thumbnails, setThumbnails] = useState();
-  const [Titles, setTitles] = useState();
-  const [Uploader, setUploader] = useState();
-  const [duration, setDuration] = useState();
-  const [VideoID, setVideoID] = useState();
-  const [Views, SetViews] = useState();
-  const [publishdate, setPublishDate] = useState();
   const [VideoLikes, setVideoLikes] = useState();
   const [CommentLikes, setCommentLikes] = useState();
   const [isLiked, setIsLiked] = useState();
@@ -91,7 +105,6 @@ const VideoSection = () => {
   const [UserPlaylist, setUserPlaylist] = useState([]);
   const [playlistID, setplaylistID] = useState([]);
   const [isHeart, setIsHeart] = useState([]);
-  const [rec, setRecommend] = useState(false);
 
   //Get Channel Data
   const [youtuberName, setyoutuberName] = useState();
@@ -101,69 +114,7 @@ const VideoSection = () => {
   const [Subscribers, setSubscribers] = useState();
 
   //Signup user Profile Pic
-  const [userProfile, setUserProfile] = useState();
-
-  //TOAST FUNCTIONS
-
-  const playlistNotify = () =>
-    toast.success("Video added to the playlist!", {
-      position: "bottom-center",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const watchLaterNotify = () =>
-    toast.success("Video saved to watch later!", {
-      position: "bottom-center",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const LikedNotify = () =>
-    toast.success("Video liked!", {
-      position: "bottom-center",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const SubscribeNotify = () =>
-    toast.success("Channel subscribed!", {
-      position: "bottom-center",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const CommentDeleteNotify = () =>
-    toast.success("Comment deleted!", {
-      position: "bottom-center",
-      autoClose: 1500,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
+  const [userProfile, setUserProfile] = useState(avatar);
 
   // USE EFFECTS
 
@@ -210,39 +161,6 @@ const VideoSection = () => {
     };
   });
 
-  // useEffect(() => {
-  //   const checkChannel = async () => {
-  //     try {
-  //       if (email !== undefined) {
-  //         const response = await fetch(`${backendURL}/checkchannel/${email}`);
-  //         const channelname = await response.json();
-  //         setChannelName(channelname);
-  //       }
-  //     } catch (error) {
-  //       //console.log(error.message);
-  //     }
-  //   };
-
-  //   checkChannel();
-  // }, []);
-
-  // get channel api
-  // useEffect(() => {
-  //   const getChannel = async () => {
-  //     try {
-  //       if (email !== undefined) {
-  //         const response = await fetch(`${APIHttp}/getchannel/${email}`);
-  //         const { email, avatar } = await response.json();
-  //         setisChannel(email);
-  //         setUserProfile(avatar);
-  //       }
-  //     } catch (error) {
-  //       //console.log(error.message);
-  //     }
-  //   };
-  //   getChannel();
-  // }, []);
-
   // trending api
   // useEffect(() => {
   //   const getTrendingData = async () => {
@@ -276,64 +194,55 @@ const VideoSection = () => {
   // }, [id, usermail]);
 
   // get videoData
+
   useEffect(() => {
     const getVideoData = async () => {
       try {
         if (id !== undefined) {
-          const response = await axios.get(`${APIHttp}videos/${id}`, Header);
-
-          // const {
-          //   thumbnailURLs,
-          //   titles,
-          //   Uploader,
-          //   Profile,
-          //   Duration,
-          //   videoID,
-          //   views,
-          //   uploadDate,
-          //   Visibility,
-          //   videoData,
-          // } = response.data;
-          const video = await response.data.data;
-          setVideoData(video);
-          console.log("video", video);
+          dispatch(getSelectedVideo(id));
         }
       } catch (error) {
         console.log(error.message);
       }
     };
-    console.log("video Data ", videoData);
 
     getVideoData();
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    setVideoData(selectedVideo);
+  }, [selectedVideo]);
+  console.log("video Data ", videoData);
+
+  useEffect(() => {
+    dispatch(getAllVideos());
+  }, []);
+
+  useEffect(() => {
+    setListVideoDetails(listVideo);
+  }, [listVideo]);
+
+  console.log("list", listVideoDetails);
+
+  // get all comment
+  useEffect(() => {
+    const getComments = async () => {
+      try {
+        if (id !== undefined) {
+          dispatch(getSelectedComment(id));
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    getComments();
   }, [id]);
 
   useEffect(() => {
-    const getVideos = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/getvideos");
-        const {
-          thumbnailURLs,
-          titles,
-          Uploader,
-          Duration,
-          videoID,
-          views,
-          uploadDate,
-        } = await response.json();
-        setThumbnails(thumbnailURLs);
-        setTitles(titles);
-        setUploader(Uploader);
-        setDuration(Duration);
-        setVideoID(videoID);
-        SetViews(views);
-        setPublishDate(uploadDate);
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
+    setComments(selectedComment);
+  }, [selectedComment]);
 
-    getVideos();
-  }, []);
+  // get user videos
 
   // playlist
   // useEffect(() => {
@@ -438,24 +347,6 @@ const VideoSection = () => {
   //   return () => clearInterval(interval);
   // }, []);
 
-  // get all comment
-  // useEffect(() => {
-  //   const getComments = async () => {
-  //     try {
-  //       if (id !== undefined) {
-  //         const response = await fetch(`${backendURL}/getcomments/${id}`);
-  //         const result = await response.json();
-  //         setComments(result);
-  //       }
-  //     } catch (error) {
-  //       //console.log(error.message);
-  //     }
-  //   };
-  //   const interval = setInterval(getComments, 200);
-
-  //   return () => clearInterval(interval);
-  // }, []);
-
   // get other channel
   // useEffect(() => {
   //   const getOtherChannel = async () => {
@@ -537,25 +428,6 @@ const VideoSection = () => {
   //   return () => clearInterval(interval);
   // }, [channelID]);
 
-  // get user videos
-  // useEffect(() => {
-  //   const GetUserVideos = async () => {
-  //     try {
-  //       if (usermail !== undefined) {
-  //         const response = await fetch(
-  //           `${backendURL}/getuservideos/${usermail}`
-  //         );
-  //         const myvideos = await response.json();
-  //         setUserVideos(myvideos);
-  //       }
-  //     } catch (error) {
-  //       //console.log(error.message);
-  //     }
-  //   };
-
-  //   GetUserVideos();
-  // }, [usermail]);
-
   // get playlist
   // useEffect(() => {
   //   const getPlaylists = async () => {
@@ -598,59 +470,39 @@ const VideoSection = () => {
   //   return () => clearInterval(interval);
   // }, []);
 
-  // get heart commentr
-  // useEffect(() => {
-  //   const getHeartComments = async () => {
-  //     try {
-  //       if (id !== undefined) {
-  //         const response = await fetch(`${backendURL}/getheartcomment/${id}`);
-  //         const heart = await response.json();
-  //         setIsHeart(heart);
-  //       }
-  //     } catch (error) {
-  //       //console.log(error.message);
-  //     }
-  //   };
-
-  //   const interval = setInterval(getHeartComments, 400);
-
-  //   return () => clearInterval(interval);
-  // }, []);
-
   useEffect(() => {
     setTimeout(() => {
       setRecommendLoading(false);
-    }, 3500);
+    }, 1200);
   }, []);
 
   //POST REQUESTS
-  // const uploadComment = async () => {
-  //   try {
-  //     setCommentLoading(true);
-  //     const response1 = await fetch(`${backendURL}/getchannelid/${email}`);
-  //     const { channelID } = await response1.json();
-  //     const data = {
-  //       comment,
-  //       email,
-  //       channelID,
-  //     };
-  //     const response = await fetch(`${backendURL}/comments/${id}`, {
-  //       method: "POST",
-  //       body: JSON.stringify(data),
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-  //     const Data = await response.json();
-  //     if (Data === "Uploaded") {
-  //       setCommentLoading(false);
-  //     } else {
-  //       setCommentLoading(true);
-  //     }
-  //   } catch (error) {
-  //     //console.log(error.message);
-  //   }
-  // };
+  const uploadComment = async () => {
+    try {
+      setCommentLoading(true);
+      // const response1 = await fetch(`${backendURL}/getchannelid/${email}`);
+      // const { channelID } = await response1.json();
+      // const data = {
+      //   comment,
+      //   email,
+      //   channelID,
+      // };
+      // const response = await fetch(`${backendURL}/comments/${id}`, {
+      //   method: "POST",
+      //   body: JSON.stringify(data),
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      // });
+
+      dispatch(createComment(id, comment));
+      setCommentLoading(false);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  console.log("comment", comment);
 
   if (!videoData) {
     return (
@@ -667,136 +519,40 @@ const VideoSection = () => {
       </>
     );
   }
-
-  // if (!videoData) {
-  //   return (
-  //     <>
-  //       <div className="main-video-section2">
-  //         <div className="spin2">
-  //           <ReactLoading
-  //             type={"spin"}
-  //             color={"white"}
-  //             height={50}
-  //             width={50}
-  //           />
-  //           <p style={{ marginTop: "15px" }}>
-  //             Fetching the data, Hang tight...
-  //           </p>
-  //         </div>
-  //       </div>
-  //     </>
-  //   );
-  // }
-
-  const { VideoData } = videoData;
-  const matchedVideo = VideoData && VideoData.find((item) => item._id === id);
-
-  console.log("matchvideo ", matchedVideo);
-
-  if (!matchedVideo) {
-    return (
-      <>
-        <div
-          className={
-            theme ? "main-video-section2" : "main-video-section2 light-mode"
-          }
-        >
-          <div className="spin23">
-            <span className={theme ? "loader2" : "loader2-light"}></span>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  // if (!matchedVideo) {
-  //   return (
-  //     <>
-  //       <div className="main-video-section2">
-  //         <div className="spin2">
-  //           <ReactLoading
-  //             type={"spin"}
-  //             color={"white"}
-  //             height={50}
-  //             width={50}
-  //           />
-  //           <p style={{ marginTop: "15px" }}>
-  //             Fetching the data, Hang tight...
-  //           </p>
-  //         </div>
-  //       </div>
-  //     </>
-  //   );
-  // }
-
   const {
-    videoURL,
-    Title,
-    thumbnailURL,
-    ChannelProfile,
-    uploader,
-    Description,
+    videoFile: videoURL,
+    title,
+    thumbnail: thumbnailURL,
+    owner,
+    description,
     views,
-    videoLength,
-    uploaded_date,
-    visibility,
-  } = matchedVideo;
+    likes,
+    createdAt,
+    isPublished,
+    subscribersCount,
+  } = videoData;
+  console.log("thumb", thumbnailURL?.url);
+  console.log("videoFile", videoURL?.url);
 
   document.title =
-    Title && Title !== undefined ? `${Title} - YouTube` : "YouTube";
+    title && title !== undefined ? `${title} - YouTube` : "YouTube";
 
-  // const likeVideo = async () => {
-  //   try {
-  //     setLikeLoading(true);
+  const likeVideo = async () => {
+    try {
+      setLikeLoading(true);
 
-  //     const response = await fetch(
-  //       `${backendURL}/like/${id}/${email}/${usermail}`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-  //     const data = await response.json();
-  //     // console.log(data);
-  //     if (data === "Liked") {
-  //       LikedNotify();
-  //       setLikeLoading(false);
-  //     } else if (data === "Liked" || data === "Disliked") {
-  //       setLikeLoading(false);
-  //     } else if (data !== "Liked" || data !== "Disliked") {
-  //       setLikeLoading(true);
-  //     }
-  //   } catch (error) {
-  //     //console.log(error.message);
-  //   }
-  // };
+      dispatch(getLikeVideoToggle(id, isLikedStatus));
+      setLikeLoading(false);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   // const LikeComment = async (commentId) => {
   //   try {
   //     if (commentId !== undefined && id !== undefined && email !== undefined) {
   //       const response = await fetch(
   //         `${backendURL}/LikeComment /${id}/${commentId}/${email}`,
-  //         {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //         }
-  //       );
-  //       await response.json();
-  //     }
-  //   } catch (error) {
-  //     //console.log(error.message);
-  //   }
-  // };
-
-  // const HeartComment = async (commentID) => {
-  //   try {
-  //     if (id !== undefined && channelID !== undefined) {
-  //       const response = await fetch(
-  //         `${backendURL}/heartcomment/${id}/${commentID}`,
   //         {
   //           method: "POST",
   //           headers: {
@@ -827,7 +583,7 @@ const VideoSection = () => {
       const data = await response.json();
       if (data === "Comment Deleted") {
         setCommentOpacity(1);
-        CommentDeleteNotify();
+        commonNotify("Comment deleted!");
       }
       // window.location.reload();
     } catch (error) {
@@ -855,7 +611,7 @@ const VideoSection = () => {
 
   const downloadVideo = () => {
     const link = document.createElement("a");
-    link.href = videoURL;
+    link.href = videoURL?.url;
     link.target = "_blank";
     link.download = "video.mp4";
     link.click();
@@ -875,7 +631,7 @@ const VideoSection = () => {
         );
         const data = await response.json();
         if (data === "Saved") {
-          watchLaterNotify();
+          commonNotify("Video saved to watch later!");
         }
       }
     } catch (error) {
@@ -902,7 +658,7 @@ const VideoSection = () => {
       );
       const data = await response.json();
       if (data === "Subscribed") {
-        SubscribeNotify();
+        commonNotify("Channel subscribed!");
       }
     } catch (error) {
       //console.log(error.message);
@@ -940,12 +696,12 @@ const VideoSection = () => {
   //         thumbnail: thumbnailURL,
   //         title: Title,
   //         videoID: id,
-  //         description: Description,
+  //         description: description,
   //         videolength: videoLength,
-  //         video_uploader: uploader,
-  //         video_date: uploaded_date,
+  //         video_uploader: owner?.username,
+  //         video_date: createdAt,
   //         video_views: views,
-  //         videoprivacy: visibility,
+  //         videoprivacy: isPublished,
   //       };
 
   //       const response = await fetch(`${backendURL}/addplaylist/${email}`, {
@@ -959,7 +715,7 @@ const VideoSection = () => {
   //       const Data = await response.json();
   //       if (Data) {
   //         setLoading(false);
-  //         playlistNotify();
+  //         commonNotify("Video added to the playlist!");
   //         window.location.reload();
   //       }
   //     }
@@ -977,12 +733,12 @@ const VideoSection = () => {
   //         thumbnail: thumbnailURL,
   //         title: Title,
   //         videoID: id,
-  //         description: Description,
+  //         description: description,
   //         videolength: videoLength,
-  //         video_uploader: channelName,
-  //         video_date: uploaded_date,
+  //         video_uploader: owner?.username,
+  //         video_date: createdAt,
   //         video_views: views,
-  //         videoprivacy: visibility,
+  //         videoprivacy: isPublished,
   //       };
 
   //       const response = await fetch(
@@ -1044,7 +800,7 @@ const VideoSection = () => {
     return formattedDescription.replace(/\n/g, "<br>");
   };
 
-  if (email !== usermail && visibility === "Private") {
+  if (email !== usermail && isPublished === false) {
     return (
       <>
         <Error />
@@ -1071,9 +827,9 @@ const VideoSection = () => {
               className="play-video"
               controls
               ref={videoRef}
-              poster={thumbnailURL}
+              poster={thumbnailURL?.url}
             >
-              <source src={videoURL} type="video/mp4" />
+              <source src={videoURL?.url} type="video/mp4" />
             </video>
           </div>
           <p
@@ -1085,7 +841,7 @@ const VideoSection = () => {
             {checkTrending === true ? "#TRENDING" : ""}
           </p>
           <p className={theme ? "vid-title" : "vid-title text-light-mode"}>
-            {Title}
+            {title}
           </p>
           <div className="some-channel-data">
             <div
@@ -1096,7 +852,7 @@ const VideoSection = () => {
               }
             >
               <img
-                src={ChannelProfile}
+                src={owner?.avatar}
                 alt="channelDP"
                 className="channelDP"
                 loading="lazy"
@@ -1117,7 +873,7 @@ const VideoSection = () => {
                       }
                     }}
                   >
-                    {uploader}
+                    {owner?.username}
                   </p>
                   <Tooltip
                     TransitionComponent={Zoom}
@@ -1138,7 +894,7 @@ const VideoSection = () => {
                     theme ? "channel-subs" : "channel-subs text-light-mode2"
                   }
                 >
-                  {Subscribers} subscribers
+                  {subscribersCount} subscribers
                 </p>
               </div>
 
@@ -1229,7 +985,7 @@ const VideoSection = () => {
                       />
                     )}
 
-                    <p className="like-count">{VideoLikes}</p>
+                    <p className="like-count">{likes}</p>
                   </div>
                 </Tooltip>
                 <div className={theme ? "vl" : "vl-light"}></div>
@@ -1246,7 +1002,7 @@ const VideoSection = () => {
                     }
                     onClick={() => {
                       if (token) {
-                        DislikeVideo();
+                        // DislikeVideo();
                       } else {
                         setisbtnClicked(true);
                         document.body.classList.add("bg-css");
@@ -1386,6 +1142,7 @@ const VideoSection = () => {
 
               <div className="first-c-data">
                 {/* =============== Like toggle button ================== */}
+
                 <div
                   className="like-dislike"
                   style={
@@ -1407,7 +1164,7 @@ const VideoSection = () => {
                       }
                       onClick={() => {
                         if (token) {
-                          likeVideo();
+                          // likeVideo();
                         } else {
                           setisbtnClicked(true);
                           document.body.classList.add("bg-css");
@@ -1428,7 +1185,7 @@ const VideoSection = () => {
                         />
                       )}
 
-                      <p className="like-count">{VideoLikes}</p>
+                      <p className="like-count">{likes}</p>
                     </div>
                   </Tooltip>
 
@@ -1447,7 +1204,7 @@ const VideoSection = () => {
                       }
                       onClick={() => {
                         if (token) {
-                          DislikeVideo();
+                          // DislikeVideo();
                         } else {
                           setisbtnClicked(true);
                           document.body.classList.add("bg-css");
@@ -1601,7 +1358,7 @@ const VideoSection = () => {
                         />
                       )}
 
-                      <p className="like-count">{VideoLikes}</p>
+                      <p className="like-count">{likes}</p>
                     </div>
                   </Tooltip>
                   <div className={theme ? "vl" : "vl-light"}></div>
@@ -1618,7 +1375,7 @@ const VideoSection = () => {
                       }
                       onClick={() => {
                         if (token) {
-                          DislikeVideo();
+                          // DislikeVideo();
                         } else {
                           setisbtnClicked(true);
                           document.body.classList.add("bg-css");
@@ -1814,11 +1571,11 @@ const VideoSection = () => {
                   : views >= 1e3
                   ? `${(views / 1e3).toFixed(1)}K`
                   : views}
-                views
+                {"\u00A0"} views
               </p>
               <p style={{ marginLeft: "10px" }}>
                 {(() => {
-                  const timeDifference = new Date() - new Date(uploaded_date);
+                  const timeDifference = new Date() - new Date(createdAt);
                   const minutes = Math.floor(timeDifference / 60000);
                   const hours = Math.floor(timeDifference / 3600000);
                   const days = Math.floor(timeDifference / 86400000);
@@ -1851,11 +1608,11 @@ const VideoSection = () => {
                 className="videos-desc"
                 dangerouslySetInnerHTML={{
                   __html:
-                    Description &&
+                    description &&
                     formatDescriptionWithLinks(
-                      Description.length > 170
-                        ? Description.substring(0, 170) + "..."
-                        : Description
+                      description.length > 170
+                        ? description.substring(0, 170) + "..."
+                        : description
                     ),
                 }}
               />
@@ -1866,10 +1623,10 @@ const VideoSection = () => {
                 className="videos-desc"
                 dangerouslySetInnerHTML={{
                   __html:
-                    Description && formatDescriptionWithLinks(Description),
+                    description && formatDescriptionWithLinks(description),
                 }}
               />
-              {Description && Description.length > 170 ? (
+              {description && description.length > 170 ? (
                 <p
                   className="desc-seemore"
                   onClick={() => setSeeDesc(!seeDesc)}
@@ -1882,7 +1639,7 @@ const VideoSection = () => {
                   See more...
                 </p>
               ) : null}
-              {Description && Description.length > 170 ? (
+              {description && description.length > 170 ? (
                 <p
                   className="desc-seemore"
                   onClick={() => setSeeDesc(!seeDesc)}
@@ -1908,14 +1665,16 @@ const VideoSection = () => {
             >
               <p>
                 {comments && comments.length}
-                {comments && comments.length > 1 ? "Comments" : "Comment"}
+                {comments && comments.length > 1
+                  ? "\u00A0  Comments"
+                  : "\u00A0  Comment"}
               </p>
             </div>
 
             {commentLoading === false ? (
               <div className="my-comment-area">
                 <img
-                  src={userProfile ? userProfile : avatar}
+                  src={userProfile ? userProfile : Uavatar}
                   alt="channelDP"
                   className="channelDP"
                   loading="lazy"
@@ -1925,7 +1684,7 @@ const VideoSection = () => {
                     theme ? "comment-input" : "comment-input text-light-mode"
                   }
                   type="text"
-                  name="myComment"
+                  name="content"
                   placeholder="Add a comment..."
                   value={comment}
                   onClick={() => {
@@ -1971,13 +1730,11 @@ const VideoSection = () => {
                 <button
                   className={theme ? "upload-comment" : "upload-comment-light"}
                   onClick={() => {
-                    if (token && isChannel === true && comment !== "") {
-                      setComment("");
+                    if (token && comment !== "") {
+                      // setComment("");
                       uploadComment();
-                    } else if (token && isChannel !== true) {
-                      alert("Create a channel first");
-                    } else if (token && isChannel === true && comment === "") {
-                      alert("Comment can't be empty");
+                    } else if (token && comment === "") {
+                      EmptyMessage("Comment can't be empty");
                     } else {
                       setisbtnClicked(true);
                       document.body.classList.add("bg-css");
@@ -1992,7 +1749,7 @@ const VideoSection = () => {
             )}
 
             <div className="video-comments">
-              {comments.map((element, index) => {
+              {comments?.map((element, index) => {
                 return (
                   <>
                     <div
@@ -2005,13 +1762,13 @@ const VideoSection = () => {
                     >
                       <div className="comment-left-data">
                         <img
-                          src={element.user_profile}
+                          src={element.owner?.avatar}
                           alt="commentDP"
                           className="commentDP"
                           loading="lazy"
                           onClick={() => {
-                            if (element.channel_id !== undefined) {
-                              navigate(`/channel/${element.channel_id}`);
+                            if (element.owner?._id !== undefined) {
+                              navigate(`/channel/${element.owner?._id}`);
                             }
                           }}
                         />
@@ -2026,18 +1783,18 @@ const VideoSection = () => {
                         <div className="comment-row1">
                           <p
                             onClick={() => {
-                              if (element.channel_id !== undefined) {
-                                navigate(`/channel/${element.channel_id}`);
+                              if (element.owner?._id !== undefined) {
+                                navigate(`/channel/${element.owner?._id}`);
                               }
                             }}
                             style={{ cursor: "pointer" }}
                           >
-                            {element.username}
+                            {element.owner?.username}
                           </p>
                           <p className="comment-time">
                             {(() => {
                               const timeDifference =
-                                new Date() - new Date(element.time);
+                                new Date() - new Date(element.createdAt);
                               const minutes = Math.floor(
                                 timeDifference / 60000
                               );
@@ -2070,7 +1827,7 @@ const VideoSection = () => {
                             })()}
                           </p>
                         </div>
-                        <p className="main-comment">{element.comment}</p>
+                        <p className="main-comment">{element.content}</p>
                         <div className="comment-interaction">
                           <ThumbUpIcon
                             fontSize="small"
@@ -2089,11 +1846,7 @@ const VideoSection = () => {
                             className="comment-like"
                           />
 
-                          <p style={{ marginLeft: "16px" }}>
-                            {CommentLikes &&
-                              CommentLikes[index] &&
-                              CommentLikes[index].likes}
-                          </p>
+                          <p style={{ marginLeft: "16px" }}>{element.likes}</p>
 
                           {isHeart[index] === false ? (
                             <FavoriteBorderOutlinedIcon
@@ -2110,7 +1863,7 @@ const VideoSection = () => {
                               className="heart-comment"
                               onClick={() => {
                                 if (email === usermail) {
-                                  HeartComment(element._id);
+                                  // HeartComment(element._id);
                                 }
                               }}
                             />
@@ -2125,12 +1878,12 @@ const VideoSection = () => {
                                 style={{ cursor: "pointer" }}
                                 onClick={() => {
                                   if (email === usermail) {
-                                    HeartComment(element._id);
+                                    // HeartComment(element._id);
                                   }
                                 }}
                               >
                                 <img
-                                  src={ChannelProfile}
+                                  src={owner?.avatar}
                                   alt="commentDP"
                                   className="heartDP"
                                   loading="lazy"
@@ -2169,6 +1922,7 @@ const VideoSection = () => {
             </div>
           </div>
         </div>
+
         {/* ===================== recommend videos ====================================== */}
 
         {recommendLoading === true && (
@@ -2192,7 +1946,7 @@ const VideoSection = () => {
                 </div>
                 <div
                   className={
-                    TagSelected === uploader
+                    TagSelected === owner?.username
                       ? `top-tags tag-two ${
                           theme ? "tag-color" : "tag-color-light"
                         }`
@@ -2200,8 +1954,8 @@ const VideoSection = () => {
                   }
                   style={{ marginLeft: "10px" }}
                 >
-                  <p onClick={() => setTagSelected(`${uploader}`)}>
-                    From {uploader}
+                  <p onClick={() => setTagSelected(`${owner?.username}`)}>
+                    From {owner?.username}
                   </p>
                 </div>
               </div>
@@ -2257,6 +2011,7 @@ const VideoSection = () => {
           </SkeletonTheme>
         )}
 
+        {/* right side video list section  */}
         <div
           className="recommended-section"
           style={
@@ -2279,7 +2034,7 @@ const VideoSection = () => {
             </div>
             <div
               className={
-                TagSelected === uploader
+                TagSelected === owner?.username
                   ? `top-tags tag-two ${
                       theme ? "tag-color" : "tag-color-light"
                     }`
@@ -2287,53 +2042,52 @@ const VideoSection = () => {
               }
               style={{ marginLeft: "10px" }}
             >
-              <p onClick={() => setTagSelected(`${uploader}`)}>
-                From {uploader}
+              <p onClick={() => setTagSelected(`${owner?.username}`)}>
+                From {owner?.username}
               </p>
             </div>
           </div>
+
           <div
             className="video-section2"
             style={
               TagSelected === "All" ? { display: "flex" } : { display: "none" }
             }
           >
-            {thumbnails &&
-              !rec &&
-              thumbnails.map((element, index) => {
+            {listVideoDetails &&
+              listVideoDetails?.map((element, index) => {
                 return (
                   <div
                     className="video-data12"
                     style={
-                      element === thumbnailURL
+                      element === thumbnailURL?.url
                         ? { display: "none" }
                         : { display: "flex" }
                     }
                     key={index}
                     onClick={() => {
                       if (token) {
-                        updateViews(VideoID[index]);
                         setTimeout(() => {
-                          navigate(`/video/${VideoID[index]}`);
+                          navigate(`/video/${element._id}`);
                         }, 400);
                       } else {
-                        navigate(`/video/${VideoID[index]}`);
+                        navigate(`/video/${element._id}`);
                       }
                     }}
                   >
                     <div className="video-left-side">
                       <img
-                        src={element}
+                        src={element.thumbnail?.url}
                         alt=""
                         className="recommend-thumbnails"
                         loading="lazy"
                       />
                       <p className="duration duration2">
-                        {Math.floor(duration[index] / 60) +
+                        {Math.floor(element.duration / 60) +
                           ":" +
-                          (Math.round(duration[index] % 60) < 10
-                            ? "0" + Math.round(duration[index] % 60)
-                            : Math.round(duration[index] % 60))}
+                          (Math.round(element.duration % 60) < 10
+                            ? "0" + Math.round(element.duration % 60)
+                            : Math.round(element.duration % 60))}
                       </p>
                     </div>
                     <div className="video-right-side">
@@ -2344,7 +2098,7 @@ const VideoSection = () => {
                             : "recommend-vid-title text-light-mode"
                         }
                       >
-                        {Titles[index]}
+                        {element.title}
                       </p>
                       <div
                         className={
@@ -2360,7 +2114,7 @@ const VideoSection = () => {
                               : "recommend-vid-uploader uploader nohover"
                           }
                         >
-                          {Uploader[index]}
+                          {element.owner[0]?.username}
                         </p>
                         <Tooltip
                           TransitionComponent={Zoom}
@@ -2378,13 +2132,13 @@ const VideoSection = () => {
                       </div>
                       <div className="view-time">
                         <p className="views">
-                          {Views[index] >= 1e9
-                            ? `${(Views[index] / 1e9).toFixed(1)}B`
-                            : Views[index] >= 1e6
-                            ? `${(Views[index] / 1e6).toFixed(1)}M`
-                            : Views[index] >= 1e3
-                            ? `${(Views[index] / 1e3).toFixed(1)}K`
-                            : Views[index]}
+                          {element.views >= 1e9
+                            ? `${(element.views / 1e9).toFixed(1)}B`
+                            : element.views >= 1e6
+                            ? `${(element.views / 1e6).toFixed(1)}M`
+                            : element.views >= 1e3
+                            ? `${(element.views / 1e3).toFixed(1)}K`
+                            : element.views}
                           views
                         </p>
                         <p
@@ -2394,134 +2148,7 @@ const VideoSection = () => {
                           &#x2022;
                           {(() => {
                             const timeDifference =
-                              new Date() - new Date(publishdate[index]);
-                            const minutes = Math.floor(timeDifference / 60000);
-                            const hours = Math.floor(timeDifference / 3600000);
-                            const days = Math.floor(timeDifference / 86400000);
-                            const weeks = Math.floor(
-                              timeDifference / 604800000
-                            );
-                            const years = Math.floor(
-                              timeDifference / 31536000000
-                            );
-
-                            if (minutes < 1) {
-                              return "just now";
-                            } else if (minutes < 60) {
-                              return `${minutes} mins ago`;
-                            } else if (hours < 24) {
-                              return `${hours} hours ago`;
-                            } else if (days < 7) {
-                              return `${days} days ago`;
-                            } else if (weeks < 52) {
-                              return `${weeks} weeks ago`;
-                            } else {
-                              return `${years} years ago`;
-                            }
-                          })()}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            {thumbnails &&
-              rec &&
-              thumbnails.slice(0, 12).map((element, index) => {
-                return (
-                  <div
-                    className="video-data12"
-                    style={
-                      element === thumbnailURL
-                        ? { display: "none" }
-                        : { display: "flex" }
-                    }
-                    key={index}
-                    onClick={() => {
-                      if (token) {
-                        updateViews(VideoID[index]);
-                        setTimeout(() => {
-                          navigate(`/video/${VideoID[index]}`);
-                        }, 400);
-                      } else {
-                        navigate(`/video/${VideoID[index]}`);
-                      }
-                    }}
-                  >
-                    <div className="video-left-side">
-                      <img
-                        src={element}
-                        alt=""
-                        className="recommend-thumbnails"
-                        loading="lazy"
-                      />
-                      <p className="duration duration2">
-                        {Math.floor(duration[index] / 60) +
-                          ":" +
-                          (Math.round(duration[index] % 60) < 10
-                            ? "0" + Math.round(duration[index] % 60)
-                            : Math.round(duration[index] % 60))}
-                      </p>
-                    </div>
-                    <div className="video-right-side">
-                      <p
-                        className={
-                          theme
-                            ? "recommend-vid-title"
-                            : "recommend-vid-title text-light-mode"
-                        }
-                      >
-                        {Titles[index]}
-                      </p>
-                      <div
-                        className={
-                          theme
-                            ? "recommend-uploader"
-                            : "recommend-uploader text-light-mode2"
-                        }
-                      >
-                        <p
-                          className={
-                            theme
-                              ? "recommend-vid-uploader uploader"
-                              : "recommend-vid-uploader uploader nohover"
-                          }
-                        >
-                          {Uploader[index]}
-                        </p>
-                        <Tooltip
-                          TransitionComponent={Zoom}
-                          title="Verified"
-                          placement="right"
-                        >
-                          <CheckCircleIcon
-                            fontSize="100px"
-                            style={{
-                              color: "rgb(138, 138, 138)",
-                              marginLeft: "4px",
-                            }}
-                          />
-                        </Tooltip>
-                      </div>
-                      <div className="view-time">
-                        <p className="views">
-                          {Views[index] >= 1e9
-                            ? `${(Views[index] / 1e9).toFixed(1)}B`
-                            : Views[index] >= 1e6
-                            ? `${(Views[index] / 1e6).toFixed(1)}M`
-                            : Views[index] >= 1e3
-                            ? `${(Views[index] / 1e3).toFixed(1)}K`
-                            : Views[index]}
-                          views
-                        </p>
-                        <p
-                          className="upload-time"
-                          style={{ marginLeft: "4px" }}
-                        >
-                          &#x2022;
-                          {(() => {
-                            const timeDifference =
-                              new Date() - new Date(publishdate[index]);
+                              new Date() - new Date(element.createdAt);
                             const minutes = Math.floor(timeDifference / 60000);
                             const hours = Math.floor(timeDifference / 3600000);
                             const days = Math.floor(timeDifference / 86400000);
@@ -2560,262 +2187,141 @@ const VideoSection = () => {
               TagSelected !== "All" ? { display: "flex" } : { display: "none" }
             }
           >
-            {userVideos &&
-              !rec &&
-              userVideos.length > 0 &&
-              userVideos.map((element, index) => {
-                return (
-                  <div
-                    className="video-data12"
-                    style={
-                      element.thumbnailURL === thumbnailURL
-                        ? { display: "none" }
-                        : { display: "flex" }
-                    }
-                    key={index}
-                    onClick={() => {
-                      if (token) {
-                        updateViews(element._id);
-                        setTimeout(() => {
-                          navigate(`/channel/${channelID}`);
-                        }, 400);
-                      } else {
-                        navigate(`/channel/${channelID}`);
+            {listVideoDetails &&
+              listVideoDetails.length > 0 &&
+              listVideoDetails.map((element, index) => {
+                if (owner?.username === element.owner[0]?.username) {
+                  return (
+                    <div
+                      className="video-data12"
+                      style={
+                        element.thumbnailURL === thumbnailURL?.url
+                          ? { display: "none" }
+                          : { display: "flex" }
                       }
-                    }}
-                  >
-                    <div className="video-left-side">
-                      <img
-                        src={element.thumbnailURL}
-                        alt=""
-                        className="recommend-thumbnails"
-                        loading="lazy"
-                      />
-                      <p className="duration duration2">
-                        {Math.floor(element.videoLength / 60) +
-                          ":" +
-                          (Math.round(element.videoLength % 60) < 10
-                            ? "0" + Math.round(element.videoLength % 60)
-                            : Math.round(element.videoLength % 60))}
-                      </p>
-                    </div>
-                    <div className="video-right-side">
-                      <p
-                        className={
-                          theme
-                            ? "recommend-vid-title"
-                            : "recommend-vid-title text-light-mode"
+                      key={index}
+                      onClick={() => {
+                        if (token) {
+                          setTimeout(() => {
+                            navigate(`/video/${element._id}`);
+                          }, 400);
+                        } else {
+                          navigate(`/video/${element._id}`);
                         }
-                      >
-                        {element.Title}
-                      </p>
-                      <div
-                        className={
-                          theme
-                            ? "recommend-uploader"
-                            : "recommend-uploader text-light-mode2"
-                        }
-                      >
+                      }}
+                    >
+                      <div className="video-left-side">
+                        <img
+                          src={element.thumbnail?.url}
+                          alt=""
+                          className="recommend-thumbnails"
+                          loading="lazy"
+                        />
+                        <p className="duration duration2">
+                          {Math.floor(element.duration / 60) +
+                            ":" +
+                            (Math.round(element.duration % 60) < 10
+                              ? "0" + Math.round(element.duration % 60)
+                              : Math.round(element.duration % 60))}
+                        </p>
+                      </div>
+                      <div className="video-right-side">
                         <p
                           className={
                             theme
-                              ? "recommend-vid-uploader uploader"
-                              : "recommend-vid-uploader uploader nohover"
+                              ? "recommend-vid-title"
+                              : "recommend-vid-title text-light-mode"
                           }
                         >
-                          {element.uploader}
+                          {element.title}
                         </p>
-                        <Tooltip
-                          TransitionComponent={Zoom}
-                          title="Verified"
-                          placement="right"
-                        >
-                          <CheckCircleIcon
-                            fontSize="100px"
-                            style={{
-                              color: "rgb(138, 138, 138)",
-                              marginLeft: "4px",
-                            }}
-                          />
-                        </Tooltip>
-                      </div>
-                      <div className="view-time">
-                        <p className="views">
-                          {element.views >= 1e9
-                            ? `${(element.views / 1e9).toFixed(1)}B`
-                            : element.views >= 1e6
-                            ? `${(element.views / 1e6).toFixed(1)}M`
-                            : element.views >= 1e3
-                            ? `${(element.views / 1e3).toFixed(1)}K`
-                            : element.views}
-                          views
-                        </p>
-                        <p
-                          className="upload-time"
-                          style={{ marginLeft: "4px" }}
-                        >
-                          &#x2022;
-                          {(() => {
-                            const timeDifference =
-                              new Date() - new Date(element.uploaded_date);
-                            const minutes = Math.floor(timeDifference / 60000);
-                            const hours = Math.floor(timeDifference / 3600000);
-                            const days = Math.floor(timeDifference / 86400000);
-                            const weeks = Math.floor(
-                              timeDifference / 604800000
-                            );
-                            const years = Math.floor(
-                              timeDifference / 31536000000
-                            );
-
-                            if (minutes < 1) {
-                              return "just now";
-                            } else if (minutes < 60) {
-                              return `${minutes} mins ago`;
-                            } else if (hours < 24) {
-                              return `${hours} hours ago`;
-                            } else if (days < 7) {
-                              return `${days} days ago`;
-                            } else if (weeks < 52) {
-                              return `${weeks} weeks ago`;
-                            } else {
-                              return `${years} years ago`;
-                            }
-                          })()}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-
-            {userVideos &&
-              rec &&
-              userVideos.length > 0 &&
-              userVideos.slice(0, 12).map((element, index) => {
-                return (
-                  <div
-                    className="video-data12"
-                    style={
-                      element.thumbnailURL === thumbnailURL
-                        ? { display: "none" }
-                        : { display: "flex" }
-                    }
-                    key={index}
-                    onClick={() => {
-                      if (token) {
-                        updateViews(element._id);
-                        setTimeout(() => {
-                          navigate(`/channel/${channelID}`);
-                        }, 400);
-                      } else {
-                        navigate(`/channel/${channelID}`);
-                      }
-                    }}
-                  >
-                    <div className="video-left-side">
-                      <img
-                        src={element.thumbnailURL}
-                        alt=""
-                        className="recommend-thumbnails"
-                        loading="lazy"
-                      />
-                      <p className="duration duration2">
-                        {Math.floor(element.videoLength / 60) +
-                          ":" +
-                          (Math.round(element.videoLength % 60) < 10
-                            ? "0" + Math.round(element.videoLength % 60)
-                            : Math.round(element.videoLength % 60))}
-                      </p>
-                    </div>
-                    <div className="video-right-side">
-                      <p
-                        className={
-                          theme
-                            ? "recommend-vid-title"
-                            : "recommend-vid-title text-light-mode"
-                        }
-                      >
-                        {element.Title}
-                      </p>
-                      <div
-                        className={
-                          theme
-                            ? "recommend-uploader"
-                            : "recommend-uploader text-light-mode2"
-                        }
-                      >
-                        <p
+                        <div
                           className={
                             theme
-                              ? "recommend-vid-uploader uploader"
-                              : "recommend-vid-uploader uploader nohover"
+                              ? "recommend-uploader"
+                              : "recommend-uploader text-light-mode2"
                           }
                         >
-                          {element.uploader}
-                        </p>
-                        <Tooltip
-                          TransitionComponent={Zoom}
-                          title="Verified"
-                          placement="right"
-                        >
-                          <CheckCircleIcon
-                            fontSize="100px"
-                            style={{
-                              color: "rgb(138, 138, 138)",
-                              marginLeft: "4px",
-                            }}
-                          />
-                        </Tooltip>
-                      </div>
-                      <div className="view-time">
-                        <p className="views">
-                          {element.views >= 1e9
-                            ? `${(element.views / 1e9).toFixed(1)}B`
-                            : element.views >= 1e6
-                            ? `${(element.views / 1e6).toFixed(1)}M`
-                            : element.views >= 1e3
-                            ? `${(element.views / 1e3).toFixed(1)}K`
-                            : element.views}
-                          views
-                        </p>
-                        <p
-                          className="upload-time"
-                          style={{ marginLeft: "4px" }}
-                        >
-                          &#x2022;
-                          {(() => {
-                            const timeDifference =
-                              new Date() - new Date(element.uploaded_date);
-                            const minutes = Math.floor(timeDifference / 60000);
-                            const hours = Math.floor(timeDifference / 3600000);
-                            const days = Math.floor(timeDifference / 86400000);
-                            const weeks = Math.floor(
-                              timeDifference / 604800000
-                            );
-                            const years = Math.floor(
-                              timeDifference / 31536000000
-                            );
-
-                            if (minutes < 1) {
-                              return "just now";
-                            } else if (minutes < 60) {
-                              return `${minutes} mins ago`;
-                            } else if (hours < 24) {
-                              return `${hours} hours ago`;
-                            } else if (days < 7) {
-                              return `${days} days ago`;
-                            } else if (weeks < 52) {
-                              return `${weeks} weeks ago`;
-                            } else {
-                              return `${years} years ago`;
+                          <p
+                            className={
+                              theme
+                                ? "recommend-vid-uploader uploader"
+                                : "recommend-vid-uploader uploader nohover"
                             }
-                          })()}
-                        </p>
+                          >
+                            {element.owner[0]?.username}
+                          </p>
+                          <Tooltip
+                            TransitionComponent={Zoom}
+                            title="Verified"
+                            placement="right"
+                          >
+                            <CheckCircleIcon
+                              fontSize="100px"
+                              style={{
+                                color: "rgb(138, 138, 138)",
+                                marginLeft: "4px",
+                              }}
+                            />
+                          </Tooltip>
+                        </div>
+                        <div className="view-time">
+                          <p className="views">
+                            {element.views >= 1e9
+                              ? `${(element.views / 1e9).toFixed(1)}B`
+                              : element.views >= 1e6
+                              ? `${(element.views / 1e6).toFixed(1)}M`
+                              : element.views >= 1e3
+                              ? `${(element.views / 1e3).toFixed(1)}K`
+                              : element.views}
+                            views
+                          </p>
+                          <p
+                            className="upload-time"
+                            style={{ marginLeft: "4px" }}
+                          >
+                            &#x2022;
+                            {(() => {
+                              const timeDifference =
+                                new Date() - new Date(element.createdAt);
+                              const minutes = Math.floor(
+                                timeDifference / 60000
+                              );
+                              const hours = Math.floor(
+                                timeDifference / 3600000
+                              );
+                              const days = Math.floor(
+                                timeDifference / 86400000
+                              );
+                              const weeks = Math.floor(
+                                timeDifference / 604800000
+                              );
+                              const years = Math.floor(
+                                timeDifference / 31536000000
+                              );
+
+                              if (minutes < 1) {
+                                return "just now";
+                              } else if (minutes < 60) {
+                                return `${minutes} mins ago`;
+                              } else if (hours < 24) {
+                                return `${hours} hours ago`;
+                              } else if (days < 7) {
+                                return `${days} days ago`;
+                              } else if (weeks < 52) {
+                                return `${weeks} weeks ago`;
+                              } else {
+                                return `${years} years ago`;
+                              }
+                            })()}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
+                  );
+                } else {
+                  return null;
+                }
               })}
           </div>
 
@@ -2829,13 +2335,15 @@ const VideoSection = () => {
             >
               <p>
                 {comments && comments.length}
-                {comments && comments.length > 1 ? "Comments" : "Comment"}
+                {comments && comments.length > 1
+                  ? "\u00A0 Comments"
+                  : "\u00A0 Comment"}
               </p>
             </div>
             {commentLoading === false ? (
               <div className="my-comment-area">
                 <img
-                  src={userProfile ? userProfile : avatar}
+                  src={userProfile ? userProfile : Uavatar}
                   alt="channelDP"
                   className="channelDP"
                   loading="lazy"
@@ -2891,13 +2399,11 @@ const VideoSection = () => {
                 <button
                   className={theme ? "upload-comment" : "upload-comment-light"}
                   onClick={() => {
-                    if (token && isChannel === true && comment !== "") {
+                    if (token && comment !== "") {
                       setComment("");
                       uploadComment();
-                    } else if (token && isChannel !== true) {
-                      alert("Create a channel first");
-                    } else if (token && isChannel === true && comment === "") {
-                      alert("Comment can't be empty");
+                    } else if (token && comment === "") {
+                      EmptyMessage("Comment can't be empty");
                     } else {
                       setisbtnClicked(true);
                       document.body.classList.add("bg-css");
@@ -2925,13 +2431,13 @@ const VideoSection = () => {
                     >
                       <div className="comment-left-data">
                         <img
-                          src={element.user_profile}
+                          src={element.owner?.avatar}
                           alt="commentDP"
                           className="commentDP"
                           loading="lazy"
                           onClick={() => {
-                            if (element.channel_id !== undefined) {
-                              navigate(`/channel/${element.channel_id}`);
+                            if (element.cowner?._id !== undefined) {
+                              navigate(`/channel/${element.owner?._id}`);
                             }
                           }}
                         />
@@ -2947,17 +2453,17 @@ const VideoSection = () => {
                           <p
                             onClick={() => {
                               if (element.channel_id !== undefined) {
-                                navigate(`/channel/${element.channel_id}`);
+                                navigate(`/channel/${element.owner?._id}`);
                               }
                             }}
                             style={{ cursor: "pointer" }}
                           >
-                            {element.username}
+                            {element.owner?.username}
                           </p>
                           <p className="comment-time">
                             {(() => {
                               const timeDifference =
-                                new Date() - new Date(element.time);
+                                new Date() - new Date(element.createdAt);
                               const minutes = Math.floor(
                                 timeDifference / 60000
                               );
@@ -2990,7 +2496,7 @@ const VideoSection = () => {
                             })()}
                           </p>
                         </div>
-                        <p className="main-comment">{element.comment}</p>
+                        <p className="main-comment">{element.content}</p>
                         <div className="comment-interaction">
                           <ThumbUpIcon
                             fontSize="small"
@@ -3000,7 +2506,7 @@ const VideoSection = () => {
                             }}
                             onClick={() => {
                               if (token) {
-                                LikeComment(element._id);
+                                // LikeComment(element._id);
                               } else {
                                 setisbtnClicked(true);
                                 document.body.classList.add("bg-css");
@@ -3009,11 +2515,7 @@ const VideoSection = () => {
                             className="comment-like"
                           />
 
-                          <p style={{ marginLeft: "16px" }}>
-                            {CommentLikes &&
-                              CommentLikes[index] &&
-                              CommentLikes[index].likes}
-                          </p>
+                          <p style={{ marginLeft: "16px" }}>{element.likes}</p>
 
                           {isHeart[index] === false ? (
                             <FavoriteBorderOutlinedIcon
@@ -3030,7 +2532,7 @@ const VideoSection = () => {
                               className="heart-comment"
                               onClick={() => {
                                 if (email === usermail) {
-                                  HeartComment(element._id);
+                                  // HeartComment(element._id);
                                 }
                               }}
                             />
@@ -3045,12 +2547,12 @@ const VideoSection = () => {
                                 style={{ cursor: "pointer" }}
                                 onClick={() => {
                                   if (email === usermail) {
-                                    HeartComment(element._id);
+                                    // HeartComment(element._id);
                                   }
                                 }}
                               >
                                 <img
-                                  src={ChannelProfile}
+                                  src={owner?.avatar}
                                   alt="commentDP"
                                   className="heartDP"
                                   loading="lazy"
@@ -3206,7 +2708,7 @@ const VideoSection = () => {
             <p>No Playlists available...</p>
           ) : (
             ""
-          )}
+          )} 
         </div>
         <div className="this-middle-section2">
           <div className="show-playlists">
@@ -3224,7 +2726,7 @@ const VideoSection = () => {
                         fontSize="medium"
                         style={{ color: theme ? "white" : "black" }}
                         onClick={() => {
-                          AddVideoToExistingPlaylist(element._id);
+                          // AddVideoToExistingPlaylist(element._id);
                         }}
                       />
                     ) : (
@@ -3232,7 +2734,7 @@ const VideoSection = () => {
                         className="tick-box"
                         fontSize="medium"
                         style={{ color: theme ? "white" : "black" }}
-                        onClick={() => RemoveVideo(element._id)}
+                        // onClick={() => RemoveVideo(element._id)}
                       />
                     )}
                     {element.playlist_name.length <= 16
@@ -3381,9 +2883,9 @@ const VideoSection = () => {
             }
             onClick={() => {
               if (playlistName !== "" || privacy !== "") {
-                AddPlaylist();
+                // AddPlaylist();
               } else {
-                alert("Input fileds can't be empty");
+                EmptyMessage("Input fileds can't be empty");
               }
             }}
           >
