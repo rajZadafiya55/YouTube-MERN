@@ -30,7 +30,6 @@ import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LeftPanel from "./LeftPanel";
 import Error from "./Error";
@@ -55,17 +54,12 @@ const VideoSection = () => {
   const listVideo = useSelector((state) => state.videos.videosDetails);
   const isLikedStatus = useSelector((state) => state.like.isLiked);
 
-  useEffect(() => {
-    console.log("Like status changed:", isLikedStatus);
-  }, [isLikedStatus]);
-
   const [listVideoDetails, setListVideoDetails] = useState([]);
 
   const backendURL = "http://localhost:3000";
   const { id } = useParams();
   const [videoData, setVideoData] = useState([]);
   const [email, setEmail] = useState();
-  const [channelName, setChannelName] = useState();
   const [plyrInitialized, setPlyrInitialized] = useState(false);
   const [Display, setDisplay] = useState("none");
   const [comment, setComment] = useState("");
@@ -77,7 +71,6 @@ const VideoSection = () => {
   const [isbtnClicked, setisbtnClicked] = useState(false);
   const videoRef = useRef(null);
   const [TagSelected, setTagSelected] = useState("All");
-  const [userVideos, setUserVideos] = useState([]);
   const [checkTrending, setCheckTrending] = useState(false);
   const [loading, setLoading] = useState(false);
   const [recommendLoading, setRecommendLoading] = useState(true);
@@ -111,7 +104,6 @@ const VideoSection = () => {
   const [youtuberProfile, setyoutuberProfile] = useState();
   const [youtubeChannelID, setyoutubeChannelID] = useState();
   const [isSubscribed, setIsSubscribed] = useState();
-  const [Subscribers, setSubscribers] = useState();
 
   //Signup user Profile Pic
   const [userProfile, setUserProfile] = useState(avatar);
@@ -347,62 +339,6 @@ const VideoSection = () => {
   //   return () => clearInterval(interval);
   // }, []);
 
-  // get other channel
-  // useEffect(() => {
-  //   const getOtherChannel = async () => {
-  //     try {
-  //       if (id !== undefined) {
-  //         const response = await fetch(`${backendURL}/otherchannel/${id}`);
-  //         const userEmail = await response.json();
-  //         setUserMail(userEmail);
-  //       }
-  //     } catch (error) {
-  //       //console.log(error.message);
-  //     }
-  //   };
-
-  //   getOtherChannel();
-  // }, []);
-
-  // get channel by id
-  // useEffect(() => {
-  //   const getChannelID = async () => {
-  //     try {
-  //       if (usermail !== undefined) {
-  //         const response = await fetch(
-  //           `${backendURL}/getchannelid/${usermail}`
-  //         );
-  //         const { channelID, subscribers } = await response.json();
-  //         setChannelID(channelID);
-  //         setSubscribers(subscribers);
-  //       }
-  //     } catch (error) {
-  //       // console.log("Error fetching user data:", error.message);
-  //     }
-  //   };
-
-  //   getChannelID();
-  // }, [usermail]);
-
-  // get subscriber data
-  // useEffect(() => {
-  //   const GetChannelData = async () => {
-  //     try {
-  //       if (usermail !== undefined) {
-  //         const response = await fetch(`${backendURL}/subscribe/${usermail}`);
-  //         const { channel, profile, channelid } = await response.json();
-  //         setyoutuberName(channel);
-  //         setyoutuberProfile(profile);
-  //         setyoutubeChannelID(channelid);
-  //       }
-  //     } catch (error) {
-  //       // console.log("Error fetching user data:", error.message);
-  //     }
-  //   };
-
-  //   GetChannelData();
-  // }, [usermail]);
-
   // check subscription data
   // useEffect(() => {
   //   const checkSubscription = async () => {
@@ -548,24 +484,24 @@ const VideoSection = () => {
     }
   };
 
-  // const LikeComment = async (commentId) => {
-  //   try {
-  //     if (commentId !== undefined && id !== undefined && email !== undefined) {
-  //       const response = await fetch(
-  //         `${backendURL}/LikeComment /${id}/${commentId}/${email}`,
-  //         {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //         }
-  //       );
-  //       await response.json();
-  //     }
-  //   } catch (error) {
-  //     //console.log(error.message);
-  //   }
-  // };
+  const LikeComment = async (commentId) => {
+    try {
+      if (commentId !== undefined && id !== undefined && email !== undefined) {
+        const response = await fetch(
+          `${backendURL}/LikeComment /${id}/${commentId}/${email}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        await response.json();
+      }
+    } catch (error) {
+      //console.log(error.message);
+    }
+  };
 
   const DeleteComment = async (commentId) => {
     try {
@@ -586,24 +522,6 @@ const VideoSection = () => {
         commonNotify("Comment deleted!");
       }
       // window.location.reload();
-    } catch (error) {
-      //console.log(error.message);
-    }
-  };
-
-  const DislikeVideo = async () => {
-    try {
-      const response = await fetch(
-        `${backendURL}/dislikevideo/${id}/${email}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      await response.json();
-      // console.log("disliked");
     } catch (error) {
       //console.log(error.message);
     }
@@ -659,22 +577,6 @@ const VideoSection = () => {
       const data = await response.json();
       if (data === "Subscribed") {
         commonNotify("Channel subscribed!");
-      }
-    } catch (error) {
-      //console.log(error.message);
-    }
-  };
-
-  const updateViews = async (id) => {
-    try {
-      if (id !== undefined) {
-        const response = await fetch(`${backendURL}/updateview/${id}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        await response.json();
       }
     } catch (error) {
       //console.log(error.message);
@@ -910,12 +812,7 @@ const VideoSection = () => {
                   }
                   disabled={email === usermail ? true : false}
                   onClick={() => {
-                    if (token) {
-                      SubscribeChannel();
-                    } else {
-                      setisbtnClicked(true);
-                      document.body.classList.add("bg-css");
-                    }
+                    SubscribeChannel();
                   }}
                   style={
                     email === usermail
@@ -1836,12 +1733,7 @@ const VideoSection = () => {
                               cursor: "pointer",
                             }}
                             onClick={() => {
-                              if (token) {
-                                element._id;
-                              } else {
-                                setisbtnClicked(true);
-                                document.body.classList.add("bg-css");
-                              }
+                              LikeComment(element._id);
                             }}
                             className="comment-like"
                           />
@@ -2505,12 +2397,9 @@ const VideoSection = () => {
                               cursor: "pointer",
                             }}
                             onClick={() => {
-                              if (token) {
-                                // LikeComment(element._id);
-                              } else {
-                                setisbtnClicked(true);
-                                document.body.classList.add("bg-css");
-                              }
+                             
+                                LikeComment(element._id);
+                             
                             }}
                             className="comment-like"
                           />
@@ -2708,7 +2597,7 @@ const VideoSection = () => {
             <p>No Playlists available...</p>
           ) : (
             ""
-          )} 
+          )}
         </div>
         <div className="this-middle-section2">
           <div className="show-playlists">
