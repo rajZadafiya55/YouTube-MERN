@@ -52,7 +52,6 @@ const Content = () => {
 
   const [userVideos, setUserVideos] = useState([]);
   const [sortByDateAsc, setSortByDateAsc] = useState(true);
-  const [Email, setEmail] = useState();
   const [changeSort, setChangeSort] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [DeleteVideoID, setDeleteVideoID] = useState();
@@ -72,9 +71,7 @@ const Content = () => {
   });
 
   // upload video
-  const [selectedImage, setSelectedImage] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
-  const [previewImage, setPreviewImage] = useState(avatar);
   const [videoName, setVideoName] = useState("Upload videos");
   const [VideoURL, setVideoURL] = useState("");
   const [Progress, setProgress] = useState(0);
@@ -114,11 +111,6 @@ const Content = () => {
     });
 
   //USE EFFECTS
-
-  useEffect(() => {
-    const token = localStorage.getItem("userToken");
-    setEmail(jwtDecode(token).email);
-  }, []);
 
   //IMAGE UPLOAD
   useEffect(() => {
@@ -278,7 +270,7 @@ const Content = () => {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 1200);
+    }, 1000);
   }, []);
 
   useEffect(() => {
@@ -1125,27 +1117,6 @@ const Content = () => {
                               <div
                                 className={
                                   theme
-                                    ? "edit-video-data-row option-row"
-                                    : "edit-video-data-row option-row preview-lightt"
-                                }
-                                onClick={() => {
-                                  navigate(`/studio/video/edit/${element._id}`);
-                                }}
-                              >
-                                <ModeEditOutlineOutlinedIcon
-                                  className={
-                                    theme
-                                      ? "video-edit-icons"
-                                      : "video-edit-icons-light"
-                                  }
-                                  fontSize="medium"
-                                  style={{ color: theme ? "#aaa" : "#606060" }}
-                                />
-                                <p>Edit title and description</p>
-                              </div>
-                              <div
-                                className={
-                                  theme
                                     ? "share-video-data-row option-row"
                                     : "share-video-data-row option-row preview-lightt"
                                 }
@@ -1284,9 +1255,7 @@ const Content = () => {
         <div
           className="novideo-available"
           style={
-            userVideos && userVideos.message === "USER DOESN'T EXIST"
-              ? { display: "flex" }
-              : { display: "none" }
+            userVideos.length === 0 ? { display: "flex" } : { display: "none" }
           }
         >
           <img src={noImage} alt="no-video" className="no-content-img" />

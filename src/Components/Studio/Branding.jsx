@@ -1,461 +1,317 @@
-import jwtDecode from "jwt-decode";
 import { useState, useEffect } from "react";
 import defaultimg from "../../img/Uavatar.png";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { storage } from "../../Firebase";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { avatar, coverImage } from "../../constant/Api.js";
+import axios from "axios";
+import pica from "pica";
+import {
+  avatar as Myavatar,
+  coverImage as MycoverImage,
+  VideoHeader,
+  APIHttp,
+} from "../../constant/Api";
+import { Button } from "@mui/material";
 
 function Branding() {
-  const backendURL = "http://localhost:3000";
-  const [email, setEmail] = useState("");
-  const [selectedProfile, setSelectedProfile] = useState(null);
-  const [previewProfile, setPreviewProfile] = useState(defaultimg);
-  const [selectedBanner, setSelectedBanner] = useState(null);
-  const [previewBanner, setPreviewBanner] = useState(null);
-  const [changes, setChanges] = useState(false);
-  const [ProfileChanges, setProfileChanges] = useState(false);
-  const [BannerChanges, setBannerChanges] = useState(false);
-  const [channelID, setChannelID] = useState();
+  const [avatar, setPreviewAvatar] = useState(Myavatar || defaultimg);
+  const [coverImage, setPreviewCoverImage] = useState(MycoverImage);
   const [loading, setLoading] = useState(false);
   const [fakeLoading, setFakeLoading] = useState(true);
-  const [theme, setTheme] = useState(() => {
-    const Dark = localStorage.getItem("Dark");
-    return Dark ? JSON.parse(Dark) : true;
-  });
-
-  //TOAST FUNCTIONS
-
-  const saveNotify = () =>
-    toast.success("Changes saved successfully!", {
-      position: "bottom-center",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  //USE EFFECTS
-
-  useEffect(() => {
-    const token = localStorage.getItem("userToken");
-    setEmail(jwtDecode(token).email);
-  }, []);
+  const [theme, setTheme] = useState(false);
+  const [data, setData] = useState({ avatar: null, coverImage: null });
 
   useEffect(() => {
     setTimeout(() => {
       setFakeLoading(false);
-    }, 1200);
+    }, 50);
   }, []);
 
-  useEffect(() => {
-    const handleMenuButtonClick = () => {
-      alert("You'll lose your unsaved data.");
-    };
-
-    const basicInfo = document.querySelector(".basic-txt");
-
-    if (changes === true) {
-      basicInfo.addEventListener("click", handleMenuButtonClick);
-
-      return () => {
-        basicInfo.removeEventListener("click", handleMenuButtonClick);
-      };
-    }
-  }, [changes]);
-
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        if (email !== undefined) {
-          const response = await fetch(`${backendURL}/getchannel/${email}`);
-          const { profile } = await response.json();
-          setPreviewProfile(profile);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-    getData();
-  }, [email]);
-
-  useEffect(() => {
-    const getChannelID = async () => {
-      try {
-        if (email !== undefined) {
-          const response = await fetch(`${backendURL}/getchannelid/${email}`);
-          const { channelID } = await response.json();
-          setChannelID(channelID);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-    getChannelID();
-  }, [email]);
-
-  useEffect(() => {
-    const getChannelCover = async () => {
-      try {
-        const response = await fetch(`${backendURL}/getcover/${email}`);
-        const coverimg = await response.json();
-        setPreviewBanner(coverimg);
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-
-    getChannelCover();
-  }, [email]);
-
-  const handleProfileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedProfile(file);
-    setChanges(true);
-    setProfileChanges(true);
-    if (file) {
-      setPreviewProfile(URL.createObjectURL(file));
-    }
-  };
-
-  const handleBannerChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedBanner(file);
-    setChanges(true);
-    setBannerChanges(true);
-
-    if (file) {
+  const resizeImage = (file, width, height) => {
+    return new Promise((resolve, reject) => {
+      const img = document.createElement("img");
       const reader = new FileReader();
-      reader.onloadend = () => {
-        const img = new Image();
-        img.onload = () => {
-          const width = img.width;
-          const height = img.height;
-          const aspectRatio = width / height;
-          if (Math.abs(aspectRatio - 16 / 9) < 0.01) {
-            setChanges(true);
-            setPreviewBanner(URL.createObjectURL(file));
-          } else {
-            alert("Invalid image aspect ratio. Please select a 16:9 image.");
-          }
-        };
-        img.src = reader.result;
+
+      reader.onload = (e) => {
+        img.src = e.target.result;
       };
+
+      reader.onerror = (e) => {
+        reject(e);
+      };
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+
+        const picaInstance = pica();
+        picaInstance
+          .resize(img, canvas, {
+            unsharpAmount: 80,
+            unsharpRadius: 0.6,
+            unsharpThreshold: 2,
+          })
+          .then(() => picaInstance.toBlob(canvas, "image/jpeg", 0.9))
+          .then((blob) => {
+            resolve(new File([blob], file.name, { type: "image/jpeg" }));
+          })
+          .catch(reject);
+      };
+
       reader.readAsDataURL(file);
-    }
+    });
   };
 
-  const UploadProfile = async () => {
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    const fieldName = e.target.name;
+
+    if (file.type === "application/pdf") {
+      toast.error("PDF files are not allowed. Please upload an image file.");
+      return;
+    }
+
     try {
-      if (!selectedProfile) {
-        return null;
+      if (fieldName === "avatar") {
+        const resizedAvatar = await resizeImage(file, 98, 98);
+        setPreviewAvatar(URL.createObjectURL(resizedAvatar));
+        setData({ ...data, [fieldName]: resizedAvatar });
+      } else if (fieldName === "coverImage") {
+        const resizedCoverImage = await resizeImage(file, 2048, 1152);
+        setPreviewCoverImage(URL.createObjectURL(resizedCoverImage));
+        setData({ ...data, [fieldName]: resizedCoverImage });
       }
-
-      const fileReference = ref(storage, `profile/${selectedProfile.name}`);
-      const uploadData = uploadBytesResumable(fileReference, selectedProfile);
-
-      return new Promise((resolve, reject) => {
-        uploadData.on(
-          "state_changed",
-          null,
-          (error) => {
-            console.log(error);
-            reject(error);
-          },
-          async () => {
-            try {
-              const downloadURL = await getDownloadURL(uploadData.snapshot.ref);
-              resolve(downloadURL);
-            } catch (error) {
-              console.log(error);
-              reject(error);
-            }
-          }
-        );
-      });
     } catch (error) {
-      console.log(error);
-      throw error;
+      toast.error("Failed to resize the image. Please try again.");
     }
   };
 
-  const UploadBanner = async () => {
-    try {
-      if (!selectedBanner) {
-        return null;
-      }
-
-      const fileReference = ref(storage, `cover/${selectedBanner.name}`);
-      const uploadData = uploadBytesResumable(fileReference, selectedBanner);
-
-      return new Promise((resolve, reject) => {
-        uploadData.on(
-          "state_changed",
-          null,
-          (error) => {
-            console.log(error);
-            reject(error);
-          },
-          async () => {
-            try {
-              const downloadURL1 = await getDownloadURL(
-                uploadData.snapshot.ref
-              );
-              resolve(downloadURL1);
-            } catch (error) {
-              console.log(error);
-              reject(error);
-            }
-          }
-        );
-      });
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  };
-
-  const saveChannelData = async (e) => {
+  const handleSubmitProfile = (e) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      let profileURL = previewProfile;
-      let coverURL = previewBanner;
+    const formData = new FormData();
+    formData.append("avatar", data.avatar);
 
-      if (ProfileChanges === true) {
-        profileURL = await UploadProfile();
-      }
-
-      if (BannerChanges === true) {
-        coverURL = await UploadBanner();
-      }
-
-      const data = {
-        profileURL: profileURL,
-        coverURL: coverURL,
-        channelid: channelID,
-      };
-
-      const response = await fetch(`${backendURL}/savecustomization/${email}`, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const user = await response.json();
-      if (user) {
+    axios
+      .patch(`${APIHttp}users/avatar`, formData, VideoHeader)
+      .then((response) => {
+        const updatedData = response.data.data;
+        localStorage.setItem("userData", JSON.stringify(updatedData));
+        window.location.reload();
+        toast("Profile picture updated successfully.");
         setLoading(false);
-        setChanges(false);
-        saveNotify();
-      } else {
-        setLoading(true);
-      }
-    } catch (error) {
-      // console.log(error.message);
-      setLoading(false);
-    }
+      })
+      .catch((error) => {
+        toast.error("Failed to update profile picture. Please try again.");
+        setLoading(false);
+      });
   };
 
-  useEffect(() => {
-    const publishBtn = document.querySelector(".save-customize");
+  const handleSubmitCoverImage = (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-    if (changes === false) {
-      publishBtn.classList.add("disable-btn");
-    } else {
-      publishBtn.classList.remove("disable-btn");
+    const formData = new FormData();
+    formData.append("coverImage", data.coverImage);
 
-      publishBtn.addEventListener("click", saveChannelData);
-
-      return () => {
-        publishBtn.removeEventListener("click", saveChannelData);
-      };
-    }
-  });
+    axios
+      .patch(`${APIHttp}users/cover-image`, formData, VideoHeader)
+      .then((response) => {
+        const updatedData = response.data.data;
+        localStorage.setItem("userData", JSON.stringify(updatedData));
+        window.location.reload();
+        toast("Cover image updated successfully.");
+        setLoading(false);
+      })
+      .catch((error) => {
+        toast.error("Failed to update cover image. Please try again.");
+        setLoading(false);
+      });
+  };
 
   return (
-    <>
-      <div
-        className="channel-branding-section"
-        style={{
-          opacity: loading ? "0.35" : "1",
-          transition: "opacity .15s ease",
-          cursor: loading ? "wait" : "auto",
-        }}
-      >
-        {/* Picture section  */}
-        <div className="profile-update-section">
-          <p
-            className={
-              theme ? "profile-head-txt" : "profile-head-txt text-light-mode"
-            }
+    <div
+      className="channel-branding-section"
+      style={{
+        opacity: loading ? "0.35" : "1",
+        transition: "opacity .15s ease",
+        cursor: loading ? "wait" : "auto",
+      }}
+    >
+      {/* Profile Picture Section */}
+      <div className="profile-update-section">
+        <p
+          className={
+            theme ? "profile-head-txt" : "profile-head-txt text-light-mode"
+          }
+        >
+          Picture
+        </p>
+        <p
+          className={
+            theme ? "profile-desc-txt" : "profile-desc-txt text-light-mode2"
+          }
+        >
+          Your profile picture will appear where your channel is presented on
+          YouTube, like next to your videos and comments.
+        </p>
+        <p
+          className={
+            theme ? "profile-desc-txt" : "profile-desc-txt text-light-mode2"
+          }
+        >
+          (Please refresh the page if the images don’t load properly.)
+        </p>
+        <div className="picture-section">
+          <SkeletonTheme
+            baseColor={theme ? "#353535" : "#aaaaaa"}
+            highlightColor={theme ? "#444" : "#b6b6b6"}
           >
-            Picture
-          </p>
-          <p
-            className={
-              theme ? "profile-desc-txt" : "profile-desc-txt text-light-mode2"
-            }
-          >
-            Your profile picture will appear where your channel is presented on
-            YouTube, like next to your videos and comments.
-          </p>
-          <p
-            className={
-              theme ? "profile-desc-txt" : "profile-desc-txt text-light-mode2"
-            }
-          >
-            (Please refresh the page if the images don’t load properly.)
-          </p>
-          <div className="picture-section">
-            <SkeletonTheme
-              baseColor={theme ? "#353535" : "#aaaaaa"}
-              highlightColor={theme ? "#444" : "#b6b6b6"}
-            >
-              <div
-                className="pic-div"
-                style={
-                  fakeLoading === true
-                    ? { display: "flex" }
-                    : { display: "none" }
-                }
-              >
-                <Skeleton
-                  count={1}
-                  width={140}
-                  height={140}
-                  style={{
-                    borderRadius: "100%",
-                  }}
-                  className="sk-custom-dp"
-                />
-              </div>
-            </SkeletonTheme>
             <div
               className="pic-div"
-              style={
-                fakeLoading === false
-                  ? { visibility: "visible", display: "flex" }
-                  : { visibility: "hidden", display: "none" }
-              }
+              style={fakeLoading ? { display: "flex" } : { display: "none" }}
             >
-              <img src={avatar} alt="profile" className="channel-image" />
+              <Skeleton
+                count={1}
+                width={98}
+                height={98}
+                style={{ borderRadius: "100%" }}
+                className="sk-custom-dp"
+              />
             </div>
-            <div
-              className={
-                theme
-                  ? "pic-extra-content"
-                  : "pic-extra-content text-light-mode2"
-              }
-            >
-              It’s recommended to use a picture that’s at least 98 x 98 pixels
-              and 4MB or less. Use a PNG or GIF (no animations) file. Make sure
-              your picture follows the YouTube Community Guidelines.
-              <label
-                className={theme ? "change-image" : "change-image blue-txt"}
-                htmlFor="profile-image-input"
-              >
-                CHANGE
-              </label>
+          </SkeletonTheme>
+          <div
+            className="pic-div"
+            style={
+              fakeLoading
+                ? { visibility: "hidden", display: "none" }
+                : { visibility: "visible", display: "flex" }
+            }
+          >
+            <img src={avatar} alt="profile" className="channel-image" />
+          </div>
+          <div
+            className={
+              theme ? "pic-extra-content" : "pic-extra-content text-light-mode2"
+            }
+          >
+            It’s recommended to use a picture that’s at least 98 x 98 pixels and
+            4MB or less. Use a PNG or GIF (no animations) file. Make sure your
+            picture follows the YouTube Community Guidelines.
+            <form onSubmit={handleSubmitProfile}>
+              <div style={{ marginBottom: "20px" }}>
+                <label
+                  className={theme ? "change-image" : "change-image blue-txt"}
+                  htmlFor="profile-image-input"
+                >
+                  SELECT
+                </label>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  style={{ marginLeft: "30px" }}
+                >
+                  CHANGE
+                </Button>
+              </div>
               <input
                 type="file"
                 id="profile-image-input"
+                name="avatar"
                 accept="image/*"
-                onChange={handleProfileChange}
+                onChange={handleImageChange}
                 style={{ display: "none" }}
               />
-            </div>
-          </div>
-        </div>
-
-        {/* Banner section  */}
-        <div className="cover-update-section">
-          <p className={theme ? "cover-head" : "cover-head text-light-mode"}>
-            Banner image
-          </p>
-          <p className={theme ? "banner-desc" : "banner-desc text-light-mode2"}>
-            This image will appear across the top of your channel
-          </p>
-          <p
-            className={
-              theme ? "profile-desc-txt" : "profile-desc-txt text-light-mode2"
-            }
-          >
-            (Please refresh the page if the images don’t load properly.)
-          </p>
-          <div className="banner-section">
-            <SkeletonTheme
-              baseColor={theme ? "#353535" : "#aaaaaa"}
-              highlightColor={theme ? "#444" : "#b6b6b6"}
-            >
-              <div
-                className="pic-div"
-                style={
-                  fakeLoading === true
-                    ? { display: "flex" }
-                    : { display: "none" }
-                }
-              >
-                <Skeleton
-                  count={1}
-                  width={290}
-                  height={160}
-                  className="sk-custom-banner"
-                />
-              </div>
-            </SkeletonTheme>
-            <div
-              className="pic-div"
-              style={
-                fakeLoading === false
-                  ? { visibility: "visible", display: "flex" }
-                  : { visibility: "hidden", display: "none" }
-              }
-            >
-              {previewBanner ? (
-                <img
-                  src={coverImage}
-                  alt="banner"
-                  className="banner-image"
-                />
-              ) : (
-                ""
-              )}
-            </div>
-            <div
-              className={
-                theme
-                  ? "pic-extra-content"
-                  : "pic-extra-content text-light-mode2"
-              }
-            >
-              For the best results on all devices, use an image that’s at least
-              2048 x 1152 pixels and 6MB or less.
-              <label
-                className={theme ? "change-image" : "change-image blue-txt"}
-                htmlFor="banner-image-input"
-              >
-                CHANGE
-              </label>
-              <input
-                type="file"
-                id="banner-image-input"
-                accept="image/*"
-                onChange={handleBannerChange}
-                style={{ display: "none" }}
-              />
-            </div>
+            </form>
           </div>
         </div>
       </div>
-    </>
+
+      {/* Cover Image Section */}
+      <div className="cover-update-section">
+        <p className={theme ? "cover-head" : "cover-head text-light-mode"}>
+          Banner image
+        </p>
+        <p className={theme ? "banner-desc" : "banner-desc text-light-mode2"}>
+          This image will appear across the top of your channel.
+        </p>
+        <p
+          className={
+            theme ? "profile-desc-txt" : "profile-desc-txt text-light-mode2"
+          }
+        >
+          (Please refresh the page if the images don’t load properly.)
+        </p>
+        <div className="banner-section">
+          <SkeletonTheme
+            baseColor={theme ? "#353535" : "#aaaaaa"}
+            highlightColor={theme ? "#444" : "#b6b6b6"}
+          >
+            <div
+              className="pic-div"
+              style={fakeLoading ? { display: "flex" } : { display: "none" }}
+            >
+              <Skeleton
+                count={1}
+                width={290}
+                height={160}
+                className="sk-custom-banner"
+              />
+            </div>
+          </SkeletonTheme>
+          <div
+            className="pic-div"
+            style={
+              fakeLoading
+                ? { visibility: "hidden", display: "none" }
+                : { visibility: "visible", display: "flex" }
+            }
+          >
+            {coverImage ? (
+              <img src={coverImage} alt="banner" className="banner-image" />
+            ) : (
+              ""
+            )}
+          </div>
+          <div
+            className={
+              theme ? "pic-extra-content" : "pic-extra-content text-light-mode2"
+            }
+          >
+            For the best results on all devices, use an image that’s at least
+            2048 x 1152 pixels and 6MB or less.
+            <form onSubmit={handleSubmitCoverImage}>
+              <div style={{ marginBottom: "20px" }}>
+                <label
+                  className={theme ? "change-image" : "change-image blue-txt"}
+                  htmlFor="banner-image-input"
+                >
+                  SELECT
+                </label>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  style={{ marginLeft: "30px" }}
+                >
+                  CHANGE
+                </Button>
+              </div>
+              <input
+                type="file"
+                id="banner-image-input"
+                name="coverImage"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: "none" }}
+              />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

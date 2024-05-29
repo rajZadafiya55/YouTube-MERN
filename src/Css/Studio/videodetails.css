@@ -14,6 +14,7 @@
   left: 300px;
   width: 62%;
   animation: FADEINN 1s ease;
+  padding-bottom: 40px;
 }
 
 .currentvideo-title {
@@ -542,56 +543,41 @@
 }
 
 @media (width<= 460px) {
-  .playable-videoedit {
-    width: 92vw !important;
-    height: 52.2vw !important;
+  .current-videolink {
+    cursor: pointer;
+    overflow: hidden;
+    max-width: 80%;
   }
-  .preview-data-details {
-    width: inherit;
+
+  .img-optionss {
+    bottom: 225px;
+    left: 134px;
+    right: 0px;
   }
-  .preview-part1 {
-    flex-wrap: wrap;
+  .choosed-one {
+    bottom: 0px !important;
+  }
+  .mythumbnails-sectionn {
     flex-direction: column;
     align-items: flex-start;
   }
-  .current-videolink,
-  .copythis-btn,.copy-light-btn {
-    display: none !important;
-  }
-  .copyvideokalink {
-    display: flex;
-    align-items: center;
-    margin-top: 15px;
-    font-size: 13px;
-  }
-  .copyvideokalink > p {
-    margin-left: 8px;
-  }
-  .video-visibility-section {
-    width: inherit;
-  }
-  .select-any-visibility {
-    width: inherit;
-  }
-  .main-video-details-section {
-    padding-right: 15px;
-    left: 16px !important;
-    top: 135px !important;
-  }
-
-  .back-menu-edit {
-    display: flex !important;
-  }
-
-  .main-section3-new {
-    display: none !important;
-  }
   .extra-img-options {
-    bottom: auto;
-    top: 588px;
+    bottom: 756px;
   }
-  .video-details-right {
-    padding-bottom: 80px;
+  .currnt-tbimg,
+  .currnt-tbimg2 {
+    margin-left: 0px;
+  }
+  .thissection-btns > button:nth-child(1) {
+    display: none;
+  }
+  .currentvideo-title-inp,
+  .currentvideo-desc-inp,
+  .preview-part2 > p:nth-child(2) {
+    font-size: 13.6px;
+  }
+  .undo-edit {
+    display: block !important;
   }
 }
 

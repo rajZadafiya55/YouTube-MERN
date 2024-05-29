@@ -10,8 +10,7 @@
   top: 110px;
   left: 310px;
 }
-upload-content
-.channel-content-top > p:nth-child(1) {
+upload-content .channel-content-top > p:nth-child(1) {
   color: white;
   font-family: "Open Sans", sans-serif;
   font-weight: 700;
@@ -431,16 +430,16 @@ upload-content
   margin-top: 70px;
 }
 
-.channel-dark::before {
+/* .channel-dark::before {
   content: "";
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 5; /* Set a lower z-index than the auth-popup */
+  z-index: 5;
   animation: Fade2 0.25s ease-out forwards;
-}
+} */
 
 .no-skeleton {
   display: flex;

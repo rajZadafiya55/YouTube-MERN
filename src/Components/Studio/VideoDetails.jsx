@@ -588,7 +588,9 @@ function VideoDetails() {
                   </div>
                   <ContentCopyIcon
                     fontSize="medium"
-                    className={theme ? "copythis-btn" : "copy-light-btn"}
+                    className={
+                      theme ? "copythis-btn" : "copy-light-btn copybtn,"
+                    }
                     style={{ color: "#aaaaaab0" }}
                     onClick={handleCopyLink}
                   />
@@ -712,7 +714,6 @@ function VideoDetails() {
                 />
                 <p className={theme ? "" : "text-light-mode"}>Private</p>
               </div>
-              
             </div>
           </div>
         </div>

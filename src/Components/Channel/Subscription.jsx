@@ -15,7 +15,6 @@ function Subscription(prop) {
   const backendURL = "http://localhost:3000";
   const [addChannelClicked, setAddChannelClicked] = useState(false);
   const [Subscriptions, setSubscriptions] = useState([]);
-  const [Email, setEmail] = useState();
   const [featuredChannelsData, setFeaturedChannelsData] = useState([]);
 
   const token = localStorage.getItem("userToken");
@@ -26,12 +25,6 @@ function Subscription(prop) {
   });
 
   // UseEffects
-
-  useEffect(() => {
-    if (token) {
-      setEmail(jwtDecode(token).email);
-    }
-  }, [token]);
 
   useEffect(() => {
     setTimeout(() => {

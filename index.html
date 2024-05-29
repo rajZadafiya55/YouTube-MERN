@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="src/img/icon.png" type="image/x-icon">
+    <link rel="icon" href="src/img/icon.png" type="image/x-icon" />
+
     <title>YouTube</title>
   </head>
   <body>
@@ -12,6 +13,7 @@
     <script>
       const currentURL = window.location.href;
       const local = "http://localhost:5173";
+      localStorage.setItem("Dark", false);
 
       if (currentURL === `${local}/studio`) {
         document.body.style.backgroundColor = "#1f1f1f";
