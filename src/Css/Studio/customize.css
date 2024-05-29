@@ -2,7 +2,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap");
 
 .channel-customize {
-  background-color: #282828;
+  background-color: white;
   height: max-content;
   animation: FADEINN 1s ease;
 }
@@ -114,6 +114,7 @@
 
 .customize-data-section {
   position: absolute;
+  padding-bottom: 200px;
 }
 
 .profile-update-section {
@@ -458,7 +459,8 @@
   color: #3eaffe;
 }
 
-.delete-social,.delete-social-light {
+.delete-social,
+.delete-social-light {
   cursor: pointer;
   margin-right: 10px;
 }
@@ -505,7 +507,8 @@
   }
 }
 
-.addthis-icon,.addthis-icon-light {
+.addthis-icon,
+.addthis-icon-light {
   cursor: pointer;
   padding-top: 8px;
   padding-bottom: 8px;

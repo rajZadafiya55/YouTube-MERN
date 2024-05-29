@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import "../Css/leftpanel2.css";
-import jwtDecode from "jwt-decode";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import VideoLibraryOutlinedIcon from "@mui/icons-material/VideoLibraryOutlined";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
@@ -11,7 +10,8 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { CiShare1 } from "react-icons/ci";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
-import { avatar } from "../constant/Api";
+import { avatar, username, _id } from "../constant/Api";
+
 import Uavatar from "../img/Uavatar.png";
 
 // REACT ICONS
@@ -23,12 +23,6 @@ import { MdOutlineAutoFixHigh } from "react-icons/md";
 
 const LeftPanel2 = () => {
   const navigate = useNavigate();
-  const backendURL = "http://localhost:3000";
-  const [email, setEmail] = useState("");
-  const token = localStorage.getItem("userToken");
-  const [profileIMG, setProfileIMG] = useState();
-  const [channel, setChannel] = useState("");
-  const [channelId, setChannelId] = useState();
   const [studioMenuClicked, setstudioMenuClicked] = useState(() => {
     const menu = localStorage.getItem("studioMenuClicked");
     return menu ? JSON.parse(menu) : false;
@@ -36,10 +30,7 @@ const LeftPanel2 = () => {
   const StudioSection = localStorage.getItem("Studio-Section");
   const location = useLocation();
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState(() => {
-    const Dark = localStorage.getItem("Dark");
-    return Dark ? JSON.parse(Dark) : true;
-  });
+  const [theme, setTheme] = useState(false);
 
   useEffect(() => {
     const handleMenuButtonClick = () => {
@@ -81,14 +72,8 @@ const LeftPanel2 = () => {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 2800);
+    }, 200);
   }, []);
-
-  useEffect(() => {
-    setEmail(jwtDecode(token).email);
-  }, [token]);
-
-
 
   return (
     <>
@@ -151,8 +136,8 @@ const LeftPanel2 = () => {
               alt=""
               className="profile_img"
               onClick={() => {
-                if (channelId !== undefined) {
-                  navigate(`/channel/${channelId}`);
+                if (_id !== undefined) {
+                  navigate(`/channel/${_id}`);
                 }
               }}
             />
@@ -161,7 +146,7 @@ const LeftPanel2 = () => {
           <div className="about-channel">
             <p className="your-channel">Your Channel</p>
             <p className={theme ? "c-name" : "c-name text-light-mode2"}>
-              {channel}
+              {username}
             </p>
           </div>
         </div>
@@ -307,13 +292,13 @@ const LeftPanel2 = () => {
             placement="top"
           >
             <img
-              src={profileIMG ? profileIMG : avatar}
+              src={avatar || Uavatar}
               alt=""
               className="profile_img"
               style={{ width: "50px", height: "50px" }}
               onClick={() => {
-                if (channelId !== undefined) {
-                  navigate(`/channel/${channelId}`);
+                if (_id !== undefined) {
+                  navigate(`/channel/${_id}`);
                 }
               }}
             />

@@ -16,8 +16,6 @@ import {
   deleteCoomentsDetails,
   getUserAllComments,
 } from "../../redux/actions/commentAction.js";
-import { APIHttp } from "../../constant/Api.js";
-import { getSelectedVideo } from "../../redux/actions/videoAction.js";
 import { getLikeCommentToggle } from "../../redux/actions/likeAction.js";
 
 const Comments = () => {
@@ -36,12 +34,9 @@ const Comments = () => {
     console.log("Like status changed:", isLiked);
   }, [isLiked]);
 
-  const backendURL = "http://localhost:3000";
-  const [Email, setEmail] = useState();
   const [AllComments, setAllComments] = useState([]);
   const [filterComment, setFilterComment] = useState("");
   const [loading, setLoading] = useState(true);
-  const [Profile, setProfile] = useState();
   const [menu, setmenu] = useState(() => {
     const menu = localStorage.getItem("studioMenuClicked");
     return menu ? JSON.parse(menu) : false;
@@ -75,14 +70,9 @@ const Comments = () => {
   }, [menu]);
 
   useEffect(() => {
-    const token = localStorage.getItem("userToken");
-    setEmail(jwtDecode(token).email);
-  }, []);
-
-  useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 1200);
+    }, 800);
   }, []);
 
   useEffect(() => {
@@ -137,21 +127,6 @@ const Comments = () => {
   });
 
   useEffect(() => {
-    const getChannel = async () => {
-      try {
-        if (Email !== undefined) {
-          const response = await fetch(`${backendURL}/getchannel/${Email}`);
-          const { profile } = await response.json();
-          setProfile(profile);
-        }
-      } catch (error) {
-        //console.log(error.message);
-      }
-    };
-    getChannel();
-  }, [Email]);
-
-  useEffect(() => {
     dispatch(getUserAllComments());
   }, []);
 
@@ -194,8 +169,8 @@ const Comments = () => {
       (item) =>
         (item.content &&
           item.content.toLowerCase().includes(filterComment.toLowerCase())) ||
-        (item.owner.username &&
-          item.owner.username
+        (item.video.owner.username &&
+          item.video.owner.username
             .toLowerCase()
             .includes(filterComment.toLowerCase()))
     );
@@ -304,22 +279,6 @@ const Comments = () => {
                               }}
                             />
                             <div className="comment-all-btns">
-                              <div className="cmmt-like">
-                                <Tooltip
-                                  TransitionComponent={Zoom}
-                                  title="Like/Unlike"
-                                  placement="bottom"
-                                >
-                                  <ThumbUpIcon
-                                    fontSize="small"
-                                    className="thiscomment-like-btn"
-                                    style={{
-                                      color: theme ? "white" : "#606060",
-                                    }}
-                                  />
-                                </Tooltip>
-                              </div>
-
                               <Tooltip
                                 TransitionComponent={Zoom}
                                 title="Delete"
@@ -393,9 +352,12 @@ const Comments = () => {
                     >
                       <div className="leftside-viddata">
                         <img
-                          src={element.owner.avatar}
+                          src={element.video.owner.avatar}
                           alt="profile"
                           className="user-channelprofileee"
+                          onClick={() =>
+                            navigate(`/channel/${element.video.owner._id}`)
+                          }
                         />
                         <div className="comment-rightt-data">
                           <div
@@ -403,7 +365,7 @@ const Comments = () => {
                               theme ? "name-time" : "name-time text-light-mode2"
                             }
                           >
-                            <p>{element.owner.username}</p>
+                            <p>{element.video.owner.username}</p>
                             <FiberManualRecordIcon
                               className="dot-seperate"
                               style={{
@@ -455,7 +417,7 @@ const Comments = () => {
                             {element.content}
                           </p>
                           <div className="comment-all-btns">
-                            <div className="cmmt-like">
+                            {/* <div className="cmmt-like">
                               <Tooltip
                                 TransitionComponent={Zoom}
                                 title="Like/Unlike"
@@ -476,7 +438,7 @@ const Comments = () => {
                               >
                                 {element.likes}
                               </p>
-                            </div>
+                            </div> */}
 
                             <Tooltip
                               TransitionComponent={Zoom}
@@ -499,16 +461,10 @@ const Comments = () => {
                       <div
                         className="right-sidevideo"
                         key={index}
-                        onClick={() => {
-                          if (element.videoData._id !== undefined) {
-                            navigate(`/studio/video/comments/${element.video}`);
-                          }
-                        }}
+                        onClick={() => navigate(`/video/${element.video._id}`)}
                       >
                         <img
-                          src={
-                            element.videoData && element.videoData.thumbnailURL
-                          }
+                          src={element.video.thumbnail.url}
                           alt="thumbnail"
                           className="commentvideo-thumbnail"
                         />
@@ -519,7 +475,15 @@ const Comments = () => {
                               : "thiscomment-rightone text-light-mode"
                           }
                         >
-                          <p></p>
+                          <p>
+                            {element.video.title &&
+                            element.video.title.length <= 55
+                              ? element.video.title
+                              : `${
+                                  element.video.title &&
+                                  element.video.title.slice(0, 55)
+                                }...`}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -542,9 +506,12 @@ const Comments = () => {
                   >
                     <div className="leftside-viddata">
                       <img
-                        src={element.owner.avatar}
+                        src={element.video.owner.avatar}
                         alt="profile"
                         className="user-channelprofileee"
+                        onClick={() =>
+                          navigate(`/channel/${element.video.owner._id}`)
+                        }
                       />
                       <div className="comment-rightt-data">
                         <div
@@ -552,7 +519,7 @@ const Comments = () => {
                             theme ? "name-time" : "name-time text-light-mode2"
                           }
                         >
-                          <p>{element.owner.username}</p>
+                          <p>{element.video.owner.username}</p>
                           <FiberManualRecordIcon
                             className="dot-seperate"
                             style={{
@@ -604,7 +571,7 @@ const Comments = () => {
                           {element.content}
                         </p>
                         <div className="comment-all-btns">
-                          <div className="cmmt-like">
+                          {/* <div className="cmmt-like">
                             <Tooltip
                               TransitionComponent={Zoom}
                               title="Like/Unlike"
@@ -625,7 +592,7 @@ const Comments = () => {
                             >
                               {element.likes}
                             </p>
-                          </div>
+                          </div> */}
 
                           <Tooltip
                             TransitionComponent={Zoom}
@@ -648,18 +615,10 @@ const Comments = () => {
                     <div
                       className="right-sidevideo"
                       key={index}
-                      onClick={() => {
-                        if (element.videoData._id !== undefined) {
-                          navigate(
-                            `/studio/video/comments/${element.videoData._id}`
-                          );
-                        }
-                      }}
+                      onClick={() => navigate(`/video/${element.video._id}`)}
                     >
                       <img
-                        src={
-                          element.videoData && element.videoData.thumbnailURL
-                        }
+                        src={element.video.thumbnail.url}
                         alt="thumbnail"
                         className="commentvideo-thumbnail"
                       />
@@ -671,10 +630,13 @@ const Comments = () => {
                         }
                       >
                         <p>
-                          {/* {element.videoData &&
-                          element.videoData.Title.length <= 40
-                            ? element.videoData.Title
-                            : `${element.videoData.Title.slice(0, 40)}...`} */}
+                          {element.video.title &&
+                          element.video.title.length <= 55
+                            ? element.video.title
+                            : `${
+                                element.video.title &&
+                                element.video.title.slice(0, 55)
+                              }...`}
                         </p>
                       </div>
                     </div>

@@ -1,31 +1,19 @@
 import React, { useEffect, useState } from "react";
+// ====================================================
+import Grid from "@mui/material/Grid";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+// project import
+import MainCard from "./Chart/MainCard";
+import AnalyticEcommerce from "./Chart/AnalyticEcommerce";
+import MonthlyBarChart from "./Chart/MonthlyBarChart";
+import UniqueVisitorCard from "./Chart/UniqueVisitorCard";
+// ====================================================
 import "../../Css/Studio/dashboard.css";
-import { Avatar, Card, CardContent, Grid, Typography } from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import PersonIcon from "@mui/icons-material/Person";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import { styled } from "@mui/system";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { APIHttp, Header } from "../../constant/Api";
-
-const StyledCard = styled(Card)(() => ({
-  boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
-  borderRadius: "16px",
-}));
-
-const StyledCardContent = styled(CardContent)(() => ({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  height: "100%",
-}));
-
-const StyledAvatar = styled(Avatar)(() => ({
-  backgroundColor: "#2196f3",
-  color: "white",
-}));
 
 const Dashboard = () => {
   const [menu, setMenu] = useState(() => {
@@ -56,7 +44,6 @@ const Dashboard = () => {
     localStorage.setItem("studioMenuClicked", JSON.stringify(menu));
   }, [menu]);
 
-  // api integrate
   const getAllStats = async () => {
     const response = await axios.get(`${APIHttp}dashboard/stats`, Header);
     return response.data.data;
@@ -75,82 +62,86 @@ const Dashboard = () => {
   if (error) return <div>Error loading stats</div>;
 
   return (
-    <>
-      <div className="studio-dashboard-section">
-        <div
-          className="dashboard-data"
-          style={{
-            left: menu ? "125px" : "310px",
-            transition: menu ? "all .1s ease" : "none",
-          }}
-        >
-          <Grid
-            container
-            spacing={2}
-            justifyContent="center"
-            style={{ marginTop: "20px" }}
-          >
-            <Grid item xs={12} sm={6} md={4}>
-              <StyledCard>
-                <StyledCardContent>
-                  <StyledAvatar>
-                    <VisibilityIcon />
-                  </StyledAvatar>
-                  <Typography
-                    variant="h6"
-                    component="div"
-                    sx={{ marginTop: 1 }}
-                  >
-                    Total Views
-                  </Typography>
-                  <Typography variant="h3" sx={{ marginTop: 1 }}>
-                    {statsData?.totalViews || 0}
-                  </Typography>
-                </StyledCardContent>
-              </StyledCard>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <StyledCard>
-                <StyledCardContent>
-                  <StyledAvatar>
-                    <PersonIcon />
-                  </StyledAvatar>
-                  <Typography
-                    variant="h6"
-                    component="div"
-                    sx={{ marginTop: 1 }}
-                  >
-                    Total Subscribers
-                  </Typography>
-                  <Typography variant="h3" sx={{ marginTop: 1 }}>
-                    {statsData?.totalSubscribers || 0}
-                  </Typography>
-                </StyledCardContent>
-              </StyledCard>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <StyledCard>
-                <StyledCardContent>
-                  <StyledAvatar>
-                    <FavoriteIcon />
-                  </StyledAvatar>
-                  <Typography
-                    variant="h6"
-                    component="div"
-                    sx={{ marginTop: 1 }}
-                  >
-                    Total Likes
-                  </Typography>
-                  <Typography variant="h3" sx={{ marginTop: 1 }}>
-                    {statsData?.totalLikes || 0}
-                  </Typography>
-                </StyledCardContent>
-              </StyledCard>
-            </Grid>
+    <div className="studio-dashboard-section">
+      <div
+        className="dashboard-data"
+        style={{
+          left: menu ? "120px" : "290px",
+          right: "30px",
+          transition: "all .1s ease",
+        }}
+      >
+        <Grid container rowSpacing={4.5} columnSpacing={2.75}>
+          {/* row 1 */}
+          <Grid item xs={12} sx={{ mb: -2.25 }}>
+            <Typography variant="h5">Dashboard</Typography>
           </Grid>
-        </div>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <AnalyticEcommerce
+              title="Total Page Views"
+              count="55"
+              percentage={59.3}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <AnalyticEcommerce
+              title="Total Users"
+              count="78,250"
+              percentage={70.5}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <AnalyticEcommerce
+              title="Total Order"
+              count="18,800"
+              percentage={27.4}
+              isLoss
+              color="warning"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <AnalyticEcommerce
+              title="Total Sales"
+              count="$35,078"
+              percentage={27.4}
+              isLoss
+              color="warning"
+            />
+          </Grid>
+
+          <Grid
+            item
+            md={8}
+            sx={{
+              display: { sm: "none", md: "block", lg: "none" },
+            }}
+          />
+
+          {/* row 2 */}
+          <Grid item xs={12} md={7} lg={7}>
+            <UniqueVisitorCard />
+          </Grid>
+          <Grid item xs={12} md={5} lg={5}>
+            <Grid container alignItems="center" justifyContent="space-between">
+              <Grid item>
+                <Typography variant="h5">Income Overview</Typography>
+              </Grid>
+              <Grid item />
+            </Grid>
+            <MainCard sx={{ mt: 2, boxShadow: 3 }} content={false}>
+              <Box sx={{ p: 3, pb: 0 }}>
+                <Stack spacing={2}>
+                  <Typography variant="h5" color="text.secondary">
+                    This Week Statistics
+                  </Typography>
+                </Stack>
+              </Box>
+              <MonthlyBarChart />
+            </MainCard>
+          </Grid>
+        </Grid>
       </div>
-    </>
+    </div>
   );
 };
 

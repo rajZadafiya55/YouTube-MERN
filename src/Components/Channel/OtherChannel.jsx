@@ -18,7 +18,6 @@ import { avatar, coverImage, email, username } from "../../constant/Api";
 
 function OtherChannel() {
   const navigate = useNavigate();
-  const backendURL = "http://localhost:3000";
   const { id } = useParams();
   const [Email, setEmail] = useState(email);
   const [newEmail, setnewEmail] = useState();
@@ -55,12 +54,6 @@ function OtherChannel() {
     });
 
   //USE EFFECTS
-
-  useEffect(() => {
-    if (token) {
-      setnewEmail(jwtDecode(token).email);
-    }
-  }, [token]);
 
   useEffect(() => {
     setTimeout(() => {

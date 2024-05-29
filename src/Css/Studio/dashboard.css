@@ -1,12 +1,21 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap");
 
+.d-card {
+  background-color: rgb(240, 236, 252);
+  text-align: center;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
 .dashboard-data {
   position: absolute;
   top: 100px;
   left: 310px;
   width: -webkit-fill-available;
   animation: FADEINN 0.45s ease;
+  padding-bottom: 30px;
 }
 
 .dashboard-top {
@@ -227,7 +236,6 @@
 
 .dashboard-publishvideos-light:hover {
   background-color: #e1e1e1 !important;
-
 }
 
 .dashboard-publishvideos:hover .bottompublish {
@@ -476,5 +484,4 @@
   .sk-dash-title {
     width: 200px !important;
   }
-
 }

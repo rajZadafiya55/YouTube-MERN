@@ -39,7 +39,7 @@ const updateVideo = () => ({
 // Thunks
 export const getAllVideos = () => (dispatch) => {
   axios
-    .get(`${APIHttp}videos`, Header)
+    .get(`${APIHttp}videos`)
     .then((res) => {
       dispatch(getVideos(res.data.data));
     })
