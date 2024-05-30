@@ -92,32 +92,6 @@ const Content = () => {
     }
   }, [isChannel]);
 
-  //TOASTS
-
-  const CancelNotify = () =>
-    toast.warning("Video upload was cancelled!", {
-      position: "bottom-center",
-      autoClose: 950,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const CopiedNotify = () =>
-    toast.success("Link Copied!", {
-      position: "bottom-center",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
   //USE EFFECTS
 
   //IMAGE UPLOAD
@@ -488,7 +462,7 @@ const Content = () => {
                 style={{ color: "gray" }}
                 onClick={() => {
                   if (Progress !== 100) {
-                    CancelNotify();
+                    CancelNotify("Video upload was cancelled!");
                     setIsClicked(false);
 
                     setTimeout(() => {
@@ -498,7 +472,7 @@ const Content = () => {
                     Progress === 100 &&
                     formData.isPublished === "true"
                   ) {
-                    CancelNotify();
+                    CancelNotify("Video upload was cancelled!");
                     setTimeout(() => {
                       window.location.reload();
                     }, 1000);
