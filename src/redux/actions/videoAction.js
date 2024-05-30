@@ -13,6 +13,7 @@ import {
   showErrorToast,
   showToast,
 } from "../../constant/Api";
+import { getAllChannelVideos } from "./dashboardAction";
 
 // Action creators
 const addVideo = () => ({ type: ADD_VIDEOS });
@@ -78,7 +79,7 @@ export const addVideoData = (formData, setLoading, setIsClicked) => {
           setLoading(false);
           setIsClicked(false);
           await dispatch(addVideo());
-          await dispatch(getAllVideos());
+          dispatch(getAllChannelVideos());
         } else {
           showErrorToast("Failed to upload video");
           setLoading(true);
@@ -94,9 +95,9 @@ export const addVideoData = (formData, setLoading, setIsClicked) => {
 export const deleteVideoDetails = (videoId) => (dispatch) => {
   axios
     .delete(`${APIHttp}videos/${videoId}`, Header)
-    .then((res) => {
-      dispatch(deleteVideo(videoId));
-      // dispatch(getAllVideos());
+    .then(async (res) => {
+      await dispatch(deleteVideo(videoId));
+      dispatch(getAllChannelVideos());
       if (res.data.success) {
         showToast("Video Deleted successfully!");
       }
@@ -121,7 +122,7 @@ export const updateVideoData = (videoId, formData, navigate) => {
       .then(async (res) => {
         if (res.data.success) {
           await dispatch(updateVideo(res.data.data));
-          await dispatch(getAllVideos());
+          dispatch(getAllChannelVideos());
           navigate("/studio/video");
           showToast("Video updated successfully!");
         } else {

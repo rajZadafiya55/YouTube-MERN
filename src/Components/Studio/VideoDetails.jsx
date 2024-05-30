@@ -11,10 +11,10 @@ import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import ArrowDropDownOutlinedIcon from "@mui/icons-material/ArrowDropDownOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import WestIcon from "@mui/icons-material/West";
-import { toast } from "react-toastify";
+
 import "react-toastify/dist/ReactToastify.css";
 import { GrUndo } from "react-icons/gr";
-import { APIHttp } from "../../constant/Api";
+import { APIHttp, commonNotify } from "../../constant/Api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getSelectedVideo,
@@ -39,7 +39,7 @@ function VideoDetails() {
   const videolink = `${APIHttp}videos`;
   const [thumbnailImage, setThumbnailImage] = useState(null);
   const [thumbnailSelected, setThumbnailSelected] = useState(false);
-  const [finalThumbnail, setFinalThumbnail] = useState(null);
+
   const [OptionClicked, setOptionClicked] = useState(false);
   const [changes, setChanges] = useState(false);
   const [privacyClicked, setprivacyClicked] = useState(false);
@@ -58,32 +58,6 @@ function VideoDetails() {
   const optionRef = useRef();
 
   document.title = "Video details - YouTube Studio";
-
-  //TOASTS
-
-  const WarningNotify = () =>
-    toast.error("Input fields can't be empty!", {
-      position: "bottom-center",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const CopiedNotify = () =>
-    toast.success("Link Copied!", {
-      position: "bottom-center",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
 
   //USE EFFECTS
 
@@ -163,7 +137,7 @@ function VideoDetails() {
     navigator.clipboard
       .writeText(`${videolink}/${id}`)
       .then(() => {
-        CopiedNotify();
+        commonNotify("Link Copied!");
       })
       .catch((error) => {
         console.log("Error copying link to clipboard:", error);
@@ -214,7 +188,7 @@ function VideoDetails() {
     if (thumbnailImage) {
       const anchor = document.createElement("a");
       anchor.href = URL.createObjectURL(thumbnailImage);
-      anchor.download = "thumbnail.png"; //
+      anchor.download = "thumbnail.png"; 
       anchor.click();
     }
   };
@@ -248,7 +222,6 @@ function VideoDetails() {
       thumbnail: file,
     });
     setThumbnailImage(file);
-    setFinalThumbnail(file);
     setThumbnailSelected(true);
     setChanges(true);
   };
@@ -260,7 +233,7 @@ function VideoDetails() {
       const updatedVideoData = {
         title: videoData.title,
         description: videoData.description,
-        thumbnail: thumbnailImage,
+        thumbnail:  thumbnailImage ? thumbnailImage : videoData.thumbnailURL,
         videoFile: videoData.videoURL,
         isPublished: updatePrivacy === "Public" ? true : false,
       };
@@ -272,7 +245,7 @@ function VideoDetails() {
       setLoading(true);
     }
   };
-
+console.log("videodata",videoData)
   return (
     <>
       <div className="back-menu-edit" onClick={() => navigate("/studio/video")}>
@@ -317,11 +290,7 @@ function VideoDetails() {
                 changes === false ? "disabled-btn2" : "video-editbtnss"
               }
               onClick={() => {
-                // if (previewTitle === "" || previewDescription === "") {
-                //   WarningNotify();
-                // } else {
                 SaveData();
-                // }
               }}
               disabled={changes === false ? true : false}
             >
@@ -406,7 +375,7 @@ function VideoDetails() {
                         }
                         onClick={() => {
                           setThumbnailSelected(true);
-                          setFinalThumbnail(thumbnailImage);
+                          setThumbnailImage(thumbnailImage);
                         }}
                       />
                     </div>
@@ -465,7 +434,7 @@ function VideoDetails() {
                         }
                         onClick={() => {
                           setThumbnailSelected(false);
-                          setFinalThumbnail(videoData.thumbnailURL);
+                          setThumbnailImage(videoData.thumbnailURL);
                         }}
                       />
                     )}

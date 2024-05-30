@@ -6,6 +6,7 @@ import likeReducer from "./likeReducer";
 import userReducer from "./userReducer";
 import dashboardReducer from "./dashboardReducer";
 import commentReducer from "./commentReducer";
+import subscriptionRedcucer from "./subscriptionReducer";
 
 // ==============================|| COMBINE REDUCER ||============================== //
 
@@ -15,6 +16,7 @@ const reducer = combineReducers({
   user: userReducer,
   dashboard: dashboardReducer,
   comments: commentReducer,
+  subscription: subscriptionRedcucer,
 });
 
 export default reducer;

@@ -2,7 +2,6 @@ import "../../Css/Studio/content.css";
 import "../../Css/studio.css";
 import SouthIcon from "@mui/icons-material/South";
 import { useEffect, useState } from "react";
-import jwtDecode from "jwt-decode";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
@@ -20,7 +19,6 @@ import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined
 import noImage from "../../img/no-video2.png";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,7 +28,7 @@ import {
   deleteVideoDetails,
   getSelectedVideo,
 } from "../../redux/actions/videoAction";
-import { APIHttp, avatar } from "../../constant/Api";
+import { APIHttp, CancelNotify, commonNotify } from "../../constant/Api";
 import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -84,32 +82,6 @@ const Content = () => {
 
   document.title = "Channel content - YouTube Studio";
 
-  //TOASTS
-
-  const CancelNotify = () =>
-    toast.warning("Video upload was cancelled!", {
-      position: "bottom-center",
-      autoClose: 950,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const CopiedNotify = () =>
-    toast.success("Link Copied!", {
-      position: "bottom-center",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
   //USE EFFECTS
 
   //IMAGE UPLOAD
@@ -140,7 +112,7 @@ const Content = () => {
     });
     setIsVideoSelected(false);
     setIsThumbnailSelected(false);
-    setVisibility("Private");
+    setVisibility("private");
     setIsVisibilityClicked(false);
     setIsClicked(false);
   };
@@ -360,10 +332,9 @@ const Content = () => {
   const DeleteVideo = async (id) => {
     try {
       if (id !== undefined) {
-        await dispatch(deleteVideoDetails(id));
+        dispatch(deleteVideoDetails(id));
         setIsDeleteClicked(false);
         document.body.classList.remove("bg-css2");
-        dispatch(getAllChannelVideos());
       }
     } catch (error) {
       console.log(error.message);
@@ -374,7 +345,7 @@ const Content = () => {
     navigator.clipboard
       .writeText(`${videoUrl}/${id}`)
       .then(() => {
-        CopiedNotify();
+        commonNotify("Link Copied!");
       })
       .catch((error) => {
         console.log("Error copying link to clipboard:", error);
@@ -456,7 +427,7 @@ const Content = () => {
               style={{ color: "gray" }}
               onClick={() => {
                 if (Progress !== 100) {
-                  CancelNotify();
+                  CancelNotify("Video upload was cancelled!");
                   setIsClicked(false);
 
                   setTimeout(() => {
@@ -466,7 +437,7 @@ const Content = () => {
                   Progress === 100 &&
                   formData.isPublished === "true"
                 ) {
-                  CancelNotify();
+                  CancelNotify("Video upload was cancelled!");
                   setTimeout(() => {
                     window.location.reload();
                   }, 1000);
@@ -672,12 +643,12 @@ const Content = () => {
                     <p
                       className="public"
                       style={
-                        visibility === "Public"
+                        visibility === "public"
                           ? { backgroundColor: "rgba(255, 255, 255, 0.134)" }
                           : { backgroundColor: "rgba(255, 255, 255, 0)" }
                       }
                       onClick={() => {
-                        setVisibility("Public");
+                        setVisibility("public");
                         setIsVisibilityClicked(false);
                         handleInputChange({
                           target: { name: "isPublished", value: true },
@@ -690,12 +661,12 @@ const Content = () => {
                     <p
                       className="private"
                       style={
-                        visibility === "Private"
+                        visibility === "private"
                           ? { backgroundColor: "rgba(255, 255, 255, 0.134)" }
                           : { backgroundColor: "rgba(255, 255, 255, 0)" }
                       }
                       onClick={() => {
-                        setVisibility("Private");
+                        setVisibility("private");
                         setIsVisibilityClicked(false);
                         handleInputChange({
                           target: { name: "isPublished", value: false },

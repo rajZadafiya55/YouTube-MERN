@@ -33,8 +33,8 @@ const getCommentById = (comment) => ({
 export const getSelectedComment = (id) => (dispatch) => {
   axios
     .get(`${APIHttp}comments/${id}`, Header)
-    .then((res) => {
-      dispatch(getCommentById(res.data.data));
+    .then(async (res) => {
+      await dispatch(getCommentById(res.data.data));
     })
     .catch((err) => {
       console.log(err);
@@ -46,7 +46,7 @@ const deleteComment = (commentId) => ({
   payload: commentId,
 });
 
-export const deleteCoomentsDetails = (commentId) => async (dispatch) => {
+export const deleteCommentsDetails = (commentId) => async (dispatch) => {
   try {
     const result = await Swal.fire({
       title: "Are you sure Delete?",
@@ -63,9 +63,9 @@ export const deleteCoomentsDetails = (commentId) => async (dispatch) => {
         .delete(`${APIHttp}comments/c/${commentId}`, Header)
         .then(async (res) => {
           await dispatch(deleteComment(commentId));
-          await dispatch(getSelectedComment());
+          dispatch(getUserAllComments());
           if (res.data.success) {
-            showToast("Video Deleted successfully!");
+            showToast("Comment Deleted successfully!");
           }
         })
         .catch((err) => {
@@ -87,7 +87,7 @@ export const createComment = (id, commentData) => (dispatch) => {
     .post(`${APIHttp}comments/${id}`, commentData, Header)
     .then(async (res) => {
       await dispatch(addComment(res.data.data));
-      await dispatch(getSelectedComment());
+      dispatch(getSelectedComment());
 
       console.log("res data data", res.data.data);
     })

@@ -17,7 +17,7 @@ export const GET_LIKED_VIDEOS = "GET_LIKED_VIDEOS";
 export const TOGGLE_COMMENT_LIKE = "TOGGLE_COMMENT_LIKE";
 export const TOGGLE_VIDEO_LIKE = "TOGGLE_VIDEO_LIKE";
 
-// register
+// user
 export const NEW_REGISTRATION = "NEW_REGISTRATION";
 export const USER_LOGIN = "USER_LOGIN";
 export const CHANGE_PASSWORD = "CHANGE_PASSWORD";
@@ -31,3 +31,6 @@ export const GET_USER_ALL_COMMENT = "GET_USER_ALL_COMMENT";
 export const GET_COMMENT_BY_ID = "GET_COMMENT_BY_ID";
 export const DELETE_COMMENT = "DELETE_COMMENT";
 export const CREATE_COMMENT = "CREATE_COMMENT";
+
+// subscribtion
+export const SUBSCRIBE_TOGGLE = "SUBSCRIBE_TOGGLE";

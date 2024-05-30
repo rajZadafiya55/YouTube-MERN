@@ -40,7 +40,10 @@ import {
   getSelectedComment,
 } from "../redux/actions/commentAction";
 import { EmptyMessage, avatar, commonNotify } from "../constant/Api";
-import { getLikeVideoToggle } from "../redux/actions/likeAction";
+import {
+  getLikeCommentToggle,
+  getLikeVideoToggle,
+} from "../redux/actions/likeAction";
 
 const VideoSection = () => {
   const dispatch = useDispatch();
@@ -52,9 +55,16 @@ const VideoSection = () => {
     (state) => state.comments.selectedComment
   );
   const listVideo = useSelector((state) => state.videos.videosDetails);
+
   const isLikedStatus = useSelector((state) => state.like.isLiked);
+  console.log("isLiked", isLikedStatus);
 
   const [listVideoDetails, setListVideoDetails] = useState([]);
+
+  const isLikedComment = useSelector((state) => state.like.isLiked);
+
+  const isSubscribe = useSelector((state) => state.subscription.isSubscribed);
+  console.log("isSubscription", isSubscribe);
 
   const backendURL = "http://localhost:3000";
   const { id } = useParams();
@@ -85,9 +95,6 @@ const VideoSection = () => {
   });
 
   //EXTRAS
-
-  const [VideoLikes, setVideoLikes] = useState();
-  const [CommentLikes, setCommentLikes] = useState();
   const [isLiked, setIsLiked] = useState();
   const [isSaved, setIsSaved] = useState();
   const [createPlaylistClicked, setcreatePlaylistClicked] = useState(false);
@@ -486,20 +493,9 @@ const VideoSection = () => {
 
   const LikeComment = async (commentId) => {
     try {
-      if (commentId !== undefined && id !== undefined && email !== undefined) {
-        const response = await fetch(
-          `${backendURL}/LikeComment /${id}/${commentId}/${email}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        await response.json();
-      }
+      dispatch(getLikeCommentToggle(commentId, isLikedComment));
     } catch (error) {
-      //console.log(error.message);
+      console.log(error.message);
     }
   };
 
@@ -759,9 +755,7 @@ const VideoSection = () => {
                 className="channelDP"
                 loading="lazy"
                 onClick={() => {
-                  if (channelID !== undefined) {
-                    navigate(`/channel/${channelID}`);
-                  }
+                  navigate(`/channel/${owner?._id}`);
                 }}
               />
 
@@ -770,9 +764,7 @@ const VideoSection = () => {
                   <p
                     style={{ fontSize: "17px", cursor: "pointer" }}
                     onClick={() => {
-                      if (channelID !== undefined) {
-                        navigate(`/channel/${channelID}`);
-                      }
+                      navigate(`/channel/${owner?._id}`);
                     }}
                   >
                     {owner?.username}
@@ -801,7 +793,7 @@ const VideoSection = () => {
               </div>
 
               {/* ===================== Subscribe toggle button ====================================== */}
-              {isSubscribed === false || !token ? (
+              {isSubscribed === false ? (
                 <button
                   className={
                     theme
@@ -860,15 +852,10 @@ const VideoSection = () => {
                         : "like-data like-data-light text-light-mode"
                     }
                     onClick={() => {
-                      if (token) {
-                        likeVideo();
-                      } else {
-                        setisbtnClicked(true);
-                        document.body.classList.add("bg-css");
-                      }
+                      likeVideo();
                     }}
                   >
-                    {isLiked === true && token ? (
+                    {isLikedStatus === true ? (
                       <ThumbUpIcon
                         fontSize="medium"
                         style={{ color: theme ? "white" : "black" }}
@@ -892,18 +879,13 @@ const VideoSection = () => {
                   placement="top"
                 >
                   <div
-                    className={
+                    className={`${
                       theme
                         ? "dislike-data"
                         : "dislike-data dislike-data-light text-light-mode"
-                    }
+                    } ${isLikedStatus ? "d-block" : "d-none"}`}
                     onClick={() => {
-                      if (token) {
-                        // DislikeVideo();
-                      } else {
-                        setisbtnClicked(true);
-                        document.body.classList.add("bg-css");
-                      }
+                      likeVideo();
                     }}
                   >
                     <ThumbDownOutlinedIcon
@@ -1060,15 +1042,10 @@ const VideoSection = () => {
                           : "like-data like-data-light text-light-mode"
                       }
                       onClick={() => {
-                        if (token) {
-                          // likeVideo();
-                        } else {
-                          setisbtnClicked(true);
-                          document.body.classList.add("bg-css");
-                        }
+                        likeVideo();
                       }}
                     >
-                      {isLiked === true && token ? (
+                      {isLikedStatus === true ? (
                         <ThumbUpIcon
                           fontSize="medium"
                           style={{ color: theme ? "white" : "black" }}
@@ -1100,12 +1077,7 @@ const VideoSection = () => {
                           : "dislike-data dislike-data-light text-light-mode"
                       }
                       onClick={() => {
-                        if (token) {
-                          // DislikeVideo();
-                        } else {
-                          setisbtnClicked(true);
-                          document.body.classList.add("bg-css");
-                        }
+                        likeVideo();
                       }}
                     >
                       <ThumbDownOutlinedIcon
@@ -1233,15 +1205,10 @@ const VideoSection = () => {
                           : "like-data like-data-light text-light-mode"
                       }
                       onClick={() => {
-                        if (token) {
-                          likeVideo();
-                        } else {
-                          setisbtnClicked(true);
-                          document.body.classList.add("bg-css");
-                        }
+                        likeVideo();
                       }}
                     >
-                      {isLiked === true && token ? (
+                      {isLikedStatus === true ? (
                         <ThumbUpIcon
                           fontSize="medium"
                           style={{ color: theme ? "white" : "black" }}
@@ -1271,12 +1238,7 @@ const VideoSection = () => {
                           : "dislike-data dislike-data-light text-light-mode"
                       }
                       onClick={() => {
-                        if (token) {
-                          // DislikeVideo();
-                        } else {
-                          setisbtnClicked(true);
-                          document.body.classList.add("bg-css");
-                        }
+                        likeVideo();
                       }}
                     >
                       <ThumbDownOutlinedIcon
@@ -1753,11 +1715,6 @@ const VideoSection = () => {
                                   : { display: "none" }
                               }
                               className="heart-comment"
-                              onClick={() => {
-                                if (email === usermail) {
-                                  // HeartComment(element._id);
-                                }
-                              }}
                             />
                           ) : (
                             <Tooltip
@@ -1768,11 +1725,6 @@ const VideoSection = () => {
                               <div
                                 className="heart-liked"
                                 style={{ cursor: "pointer" }}
-                                onClick={() => {
-                                  if (email === usermail) {
-                                    // HeartComment(element._id);
-                                  }
-                                }}
                               >
                                 <img
                                   src={owner?.avatar}
@@ -2310,7 +2262,7 @@ const VideoSection = () => {
             )}
 
             <div className="video-comments">
-              {comments.map((element, index) => {
+              {comments?.map((element, index) => {
                 return (
                   <>
                     <div
@@ -2397,9 +2349,7 @@ const VideoSection = () => {
                               cursor: "pointer",
                             }}
                             onClick={() => {
-                             
-                                LikeComment(element._id);
-                             
+                              LikeComment(element._id);
                             }}
                             className="comment-like"
                           />

@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-export const APIHttp = "http://localhost:4000/api/v1/";
+export const APIHttp = "http://localhost:5000/api/v1/";
 import Uavatar from "../img/Uavatar.png";
 
 // const userData = JSON.parse(localStorage.getItem('loginData'));
@@ -99,6 +99,17 @@ export const commonNotify = (message) =>
   toast.success(message, {
     position: "bottom-center",
     autoClose: 2000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  });
+
+export const CancelNotify = (message) =>
+  toast.warning(message, {
+    position: "bottom-center",
+    autoClose: 950,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,

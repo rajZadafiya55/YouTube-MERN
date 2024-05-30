@@ -6,9 +6,9 @@ import twitter from "../img/social/twitter.jpg";
 import mail from "../img/social/mail.jpg";
 import "../Css/share.css";
 import { useState } from "react";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MdOutlineContentCopy } from "react-icons/md";
+import { commonNotify } from "../constant/Api";
 
 function Share() {
   const [copyText, setCopyText] = useState("Copy");
@@ -16,18 +16,6 @@ function Share() {
     const Dark = localStorage.getItem("Dark");
     return Dark ? JSON.parse(Dark) : true;
   });
-
-  const CopiedNotify = () =>
-    toast.success("Link Copied!", {
-      position: "bottom-center",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
 
   const handleCopyLink = () => {
     navigator.clipboard
@@ -128,7 +116,7 @@ function Share() {
               className={theme ? "copy-link-btn" : "copy-link-btn copy-light"}
               onClick={() => {
                 handleCopyLink();
-                CopiedNotify();
+                commonNotify("Link Copied!");
               }}
             >
               {copyText}
@@ -142,7 +130,7 @@ function Share() {
             className="copybtn-2"
             onClick={() => {
               handleCopyLink();
-              CopiedNotify();
+              commonNotify("Link Copied!");
             }}
           />
           <p>Copy Link</p>

@@ -33,23 +33,26 @@ const getLikeComment = (isLiked) => ({
 });
 
 export const getLikeCommentToggle = (id, isLiked) => {
-  return (dispatch) => {
-    axios
-      .post(`${APIHttp}likes/toggle/c/${id}`, { isLiked }, Header)
-      .then(async (res) => {
-        const updatedLikeStatus = res.data.data.isLiked;
-        await dispatch(getLikeComment(updatedLikeStatus));
-        await dispatch(getSelectedComment());
+  return async (dispatch) => {
+    try {
+      const res = await axios.post(
+        `${APIHttp}likes/toggle/c/${id}`,
+        { isLiked },
+        Header
+      );
+      const updatedLikeStatus = res.data.data.isLiked;
 
-        if (updatedLikeStatus == true) {
-          showToast("Comment liked successfully!");
-        } else {
-          showToast("Comment dislike successfully!");
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      await dispatch(getLikeComment(updatedLikeStatus));
+      dispatch(getSelectedComment());
+
+      if (updatedLikeStatus) {
+        showToast("Comment liked successfully!");
+      } else {
+        showToast("Comment disliked successfully!");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 };
 
@@ -65,9 +68,9 @@ export const getLikeVideoToggle = (id, isLiked) => {
       .then(async (res) => {
         const updatedLikeStatus = res.data.data.isLiked;
         await dispatch(getLikevideo(updatedLikeStatus));
-        await dispatch(getSelectedVideo());
+        dispatch(getSelectedVideo(id));
 
-        if (updatedLikeStatus == true) { 
+        if (updatedLikeStatus == true) {
           commonNotify("Video liked successfully!");
         } else {
           commonNotify("Video dislike successfully!");

@@ -1,10 +1,8 @@
 import "../../Css/Studio/comments.css";
 import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
 import { useEffect, useState } from "react";
-import jwtDecode from "jwt-decode";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import noImage from "../../img/no-comment.png";
@@ -13,7 +11,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  deleteCoomentsDetails,
+  deleteCommentsDetails,
   getUserAllComments,
 } from "../../redux/actions/commentAction.js";
 import { getLikeCommentToggle } from "../../redux/actions/likeAction.js";
@@ -23,16 +21,8 @@ const Comments = () => {
   const navigate = useNavigate();
 
   const AllCommentData = useSelector((state) => state.comments.commentsDetails);
-  console.log("AllCommentData", AllCommentData);
-
-  const selectedVideos = useSelector((state) => state.videos.selectedVideo);
-  console.log("selectedVideos", selectedVideos);
 
   const isLiked = useSelector((state) => state.like.isLiked);
-
-  useEffect(() => {
-    console.log("Like status changed:", isLiked);
-  }, [isLiked]);
 
   const [AllComments, setAllComments] = useState([]);
   const [filterComment, setFilterComment] = useState("");
@@ -135,15 +125,6 @@ const Comments = () => {
   }, [AllCommentData]);
 
   console.log("All video Data", AllComments);
-  // useEffect(() => {
-  //   dispatch(getSelectedVideo(AllComments.video));
-  // }, [dispatch, AllComments.video]);
-
-  // useEffect(() => {
-  //   setVideoData(selectedVideos);
-  // }, [selectedVideos]);
-
-  // console.log("aLL video Dtata", videoData);
 
   const LikeComment = async (id) => {
     try {
@@ -157,7 +138,7 @@ const Comments = () => {
 
   const DeleteComment = async (commentId) => {
     try {
-      dispatch(deleteCoomentsDetails(commentId));
+      dispatch(deleteCommentsDetails(commentId));
     } catch (error) {
       console.log(error.message);
     }

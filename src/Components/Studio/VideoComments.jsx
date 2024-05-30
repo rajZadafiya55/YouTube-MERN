@@ -14,7 +14,7 @@ import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  deleteCoomentsDetails,
+  deleteCommentsDetails,
   getSelectedComment,
 } from "../../redux/actions/commentAction";
 import { getLikeCommentToggle } from "../../redux/actions/likeAction";
@@ -162,7 +162,7 @@ function VideoComments() {
 
   const DeleteComment = async (commentId) => {
     try {
-      dispatch(deleteCoomentsDetails(commentId));
+      dispatch(deleteCommentsDetails(commentId));
     } catch (error) {
       console.log(error.message);
     }

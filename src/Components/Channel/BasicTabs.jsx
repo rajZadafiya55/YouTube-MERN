@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -10,10 +10,9 @@ import ChannelVideos from "./ChannelVideos";
 import ChannelPlaylists from "./ChannelPlaylists";
 import ChannelAbout from "./ChannelAbout";
 import "../../Css/channel.css";
-import jwtDecode from "jwt-decode";
 import Subscription from "./Subscription";
 import { email } from "../../constant/Api";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -44,28 +43,16 @@ function a11yProps(index) {
   };
 }
 
-export default function BasicTabs({ section, handleTabChange }) {
-  const dispatch = useDispatch();
-
+export default function BasicTabs({ section, handleTabChange, newemail }) {
   const AllVideo = useSelector((state) => state.videos.videosDetails);
   console.log("allVideos", AllVideo);
 
   const { id } = useParams();
   const [Email, setEmail] = useState(email);
-  const [loggedInUser, setLoggedInUser] = useState("");
 
   const handleChange = (event, newValue) => {
     handleTabChange(newValue);
   };
-
-  useEffect(() => {
-    // Fetch logged-in user's email
-    const token = localStorage.getItem("userToken");
-    if (token) {
-      const loggedInEmail = jwtDecode(token).email;
-      setLoggedInUser(loggedInEmail);
-    }
-  }, [id]);
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -91,7 +78,7 @@ export default function BasicTabs({ section, handleTabChange }) {
         >
           <Tab label="Videos" value="Videos" {...a11yProps(0)} />
           <Tab label="Playlists" value="Playlists" {...a11yProps(1)} />
-          {loggedInUser && loggedInUser === Email && (
+          {Email === newemail && (
             <Tab
               label="Subscriptions"
               value="Subscriptions"
@@ -110,7 +97,7 @@ export default function BasicTabs({ section, handleTabChange }) {
         <ChannelPlaylists newmail={Email} />
       </CustomTabPanel>
 
-      {loggedInUser && loggedInUser === Email && (
+      {Email === newemail && (
         <CustomTabPanel value={section} index="Subscriptions">
           <Subscription newmail={Email} />
         </CustomTabPanel>

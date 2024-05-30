@@ -1,30 +1,35 @@
-import { CHANGE_PASSWORD, GET_USER_CHANNEL_PROFILE, NEW_REGISTRATION, USER_LOGIN } from '../types';
+import {
+  CHANGE_PASSWORD,
+  GET_USER_CHANNEL_PROFILE,
+  NEW_REGISTRATION,
+  USER_LOGIN,
+} from "../types";
 
 export const initialState = {
-  channelDetails: [] //for store all user data
+  channelDetails: [], //for store all user data
 };
 
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
     case NEW_REGISTRATION:
       return {
-        ...state
+        ...state,
       };
 
     case USER_LOGIN:
       return {
-        ...state
+        ...state,
       };
 
     case CHANGE_PASSWORD:
       return {
-        ...state
+        ...state,
       };
 
     case GET_USER_CHANNEL_PROFILE:
       return {
         ...state,
-        channelDetails: action.payload
+        channelDetails: action.payload,
       };
 
     default:

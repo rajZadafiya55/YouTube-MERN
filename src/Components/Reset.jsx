@@ -3,8 +3,7 @@ import "../Css/navbar.css";
 import axios from "axios";
 import { Grid, styled, Button } from "@mui/material";
 import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
-import { toast } from "react-toastify";
-import { APIHttp } from "../constant/Api";
+import { APIHttp, showErrorToast, showToast } from "../constant/Api";
 import ClipLoader from "react-spinners/ClipLoader";
 
 const TextField = styled(TextValidator)(() => ({
@@ -43,7 +42,7 @@ function Reset() {
       axios
         .post(`${APIHttp}users/change-password`, data)
         .then((y) => {
-          toast.success("Password change successfully !");
+          showToast("Password change successfully !");
           setLoading(false);
           // setTimeout(() => {
           //   window.location.reload();
@@ -51,7 +50,7 @@ function Reset() {
           // }, 1000);
         })
         .catch((y) => {
-          toast.error("your credentials are invalid");
+          showErrorToast("your credentials are invalid");
           setLoading(false);
         });
     } catch (error) {
