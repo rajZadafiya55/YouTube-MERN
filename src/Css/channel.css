@@ -1,3 +1,12 @@
+.PerrorVideo {
+  position: absolute;
+  color: white;
+  transform: none !important;
+  left: 17%;
+  width: 77vw !important;
+  animation: FADEINN 0.45s ease;
+}
+
 .channel_profile {
   width: 130px;
   height: 130px;
@@ -507,6 +516,7 @@
   color: #f1f1f1;
   position: absolute;
   top: 100px;
+  padding-bottom: 100px;
   display: flex;
   justify-content: space-between;
   width: -webkit-fill-available;
@@ -630,6 +640,7 @@
 .featured-channels-sections {
   position: absolute;
   top: 100px;
+  padding-bottom: 450px;
 }
 
 .featured-channel-btn {
@@ -1075,16 +1086,25 @@
   .channel-main-content,
   .channel-main-content-nocover {
     left: 24%;
+    width: 75%;
   }
 }
 
 @media (width<=1345px) {
+  .channel-main-content,
+  .channel-main-content-nocover {
+    left: 15%;
+  }
   .thischannel-playlists {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media (width<= 1285px) {
+  .channel-main-content,
+  .channel-main-content-nocover {
+    left: 15%;
+  }
   .myvidthumbnail {
     width: 265px;
   }
@@ -1110,8 +1130,7 @@
 @media (width<= 1170px) {
   .channel-main-content,
   .channel-main-content-nocover {
-    width: 62vw;
-    left: 28%;
+    left: 10%;
   }
   .manage-videos,
   .customize-channel {
@@ -1160,6 +1179,10 @@
 }
 
 @media (width<= 1125px) {
+  .channel-main-content,
+  .channel-main-content-nocover {
+    left: 15%;
+  }
   .thischannel-playlists {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1173,6 +1196,10 @@
 }
 
 @media (width<= 1030px) {
+  .channel-main-content,
+  .channel-main-content-nocover {
+    left: 15%;
+  }
   .uploadedvideos-sectionall,
   .sk-uploadedvideos-sectionall {
     grid-template-columns: repeat(2, 1fr);
@@ -1204,7 +1231,7 @@
 @media (width<= 980px) {
   .channel-main-content,
   .channel-main-content-nocover {
-    left: 32%;
+    left: 20%;
   }
   .channel_profile {
     width: 108px;

@@ -49,7 +49,6 @@ function LikeVideos() {
 
   //==================== like video api call spark didho che aaya thi ================================
   useEffect(() => {
-
     dispatch(getAllLikedVideos());
 
     // const interval = setInterval(() => {

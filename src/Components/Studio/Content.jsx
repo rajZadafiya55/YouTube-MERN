@@ -1,5 +1,7 @@
 import "../../Css/Studio/content.css";
 import "../../Css/studio.css";
+import { LiaUploadSolid } from "react-icons/lia";
+
 import SouthIcon from "@mui/icons-material/South";
 import { useEffect, useState } from "react";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
@@ -47,7 +49,7 @@ const Content = () => {
   const AllVideos = useSelector((state) => state.dashboard.videosDetails);
 
   const selectedVideos = useSelector((state) => state.videos.selectedVideo);
-
+  const [isChannel, setisChannel] = useState(true);
   const [userVideos, setUserVideos] = useState([]);
   const [sortByDateAsc, setSortByDateAsc] = useState(true);
   const [changeSort, setChangeSort] = useState(false);
@@ -82,6 +84,40 @@ const Content = () => {
 
   document.title = "Channel content - YouTube Studio";
 
+  useEffect(() => {
+    if (isChannel === false) {
+      document.body.classList.add("bg-css");
+    } else {
+      document.body.classList.remove("bg-css");
+    }
+  }, [isChannel]);
+
+  //TOASTS
+
+  const CancelNotify = () =>
+    toast.warning("Video upload was cancelled!", {
+      position: "bottom-center",
+      autoClose: 950,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: theme ? "dark" : "light",
+    });
+
+  const CopiedNotify = () =>
+    toast.success("Link Copied!", {
+      position: "bottom-center",
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: theme ? "dark" : "light",
+    });
+
   //USE EFFECTS
 
   //IMAGE UPLOAD
@@ -115,6 +151,7 @@ const Content = () => {
     setVisibility("private");
     setIsVisibilityClicked(false);
     setIsClicked(false);
+    setisChannel(true);
   };
 
   //ON VIDEO DROP
@@ -366,45 +403,67 @@ const Content = () => {
 
   return (
     <>
-      <div className="channel-content-section">
-        <div className="d-flex flex-column">
-          <div
-            className="channel-content-top"
-            style={{ left: menu ? "125px" : "310px" }}
-          >
-            <p className={theme ? "" : "text-light-mode"}>Channel content</p>
-
-            <p
-              className={
-                theme ? "channel-videosss" : "channel-videosss blue-txt"
-              }
+      <div className={theme ? "studio" : "studio studio-light"}>
+        <div className="channel-content-section">
+          <div className="d-flex flex-column">
+            <div
+              className="channel-content-top"
+              style={{ left: menu ? "125px" : "310px" }}
             >
-              Videos
-            </p>
+              <p className={theme ? "" : "text-light-mode"}>Channel content</p>
+
+              <p
+                className={
+                  theme ? "channel-videosss" : "channel-videosss blue-txt"
+                }
+              >
+                Videos
+              </p>
+            </div>
+
+            {/* create video section */}
+
+            <div
+              className={theme ? "create-btn" : "create-btn create-btn-light"}
+              onClick={() => {
+                setIsClicked(true);
+                setisChannel(false);
+              }}
+            >
+              <VideoCallOutlinedIcon
+                className=""
+                fontSize="large"
+                style={{ color: "#FF4E45" }}
+              />
+              <p className={theme ? "" : "text-light-mode"}>CREATE</p>
+            </div>
+            <div
+              className={theme ? "create-btn2" : "create-btn2 create-btn-light"}
+              onClick={() => {
+                setIsClicked(true);
+                setisChannel(false);
+              }}
+            >
+              CREATE
+            </div>
+
+            <div
+              style={
+                isChannel === true ? { display: "flex" } : { display: "none" }
+              }
+              className={
+                theme ? "create-btn-short" : "create-btn-short light-mode"
+              }
+              onClick={() => setIsClicked(true)}
+            >
+              <LiaUploadSolid
+                fontSize="22px"
+                color={theme ? "#b1b1b1" : "#606060"}
+              />
+            </div>
           </div>
 
-          {/* create video section */}
-
-          <div
-            className={theme ? "create-btn" : "create-btn create-btn-light"}
-            onClick={() => setIsClicked(true)}
-          >
-            <VideoCallOutlinedIcon
-              className=""
-              fontSize="large"
-              style={{ color: "#FF4E45" }}
-            />
-            <p className={theme ? "" : "text-light-mode"}>CREATE</p>
-          </div>
-          <div
-            className={theme ? "create-btn2" : "create-btn2 create-btn-light"}
-            onClick={() => setIsClicked(true)}
-          >
-            CREATE
-          </div>
-        </div>
-
-        {/* ============================== video upload form ============================= */}
+          {/* ============================== video upload form ============================= */}
 
         <div
           className={
@@ -427,7 +486,7 @@ const Content = () => {
               style={{ color: "gray" }}
               onClick={() => {
                 if (Progress !== 100) {
-                  CancelNotify("Video upload was cancelled!");
+                  CancelNotify();
                   setIsClicked(false);
 
                   setTimeout(() => {
@@ -437,7 +496,7 @@ const Content = () => {
                   Progress === 100 &&
                   formData.isPublished === "true"
                 ) {
-                  CancelNotify("Video upload was cancelled!");
+                  CancelNotify();
                   setTimeout(() => {
                     window.location.reload();
                   }, 1000);
@@ -449,172 +508,180 @@ const Content = () => {
             />
           </div>
 
-          <hr
-            className={
-              theme ? "seperate seperate2" : "seperate seperate2 seperate-light"
-            }
-          />
-          <div
-            className="middle-data"
-            style={!isVideoSelected ? { display: "flex" } : { display: "none" }}
-          >
-            <img
-              src={Upload}
-              className={theme ? "upload-img" : "upload-img upload-img-light"}
-              onClick={handleUploadImageClick}
-              onDrop={handleDrop}
-              onDragOver={(e) => e.preventDefault()}
+            <hr
+              className={
+                theme
+                  ? "seperate seperate2"
+                  : "seperate seperate2 seperate-light"
+              }
             />
-            <p>Drag and drop video files to upload</p>
-            <p>Your videos will be private until you publish them.</p>
-            <div className="upload-btn-wrapper">
-              <button className={theme ? "btn" : "btn text-dark-mode"}>
-                SELECT FILES
-              </button>
-              <input
-                id="videoFileInput"
-                type="file"
-                name="videoFile"
-                accept="video/mp4"
-                onChange={handleVideoChange}
+            <div
+              className="middle-data"
+              style={
+                !isVideoSelected ? { display: "flex" } : { display: "none" }
+              }
+            >
+              <img
+                src={Upload}
+                className={theme ? "upload-img" : "upload-img upload-img-light"}
+                onClick={handleUploadImageClick}
+                onDrop={handleDrop}
+                onDragOver={(e) => e.preventDefault()}
               />
-            </div>
-          </div>
-
-          {/* =================== video details section ================== */}
-          <div
-            className="uploading-video-data"
-            style={isVideoSelected ? { display: "flex" } : { display: "none" }}
-          >
-            <div className="left-video-section">
-              <form className="details-form">
-                <div className="details-section">
-                  <p>Details</p>
-                  <input
-                    type="text"
-                    className={theme ? "video-title" : "video-title light-mode"}
-                    name="title"
-                    value={formData.title}
-                    placeholder="Title (required)"
-                    required
-                    onChange={handleInputChange}
-                  />
-                  <textarea
-                    className={
-                      theme
-                        ? "video-description"
-                        : "video-description light-mode"
-                    }
-                    name="description"
-                    placeholder="Description"
-                    onChange={handleInputChange}
-                    spellCheck="true"
-                    value={formData.description}
-                  />
-                </div>
-              </form>
-
-              <div
-                className="thumbnail-section"
-                style={
-                  !isThumbnailSelected
-                    ? { display: "flex" }
-                    : { display: "none" }
-                }
-              >
-                <p>Thumbnail</p>
-                <p>
-                  Select or upload a picture that shows what&apos;s in your
-                  video. A good thumbnail stands out and draws viewer&apos;s
-                  attention.
-                </p>
-                <label htmlFor="thumbnail-input" className="upload-thumbnail">
-                  <AddPhotoAlternateOutlinedIcon
-                    fontSize="medium"
-                    style={{ color: "#808080" }}
-                  />
-                  <p>Upload thumbnail</p>
-                </label>
+              <p>Drag and drop video files to upload</p>
+              <p>Your videos will be private until you publish them.</p>
+              <div className="upload-btn-wrapper">
+                <button className={theme ? "btn" : "btn text-dark-mode"}>
+                  SELECT FILES
+                </button>
                 <input
-                  id="thumbnail-input"
+                  id="videoFileInput"
                   type="file"
-                  name="thumbnail"
-                  accept=".jpg, .png"
-                  style={{ display: "none" }}
-                  onChange={handleThumbnailChange}
+                  name="videoFile"
+                  accept="video/mp4"
+                  onChange={handleVideoChange}
                 />
               </div>
-              <div
-                className="thumbnail-section thumb2"
-                style={
-                  isThumbnailSelected
-                    ? { display: "flex" }
-                    : { display: "none" }
-                }
-              >
-                <p>Thumbnail</p>
-                <p>
-                  Select or upload a picture that shows what&apos;s in your
-                  video. A good thumbnail stands out and draws viewer&apos;s
-                  attention.
-                </p>
-                <div className="thumb2-img">
-                  <CloseRoundedIcon
-                    className="close close2"
-                    fontSize="medium"
-                    style={{ color: theme ? "gray" : "white" }}
-                    onClick={() => {
-                      setIsThumbnailSelected(false);
-                    }}
-                  />
-                  <img
-                    className="prevThumbnail"
-                    src={previewThumbnail}
-                    alt=""
-                  />
-                </div>
-              </div>
             </div>
 
-            <div className="right-video-section">
-              <div
-                className={
-                  theme ? "preview-video" : "preview-video preview-light"
-                }
-              >
+            {/* =================== video details section ================== */}
+            <div
+              className="uploading-video-data"
+              style={
+                isVideoSelected ? { display: "flex" } : { display: "none" }
+              }
+            >
+              <div className="left-video-section">
+                <form className="details-form">
+                  <div className="details-section">
+                    <p>Details</p>
+                    <input
+                      type="text"
+                      className={
+                        theme ? "video-title" : "video-title light-mode"
+                      }
+                      name="title"
+                      value={formData.title}
+                      placeholder="Title (required)"
+                      required
+                      onChange={handleInputChange}
+                    />
+                    <textarea
+                      className={
+                        theme
+                          ? "video-description"
+                          : "video-description light-mode"
+                      }
+                      name="description"
+                      placeholder="Description"
+                      onChange={handleInputChange}
+                      spellCheck="true"
+                      value={formData.description}
+                    />
+                  </div>
+                </form>
+
                 <div
-                  className="preview-img"
+                  className="thumbnail-section"
                   style={
-                    Progress === 100 && VideoURL !== ""
-                      ? { display: "none" }
-                      : { display: "block" }
+                    !isThumbnailSelected
+                      ? { display: "flex" }
+                      : { display: "none" }
                   }
                 >
-                  <p className={theme ? "" : "text-light-mode"}>
-                    Uploading video...
+                  <p>Thumbnail</p>
+                  <p>
+                    Select or upload a picture that shows what&apos;s in your
+                    video. A good thumbnail stands out and draws viewer&apos;s
+                    attention.
                   </p>
-                </div>
-                {Progress === 100 && VideoURL !== "" ? (
-                  <video controls width="280" height="240">
-                    <source
-                      src={URL.createObjectURL(selectedVideo)}
-                      type="video/mp4"
+                  <label htmlFor="thumbnail-input" className="upload-thumbnail">
+                    <AddPhotoAlternateOutlinedIcon
+                      fontSize="medium"
+                      style={{ color: "#808080" }}
                     />
-                    Your browser does not support the video tag.
-                  </video>
-                ) : null}
+                    <p>Upload thumbnail</p>
+                  </label>
+                  <input
+                    id="thumbnail-input"
+                    type="file"
+                    name="thumbnail"
+                    accept=".jpg, .png"
+                    style={{ display: "none" }}
+                    onChange={handleThumbnailChange}
+                  />
+                </div>
+                <div
+                  className="thumbnail-section thumb2"
+                  style={
+                    isThumbnailSelected
+                      ? { display: "flex" }
+                      : { display: "none" }
+                  }
+                >
+                  <p>Thumbnail</p>
+                  <p>
+                    Select or upload a picture that shows what&apos;s in your
+                    video. A good thumbnail stands out and draws viewer&apos;s
+                    attention.
+                  </p>
+                  <div className="thumb2-img">
+                    <CloseRoundedIcon
+                      className="close close2"
+                      fontSize="medium"
+                      style={{ color: theme ? "gray" : "white" }}
+                      onClick={() => {
+                        setIsThumbnailSelected(false);
+                      }}
+                    />
+                    <img
+                      className="prevThumbnail"
+                      src={previewThumbnail}
+                      alt=""
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div
-                className={
-                  theme ? "preview-bottom" : "preview-bottom preview-light2"
-                }
-              >
-                <div className="file-details">
-                  <p>Filename</p>
-                  <p>{videoName}</p>
+              <div className="right-video-section">
+                <div
+                  className={
+                    theme ? "preview-video" : "preview-video preview-light"
+                  }
+                >
+                  <div
+                    className="preview-img"
+                    style={
+                      Progress === 100 && VideoURL !== ""
+                        ? { display: "none" }
+                        : { display: "block" }
+                    }
+                  >
+                    <p className={theme ? "" : "text-light-mode"}>
+                      Uploading video...
+                    </p>
+                  </div>
+                  {Progress === 100 && VideoURL !== "" ? (
+                    <video controls width="280" height="240">
+                      <source
+                        src={URL.createObjectURL(selectedVideo)}
+                        type="video/mp4"
+                      />
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : null}
                 </div>
-              </div>
+
+                <div
+                  className={
+                    theme ? "preview-bottom" : "preview-bottom preview-light2"
+                  }
+                >
+                  <div className="file-details">
+                    <p>Filename</p>
+                    <p>{videoName}</p>
+                  </div>
+                </div>
 
               <div className="video-visibility">
                 <p>Visibility</p>
@@ -643,12 +710,12 @@ const Content = () => {
                     <p
                       className="public"
                       style={
-                        visibility === "public"
+                        visibility === "Public"
                           ? { backgroundColor: "rgba(255, 255, 255, 0.134)" }
                           : { backgroundColor: "rgba(255, 255, 255, 0)" }
                       }
                       onClick={() => {
-                        setVisibility("public");
+                        setVisibility("Public");
                         setIsVisibilityClicked(false);
                         handleInputChange({
                           target: { name: "isPublished", value: true },
@@ -661,12 +728,12 @@ const Content = () => {
                     <p
                       className="private"
                       style={
-                        visibility === "private"
+                        visibility === "Private"
                           ? { backgroundColor: "rgba(255, 255, 255, 0.134)" }
                           : { backgroundColor: "rgba(255, 255, 255, 0)" }
                       }
                       onClick={() => {
-                        setVisibility("private");
+                        setVisibility("Private");
                         setIsVisibilityClicked(false);
                         handleInputChange({
                           target: { name: "isPublished", value: false },
@@ -681,238 +748,200 @@ const Content = () => {
             </div>
           </div>
 
-          <div
-            className="last-segment"
-            style={
-              isVideoSelected === true
-                ? { display: "block" }
-                : { display: "none" }
-            }
-          >
-            <hr
-              className={
-                theme
-                  ? "seperate seperate2"
-                  : "seperate seperate2 seperate-light"
+            <div
+              className="last-segment"
+              style={
+                isVideoSelected === true
+                  ? { display: "block" }
+                  : { display: "none" }
               }
-            />
-            <div className="last-btn">
-              <div className="left-icons">
-                <CloudUploadIcon
-                  className="left-ic"
-                  fontSize="large"
-                  style={
-                    Progress === 100
-                      ? { display: "none" }
-                      : { color: "gray", marginRight: "6px" }
-                  }
-                />
-                <SdIcon
-                  className="left-ic"
-                  fontSize="large"
-                  style={
-                    Progress >= 60
-                      ? { display: "none" }
-                      : { color: "gray", marginLeft: "6px" }
-                  }
-                />
-                <CloudDoneRoundedIcon
-                  className="left-ic"
-                  fontSize="large"
-                  style={
-                    Progress === 100
-                      ? {
-                          display: "block",
-                          color: "#3ea6ff",
-                          marginRight: "6px",
-                          animation: "none",
-                        }
-                      : { display: "none" }
-                  }
-                />
-                <HdIcon
-                  className="left-ic"
-                  fontSize="large"
-                  style={
-                    Progress >= 60
-                      ? {
-                          display: "block",
-                          color: "#3ea6ff",
-                          marginLeft: "6px",
-                          animation: "none",
-                        }
-                      : { display: "none" }
-                  }
-                />
-                <p
-                  style={
-                    Progress === 100
-                      ? { display: "none" }
-                      : { marginLeft: "12px" }
-                  }
-                >
-                  Uploading {Progress}% ...
-                </p>
-                <p
-                  style={
-                    Progress === 100
-                      ? { marginLeft: "12px" }
-                      : { display: "none" }
-                  }
-                >
-                  Video uploaded
-                </p>
+            >
+              <hr
+                className={
+                  theme
+                    ? "seperate seperate2"
+                    : "seperate seperate2 seperate-light"
+                }
+              />
+              <div className="last-btn">
+                <div className="left-icons">
+                  <CloudUploadIcon
+                    className="left-ic"
+                    fontSize="large"
+                    style={
+                      Progress === 100
+                        ? { display: "none" }
+                        : { color: "gray", marginRight: "6px" }
+                    }
+                  />
+                  <SdIcon
+                    className="left-ic"
+                    fontSize="large"
+                    style={
+                      Progress >= 60
+                        ? { display: "none" }
+                        : { color: "gray", marginLeft: "6px" }
+                    }
+                  />
+                  <CloudDoneRoundedIcon
+                    className="left-ic"
+                    fontSize="large"
+                    style={
+                      Progress === 100
+                        ? {
+                            display: "block",
+                            color: "#3ea6ff",
+                            marginRight: "6px",
+                            animation: "none",
+                          }
+                        : { display: "none" }
+                    }
+                  />
+                  <HdIcon
+                    className="left-ic"
+                    fontSize="large"
+                    style={
+                      Progress >= 60
+                        ? {
+                            display: "block",
+                            color: "#3ea6ff",
+                            marginLeft: "6px",
+                            animation: "none",
+                          }
+                        : { display: "none" }
+                    }
+                  />
+                  <p
+                    style={
+                      Progress === 100
+                        ? { display: "none" }
+                        : { marginLeft: "12px" }
+                    }
+                  >
+                    Uploading {Progress}% ...
+                  </p>
+                  <p
+                    style={
+                      Progress === 100
+                        ? { marginLeft: "12px" }
+                        : { display: "none" }
+                    }
+                  >
+                    Video uploaded
+                  </p>
+                </div>
+                {loading ? (
+                  <button
+                    className={
+                      loading || Progress !== 100
+                        ? "save-video-data-disable"
+                        : "save-video-data"
+                    }
+                    onClick={PublishData}
+                    disabled={
+                      loading === true || Progress !== 100 ? true : false
+                    }
+                  >
+                    <span className="loader3"></span>
+                  </button>
+                ) : (
+                  <button
+                    className={
+                      loading || Progress !== 100
+                        ? `save-video-data-disable ${
+                            theme ? "" : "text-dark-mode"
+                          }`
+                        : `save-video-data ${theme ? "" : "text-dark-mode"}`
+                    }
+                    onClick={PublishData}
+                    disabled={
+                      loading === true || Progress !== 100 ? true : false
+                    }
+                  >
+                    PUBLISH
+                  </button>
+                )}
               </div>
-              {loading ? (
-                <button
-                  className={
-                    loading || Progress !== 100
-                      ? "save-video-data-disable"
-                      : "save-video-data"
-                  }
-                  onClick={PublishData}
-                  disabled={loading === true || Progress !== 100 ? true : false}
-                >
-                  <span className="loader3"></span>
-                </button>
-              ) : (
-                <button
-                  className={
-                    loading || Progress !== 100
-                      ? `save-video-data-disable ${
-                          theme ? "" : "text-dark-mode"
-                        }`
-                      : `save-video-data ${theme ? "" : "text-dark-mode"}`
-                  }
-                  onClick={PublishData}
-                  disabled={loading === true || Progress !== 100 ? true : false}
-                >
-                  PUBLISH
-                </button>
-              )}
             </div>
           </div>
-        </div>
 
-        {/* video table list section  */}
-        <hr
-          className="breakk2 breakkk"
-          style={{ left: menu ? "88px" : "262px" }}
-        />
-        <div
-          className="channels-uploaded-videos-section"
-          style={{ left: menu ? "90px" : "270px" }}
-        >
-          {sortedUserVideos && sortedUserVideos.length > 0 && (
-            <table className="videos-table">
-              <thead>
-                <tr
-                  style={{ color: theme ? "#aaa" : "black", fontSize: "14px" }}
-                >
-                  <th
+          {/* video table list section  */}
+          <hr
+            className="breakk2 breakkk"
+            style={{ left: menu ? "88px" : "262px" }}
+          />
+          <div
+            className="channels-uploaded-videos-section"
+            style={{ left: menu ? "90px" : "270px" }}
+          >
+            {sortedUserVideos && sortedUserVideos.length > 0 && (
+              <table className="videos-table">
+                <thead>
+                  <tr
                     style={{
-                      textAlign: "left",
-                      paddingLeft: "40px",
-                      width: "45%",
+                      color: theme ? "#aaa" : "black",
+                      fontSize: "14px",
                     }}
                   >
-                    Video
-                  </th>
-                  <th>Visibility</th>
-                  <th onClick={handleSortByDate} className="date-table-head">
-                    <div className="table-row">
-                      <p className={theme ? "" : "text-light-mode"}>Date</p>
-                      {changeSort === false ? (
-                        <SouthIcon
-                          fontSize="200px"
-                          style={{
-                            color: theme ? "white" : "black",
-                            marginLeft: "5px",
-                          }}
-                        />
-                      ) : (
-                        <NorthOutlinedIcon
-                          fontSize="200px"
-                          style={{
-                            color: theme ? "white" : "black",
-                            marginLeft: "5px",
-                          }}
-                        />
-                      )}
-                    </div>
-                  </th>
-                  <th>Views</th>
-                  <th>Comments</th>
-                  <th>Likes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedUserVideos.map((element, index) => {
-                  const uploaded = new Date(element.createdAt);
-                  return (
-                    <tr
-                      key={index}
-                      className={
-                        theme ? "table-roww" : "table-roww preview-lightt"
-                      }
-                      style={
-                        loading === true
-                          ? { pointerEvents: "none" }
-                          : { pointerEvents: "auto" }
-                      }
+                    <th
+                      style={{
+                        textAlign: "left",
+                        paddingLeft: "40px",
+                        width: "45%",
+                      }}
                     >
-                      <td className="video-cell">
-                        <SkeletonTheme
-                          baseColor={theme ? "#353535" : "#aaaaaa"}
-                          highlightColor={theme ? "#444" : "#b6b6b6"}
-                        >
-                          <div
-                            className="no-skeleton"
-                            style={
-                              loading === true
-                                ? { display: "flex" }
-                                : { display: "none" }
-                            }
-                          >
-                            <Skeleton
-                              count={1}
-                              width={150}
-                              height={84}
-                              style={{ marginLeft: "30px" }}
-                            />
-                          </div>
-                        </SkeletonTheme>
-                        <div
-                          className="no-skeleton"
-                          style={
-                            loading === true
-                              ? { visibility: "hidden", display: "none" }
-                              : { visibility: "visible", display: "flex" }
-                          }
-                        >
-                          <img
-                            src={element.thumbnail.url}
-                            alt="thumbnail"
-                            className="studio-video-thumbnail"
-                            onClick={() => {
-                              navigate(`/studio/video/edit/${element._id}`);
+                      Video
+                    </th>
+                    <th>Visibility</th>
+                    <th onClick={handleSortByDate} className="date-table-head">
+                      <div className="table-row">
+                        <p className={theme ? "" : "text-light-mode"}>Date</p>
+                        {changeSort === false ? (
+                          <SouthIcon
+                            fontSize="200px"
+                            style={{
+                              color: theme ? "white" : "black",
+                              marginLeft: "5px",
                             }}
                           />
-                          <p className="video-left-duration">
-                            {Math.floor(element.duration / 60) +
-                              ":" +
-                              (Math.round(element.duration % 60) < 10
-                                ? "0" + Math.round(element.duration % 60)
-                                : Math.round(element.duration % 60))}
-                          </p>
-                        </div>
-                        <div className="studio-video-details">
+                        ) : (
+                          <NorthOutlinedIcon
+                            fontSize="200px"
+                            style={{
+                              color: theme ? "white" : "black",
+                              marginLeft: "5px",
+                            }}
+                          />
+                        )}
+                      </div>
+                    </th>
+                    <th>Views</th>
+                    <th>Comments</th>
+                    <th>Likes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedUserVideos.map((element, index) => {
+                    const uploaded = new Date(element.createdAt);
+                    return (
+                      <tr
+                        key={index}
+                        className={
+                          theme ? "table-roww" : "table-roww preview-lightt"
+                        }
+                        style={
+                          loading === true
+                            ? { pointerEvents: "none" }
+                            : { pointerEvents: "auto" }
+                        }
+                      >
+                        <td className="video-cell">
                           <SkeletonTheme
                             baseColor={theme ? "#353535" : "#aaaaaa"}
                             highlightColor={theme ? "#444" : "#b6b6b6"}
                           >
                             <div
-                              className="no-skeleton2"
+                              className="no-skeleton"
                               style={
                                 loading === true
                                   ? { display: "flex" }
@@ -921,182 +950,132 @@ const Content = () => {
                             >
                               <Skeleton
                                 count={1}
-                                width={250}
-                                height={14}
-                                style={{
-                                  borderRadius: "3px",
-                                  position: "relative",
-                                  left: "25px",
-                                }}
-                              />
-                              <Skeleton
-                                count={1}
-                                width={180}
-                                height={10}
-                                style={{
-                                  borderRadius: "3px",
-                                  position: "relative",
-                                  top: "15px",
-                                  left: "25px",
-                                }}
-                              />
-                              <Skeleton
-                                count={1}
-                                width={140}
-                                height={10}
-                                style={{
-                                  borderRadius: "3px",
-                                  position: "relative",
-                                  top: "18px",
-                                  left: "25px",
-                                }}
+                                width={150}
+                                height={84}
+                                style={{ marginLeft: "30px" }}
                               />
                             </div>
                           </SkeletonTheme>
-
-                          {/*===================  video description and title show ================= */}
                           <div
-                            className="no-skeleton2"
+                            className="no-skeleton"
                             style={
                               loading === true
                                 ? { visibility: "hidden", display: "none" }
                                 : { visibility: "visible", display: "flex" }
                             }
                           >
-                            <p
-                              className={
-                                theme
-                                  ? "studio-video-title"
-                                  : "studio-video-title text-light-mode"
-                              }
+                            <img
+                              src={element.thumbnail.url}
+                              alt="thumbnail"
+                              className="studio-video-thumbnail"
                               onClick={() => {
                                 navigate(`/studio/video/edit/${element._id}`);
                               }}
-                            >
-                              {element.title && element.title.length <= 40
-                                ? element.title
-                                : `${element.title?.slice(0, 40)}...`}
+                            />
+                            <p className="video-left-duration">
+                              {Math.floor(element.duration / 60) +
+                                ":" +
+                                (Math.round(element.duration % 60) < 10
+                                  ? "0" + Math.round(element.duration % 60)
+                                  : Math.round(element.duration % 60))}
                             </p>
-                            {element.description ? (
+                          </div>
+                          <div className="studio-video-details">
+                            <SkeletonTheme
+                              baseColor={theme ? "#353535" : "#aaaaaa"}
+                              highlightColor={theme ? "#444" : "#b6b6b6"}
+                            >
+                              <div
+                                className="no-skeleton2"
+                                style={
+                                  loading === true
+                                    ? { display: "flex" }
+                                    : { display: "none" }
+                                }
+                              >
+                                <Skeleton
+                                  count={1}
+                                  width={250}
+                                  height={14}
+                                  style={{
+                                    borderRadius: "3px",
+                                    position: "relative",
+                                    left: "25px",
+                                  }}
+                                />
+                                <Skeleton
+                                  count={1}
+                                  width={180}
+                                  height={10}
+                                  style={{
+                                    borderRadius: "3px",
+                                    position: "relative",
+                                    top: "15px",
+                                    left: "25px",
+                                  }}
+                                />
+                                <Skeleton
+                                  count={1}
+                                  width={140}
+                                  height={10}
+                                  style={{
+                                    borderRadius: "3px",
+                                    position: "relative",
+                                    top: "18px",
+                                    left: "25px",
+                                  }}
+                                />
+                              </div>
+                            </SkeletonTheme>
+
+                            {/*===================  video description and title show ================= */}
+                            <div
+                              className="no-skeleton2"
+                              style={
+                                loading === true
+                                  ? { visibility: "hidden", display: "none" }
+                                  : { visibility: "visible", display: "flex" }
+                              }
+                            >
                               <p
                                 className={
                                   theme
-                                    ? "studio-video-desc"
-                                    : "studio-video-desc text-light-mode2"
+                                    ? "studio-video-title"
+                                    : "studio-video-title text-light-mode"
                                 }
-                              >
-                                {element.description.length <= 85
-                                  ? element.description
-                                  : `${element.description.slice(0, 85)}...`}
-                              </p>
-                            ) : (
-                              <p>Add description</p>
-                            )}
-                          </div>
-
-                          {/* edit video Details page open in this button click event  */}
-                          <div className="video-editable-section">
-                            <Tooltip
-                              TransitionComponent={Zoom}
-                              title="Details"
-                              placement="bottom"
-                            >
-                              <ModeEditOutlineOutlinedIcon
-                                className={
-                                  theme
-                                    ? "video-edit-icons"
-                                    : "video-edit-icons-light"
-                                }
-                                fontSize="medium"
-                                style={{ color: theme ? "#aaa" : "#606060" }}
                                 onClick={() => {
                                   navigate(`/studio/video/edit/${element._id}`);
                                 }}
-                              />
-                            </Tooltip>
-
-                            <Tooltip
-                              TransitionComponent={Zoom}
-                              title="Comments"
-                              placement="bottom"
-                            >
-                              <ChatOutlinedIcon
-                                className={
-                                  theme
-                                    ? "video-edit-icons"
-                                    : "video-edit-icons-light"
-                                }
-                                fontSize="medium"
-                                style={{ color: theme ? "#aaa" : "#606060" }}
-                                onClick={() => {
-                                  navigate(
-                                    `/studio/video/comments/${element._id}`
-                                  );
-                                }}
-                              />
-                            </Tooltip>
-
-                            <Tooltip
-                              TransitionComponent={Zoom}
-                              title="View on YouTube"
-                              placement="bottom"
-                            >
-                              <YouTubeIcon
-                                className={
-                                  theme
-                                    ? "video-edit-icons"
-                                    : "video-edit-icons-light"
-                                }
-                                fontSize="medium"
-                                style={{ color: theme ? "#aaa" : "#606060" }}
-                                onClick={() => {
-                                  navigate(`/video/${element._id}`);
-                                }}
-                              />
-                            </Tooltip>
-
-                            <Tooltip
-                              TransitionComponent={Zoom}
-                              title="Options"
-                              placement="bottom"
-                            >
-                              <MoreVertOutlinedIcon
-                                className={
-                                  theme
-                                    ? "video-edit-icons"
-                                    : "video-edit-icons-light"
-                                }
-                                fontSize="medium"
-                                style={{ color: theme ? "#aaa" : "#606060" }}
-                                onClick={() => setShowOptions(!showOptions)}
-                              />
-                            </Tooltip>
-
-                            {/*=============== three dot click so open card data ======================== */}
-                            <div
-                              className={
-                                theme
-                                  ? "extra-options-menu"
-                                  : "extra-options-menu light-mode"
-                              }
-                              style={
-                                showOptions === true
-                                  ? { display: "flex" }
-                                  : { display: "none" }
-                              }
-                            >
-                              <div
-                                className={
-                                  theme
-                                    ? "share-video-data-row option-row"
-                                    : "share-video-data-row option-row preview-lightt"
-                                }
-                                onClick={() => {
-                                  handleCopyLink(element._id);
-                                  setShowOptions(false);
-                                }}
                               >
-                                <ShareOutlinedIcon
+                                {element.title && element.title.length <= 40
+                                  ? element.title
+                                  : `${element.title?.slice(0, 40)}...`}
+                              </p>
+                              {element.description ? (
+                                <p
+                                  className={
+                                    theme
+                                      ? "studio-video-desc"
+                                      : "studio-video-desc text-light-mode2"
+                                  }
+                                >
+                                  {element.description.length <= 85
+                                    ? element.description
+                                    : `${element.description.slice(0, 85)}...`}
+                                </p>
+                              ) : (
+                                <p>Add description</p>
+                              )}
+                            </div>
+
+                            {/* edit video Details page open in this button click event  */}
+                            <div className="video-editable-section">
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="Details"
+                                placement="bottom"
+                              >
+                                <ModeEditOutlineOutlinedIcon
                                   className={
                                     theme
                                       ? "video-edit-icons"
@@ -1104,50 +1083,20 @@ const Content = () => {
                                   }
                                   fontSize="medium"
                                   style={{ color: theme ? "#aaa" : "#606060" }}
-                                />
-                                <p>Get shareable link</p>
-                              </div>
-                              <div
-                                className={
-                                  theme
-                                    ? "download-video-data-row option-row"
-                                    : "download-video-data-row option-row preview-lightt"
-                                }
-                                onClick={() => {
-                                  downloadVideo(element.videoFile.url);
-                                  setShowOptions(false);
-                                }}
-                              >
-                                <KeyboardTabOutlinedIcon
-                                  className={
-                                    theme
-                                      ? "video-edit-icons"
-                                      : "video-edit-icons-light"
-                                  }
-                                  fontSize="medium"
-                                  style={{
-                                    color: theme ? "#aaa" : "#606060",
-                                    transform: "rotate(90deg)",
+                                  onClick={() => {
+                                    navigate(
+                                      `/studio/video/edit/${element._id}`
+                                    );
                                   }}
                                 />
-                                <p>Download</p>
-                              </div>
-                              <div
-                                className={
-                                  theme
-                                    ? "delete-video-data-row option-row"
-                                    : "delete-video-data-row option-row preview-lightt"
-                                }
-                                onClick={() => {
-                                  setDeleteVideoID(element._id);
-                                  if (element._id !== undefined) {
-                                    setShowOptions(false);
-                                    setIsDeleteClicked(true);
-                                    document.body.classList.add("bg-css2");
-                                  }
-                                }}
+                              </Tooltip>
+
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="Comments"
+                                placement="bottom"
                               >
-                                <DeleteOutlineOutlinedIcon
+                                <ChatOutlinedIcon
                                   className={
                                     theme
                                       ? "video-edit-icons"
@@ -1155,234 +1104,373 @@ const Content = () => {
                                   }
                                   fontSize="medium"
                                   style={{ color: theme ? "#aaa" : "#606060" }}
+                                  onClick={() => {
+                                    navigate(
+                                      `/studio/video/comments/${element._id}`
+                                    );
+                                  }}
                                 />
-                                <p>Delete forever</p>
+                              </Tooltip>
+
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="View on YouTube"
+                                placement="bottom"
+                              >
+                                <YouTubeIcon
+                                  className={
+                                    theme
+                                      ? "video-edit-icons"
+                                      : "video-edit-icons-light"
+                                  }
+                                  fontSize="medium"
+                                  style={{ color: theme ? "#aaa" : "#606060" }}
+                                  onClick={() => {
+                                    navigate(`/video/${element._id}`);
+                                  }}
+                                />
+                              </Tooltip>
+
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="Options"
+                                placement="bottom"
+                              >
+                                <MoreVertOutlinedIcon
+                                  className={
+                                    theme
+                                      ? "video-edit-icons"
+                                      : "video-edit-icons-light"
+                                  }
+                                  fontSize="medium"
+                                  style={{ color: theme ? "#aaa" : "#606060" }}
+                                  onClick={() => setShowOptions(!showOptions)}
+                                />
+                              </Tooltip>
+
+                              {/*=============== three dot click so open card data ======================== */}
+                              <div
+                                className={
+                                  theme
+                                    ? "extra-options-menu"
+                                    : "extra-options-menu light-mode"
+                                }
+                                style={
+                                  showOptions === true
+                                    ? { display: "flex" }
+                                    : { display: "none" }
+                                }
+                              >
+                                <div
+                                  className={
+                                    theme
+                                      ? "share-video-data-row option-row"
+                                      : "share-video-data-row option-row preview-lightt"
+                                  }
+                                  onClick={() => {
+                                    handleCopyLink(element._id);
+                                    setShowOptions(false);
+                                  }}
+                                >
+                                  <ShareOutlinedIcon
+                                    className={
+                                      theme
+                                        ? "video-edit-icons"
+                                        : "video-edit-icons-light"
+                                    }
+                                    fontSize="medium"
+                                    style={{
+                                      color: theme ? "#aaa" : "#606060",
+                                    }}
+                                  />
+                                  <p>Get shareable link</p>
+                                </div>
+                                <div
+                                  className={
+                                    theme
+                                      ? "download-video-data-row option-row"
+                                      : "download-video-data-row option-row preview-lightt"
+                                  }
+                                  onClick={() => {
+                                    downloadVideo(element.videoFile.url);
+                                    setShowOptions(false);
+                                  }}
+                                >
+                                  <KeyboardTabOutlinedIcon
+                                    className={
+                                      theme
+                                        ? "video-edit-icons"
+                                        : "video-edit-icons-light"
+                                    }
+                                    fontSize="medium"
+                                    style={{
+                                      color: theme ? "#aaa" : "#606060",
+                                      transform: "rotate(90deg)",
+                                    }}
+                                  />
+                                  <p>Download</p>
+                                </div>
+                                <div
+                                  className={
+                                    theme
+                                      ? "delete-video-data-row option-row"
+                                      : "delete-video-data-row option-row preview-lightt"
+                                  }
+                                  onClick={() => {
+                                    setDeleteVideoID(element._id);
+                                    if (element._id !== undefined) {
+                                      setShowOptions(false);
+                                      setIsDeleteClicked(true);
+                                      document.body.classList.add("bg-css2");
+                                    }
+                                  }}
+                                >
+                                  <DeleteOutlineOutlinedIcon
+                                    className={
+                                      theme
+                                        ? "video-edit-icons"
+                                        : "video-edit-icons-light"
+                                    }
+                                    fontSize="medium"
+                                    style={{
+                                      color: theme ? "#aaa" : "#606060",
+                                    }}
+                                  />
+                                  <p>Delete forever</p>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
+                        </td>
 
-                      <td>
-                        <div className="privacy-table">
-                          {element.isPublished === true ? (
-                            <RemoveRedEyeOutlinedIcon
-                              fontSize="small"
-                              style={{ color: "#2ba640" }}
-                            />
-                          ) : (
-                            <VisibilityOffOutlinedIcon
-                              fontSize="small"
-                              style={{
-                                color: theme
-                                  ? "rgb(170 170 170 / 53%)"
-                                  : "#909090",
-                              }}
-                            />
-                          )}
-                          <p
-                            className={theme ? "" : "text-light-mode2"}
-                            style={{ marginLeft: "8px" }}
-                          >
-                            {element.isPublished === true
-                              ? "Public"
-                              : "Private"}
+                        <td>
+                          <div className="privacy-table">
+                            {element.isPublished === true ? (
+                              <RemoveRedEyeOutlinedIcon
+                                fontSize="small"
+                                style={{ color: "#2ba640" }}
+                              />
+                            ) : (
+                              <VisibilityOffOutlinedIcon
+                                fontSize="small"
+                                style={{
+                                  color: theme
+                                    ? "rgb(170 170 170 / 53%)"
+                                    : "#909090",
+                                }}
+                              />
+                            )}
+                            <p
+                              className={theme ? "" : "text-light-mode2"}
+                              style={{ marginLeft: "8px" }}
+                            >
+                              {element.isPublished === true
+                                ? "Public"
+                                : "Private"}
+                            </p>
+                          </div>
+                        </td>
+                        <td>
+                          <p className={theme ? "" : "text-light-mode2"}>
+                            {uploaded.toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })}
                           </p>
-                        </div>
-                      </td>
-                      <td>
-                        <p className={theme ? "" : "text-light-mode2"}>
-                          {uploaded.toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })}
-                        </p>
-                      </td>
-                      <td>
-                        <p className={theme ? "" : "text-light-mode2"}>
-                          {element.views && element.views.toLocaleString()}
-                        </p>
-                      </td>
-                      <td>
-                        <p className={theme ? "" : "text-light-mode2"}>
-                          {element.commentCount}
-                        </p>
-                      </td>
-                      <td>
-                        <p className={theme ? "" : "text-light-mode2"}>
-                          {element.likeCount}
-                        </p>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
-        </div>
+                        </td>
+                        <td>
+                          <p className={theme ? "" : "text-light-mode2"}>
+                            {element.views && element.views.toLocaleString()}
+                          </p>
+                        </td>
+                        <td>
+                          <p className={theme ? "" : "text-light-mode2"}>
+                            {element.commentCount}
+                          </p>
+                        </td>
+                        <td>
+                          <p className={theme ? "" : "text-light-mode2"}>
+                            {element.likeCount}
+                          </p>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
 
-        {/*============== empty video so show ================ */}
-        <div
-          className="novideo-available"
-          style={
-            userVideos.length === 0 ? { display: "flex" } : { display: "none" }
-          }
-        >
-          <img src={noImage} alt="no-video" className="no-content-img" />
-          <p>No content available</p>
-        </div>
-      </div>
-
-      {/* delete dialogbox  */}
-
-      <div
-        className={
-          theme
-            ? "last-delete-warning"
-            : "last-delete-warning light-mode text-light-mode"
-        }
-        style={
-          isDeleteClicked === true && DeleteVideoData
-            ? { display: "block" }
-            : { display: "none" }
-        }
-      >
-        <div className="delete-question">
-          <p>Permanently delete this video?</p>
-        </div>
-        <div className="deleted-video-data">
+          {/*============== empty video so show ================ */}
           <div
-            className={
-              theme ? "thisdelete-data" : "thisdelete-data social-lightt"
+            className="novideo-available"
+            style={
+              userVideos.length === 0
+                ? { display: "flex" }
+                : { display: "none" }
             }
           >
-            <img
-              src={DeleteVideoData && DeleteVideoData.thumbnail.url}
-              alt="thumbnail"
-              className="deletevideo-thumbnail"
-            />
-            <p className="thisdelete-duration">
-              {Math.floor(DeleteVideoData && DeleteVideoData.duration / 60) +
-                ":" +
-                (Math.round(DeleteVideoData && DeleteVideoData.duration % 60) <
-                10
-                  ? "0" +
-                    Math.round(DeleteVideoData && DeleteVideoData.duration % 60)
-                  : Math.round(
-                      DeleteVideoData && DeleteVideoData.duration % 60
-                    ))}
-            </p>
-            <div className="thisdelete-video-details">
-              <p className="delete-title">
-                {DeleteVideoData && DeleteVideoData.title.length <= 15
-                  ? DeleteVideoData.title
-                  : `${
-                      DeleteVideoData && DeleteVideoData.title.slice(0, 15)
-                    }...`}
-              </p>
-              <p
-                className={
-                  theme ? "delete-uploaded" : "delete-uploaded text-light-mode2"
-                }
-              >
-                {"Uploaded " +
-                  DeleteVideoUploadDate.toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-              </p>
-              <p
-                className={
-                  theme ? "delete-views" : "delete-views text-light-mode2"
-                }
-              >
-                {DeleteVideoData && DeleteVideoData.views + " views"}
-              </p>
-            </div>
+            <img src={noImage} alt="no-video" className="no-content-img" />
+            <p>No content available</p>
           </div>
         </div>
 
-        <div className="delete-consent">
-          <CheckBoxOutlineBlankIcon
-            onClick={() => {
-              setBoxClicked(!boxclicked);
-            }}
-            fontSize="medium"
-            style={
-              boxclicked === false
-                ? { color: theme ? "#aaa" : "#606060", cursor: "pointer" }
-                : { display: "none" }
-            }
-          />
-          <CheckBoxIcon
-            onClick={() => {
-              setBoxClicked(!boxclicked);
-            }}
-            fontSize="medium"
-            style={
-              boxclicked === true
-                ? { color: theme ? "white" : "606060", cursor: "pointer" }
-                : { display: "none" }
-            }
-          />
-          <p>
-            I understand that deleting a video from YouTube is permanent and
-            cannot be undone.
-          </p>
-        </div>
-        <div className="delete-video-buttons">
-          <button
-            className={
-              theme
-                ? "download-delete-video delete-css"
-                : "download-delete-video delete-css blue-txt"
-            }
-            onClick={() => {
-              if (DeleteVideoData) {
-                downloadVideo(DeleteVideoData.videoFile.url);
-              }
-            }}
-          >
-            DOWNLOAD VIDEO
-          </button>
-          <div className="extra-two-delete-btns">
-            <button
+        {/* delete dialogbox  */}
+
+        <div
+          className={
+            theme
+              ? "last-delete-warning"
+              : "last-delete-warning light-mode text-light-mode"
+          }
+          style={
+            isDeleteClicked === true && DeleteVideoData
+              ? { display: "block" }
+              : { display: "none" }
+          }
+        >
+          <div className="delete-question">
+            <p>Permanently delete this video?</p>
+          </div>
+          <div className="deleted-video-data">
+            <div
               className={
-                theme
-                  ? "cancel-delete delete-css"
-                  : "cancel-delete delete-css blue-txt"
+                theme ? "thisdelete-data" : "thisdelete-data social-lightt"
               }
-              onClick={() => {
-                setIsDeleteClicked(false);
-                document.body.classList.remove("bg-css2");
-              }}
             >
-              CANCEL
-            </button>
+              <img
+                src={DeleteVideoData && DeleteVideoData.thumbnail.url}
+                alt="thumbnail"
+                className="deletevideo-thumbnail"
+              />
+              <p className="thisdelete-duration">
+                {Math.floor(DeleteVideoData && DeleteVideoData.duration / 60) +
+                  ":" +
+                  (Math.round(
+                    DeleteVideoData && DeleteVideoData.duration % 60
+                  ) < 10
+                    ? "0" +
+                      Math.round(
+                        DeleteVideoData && DeleteVideoData.duration % 60
+                      )
+                    : Math.round(
+                        DeleteVideoData && DeleteVideoData.duration % 60
+                      ))}
+              </p>
+              <div className="thisdelete-video-details">
+                <p className="delete-title">
+                  {DeleteVideoData && DeleteVideoData.title.length <= 15
+                    ? DeleteVideoData.title
+                    : `${
+                        DeleteVideoData && DeleteVideoData.title.slice(0, 15)
+                      }...`}
+                </p>
+                <p
+                  className={
+                    theme
+                      ? "delete-uploaded"
+                      : "delete-uploaded text-light-mode2"
+                  }
+                >
+                  {"Uploaded " +
+                    DeleteVideoUploadDate.toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                </p>
+                <p
+                  className={
+                    theme ? "delete-views" : "delete-views text-light-mode2"
+                  }
+                >
+                  {DeleteVideoData && DeleteVideoData.views + " views"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="delete-consent">
+            <CheckBoxOutlineBlankIcon
+              onClick={() => {
+                setBoxClicked(!boxclicked);
+              }}
+              fontSize="medium"
+              style={
+                boxclicked === false
+                  ? { color: theme ? "#aaa" : "#606060", cursor: "pointer" }
+                  : { display: "none" }
+              }
+            />
+            <CheckBoxIcon
+              onClick={() => {
+                setBoxClicked(!boxclicked);
+              }}
+              fontSize="medium"
+              style={
+                boxclicked === true
+                  ? { color: theme ? "white" : "606060", cursor: "pointer" }
+                  : { display: "none" }
+              }
+            />
+            <p>
+              I understand that deleting a video from YouTube is permanent and
+              cannot be undone.
+            </p>
+          </div>
+          <div className="delete-video-buttons">
             <button
               className={
                 theme
-                  ? "delete-video-btn delete-css"
-                  : `delete-video-btn delete-css ${
-                      !boxclicked ? "" : "blue-txt"
-                    }`
+                  ? "download-delete-video delete-css"
+                  : "download-delete-video delete-css blue-txt"
               }
-              disabled={!boxclicked}
               onClick={() => {
-                if (boxclicked === true && DeleteVideoData) {
-                  DeleteVideo(DeleteVideoData._id);
+                if (DeleteVideoData) {
+                  downloadVideo(DeleteVideoData.videoFile.url);
                 }
               }}
-              style={{
-                opacity: boxclicked === false ? 0.7 : 1,
-                color: boxclicked === false ? "#aaa" : "#3eaffe",
-                cursor: boxclicked === false ? "not-allowed" : "pointer",
-              }}
             >
-              DELETE VIDEO
+              DOWNLOAD VIDEO
             </button>
+            <div className="extra-two-delete-btns">
+              <button
+                className={
+                  theme
+                    ? "cancel-delete delete-css"
+                    : "cancel-delete delete-css blue-txt"
+                }
+                onClick={() => {
+                  setIsDeleteClicked(false);
+                  document.body.classList.remove("bg-css2");
+                }}
+              >
+                CANCEL
+              </button>
+              <button
+                className={
+                  theme
+                    ? "delete-video-btn delete-css"
+                    : `delete-video-btn delete-css ${
+                        !boxclicked ? "" : "blue-txt"
+                      }`
+                }
+                disabled={!boxclicked}
+                onClick={() => {
+                  if (boxclicked === true && DeleteVideoData) {
+                    DeleteVideo(DeleteVideoData._id);
+                  }
+                }}
+                style={{
+                  opacity: boxclicked === false ? 0.7 : 1,
+                  color: boxclicked === false ? "#aaa" : "#3eaffe",
+                  cursor: boxclicked === false ? "not-allowed" : "pointer",
+                }}
+              >
+                DELETE VIDEO
+              </button>
+            </div>
           </div>
         </div>
       </div>

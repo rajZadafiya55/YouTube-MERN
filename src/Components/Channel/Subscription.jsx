@@ -32,39 +32,39 @@ function Subscription(prop) {
     }, 1200);
   }, []);
 
-  useEffect(() => {
-    const getSubscriptions = async () => {
-      try {
-        if (prop.newmail !== undefined) {
-          const response = await fetch(
-            `${backendURL}/getsubscriptions/${prop.newmail}`
-          );
-          const result = await response.json();
-          setSubscriptions(result);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-    getSubscriptions();
-  }, [prop.newmail]);
+  // useEffect(() => {
+  //   const getSubscriptions = async () => {
+  //     try {
+  //       if (prop.newmail !== undefined) {
+  //         const response = await fetch(
+  //           `${backendURL}/getsubscriptions/${prop.newmail}`
+  //         );
+  //         const result = await response.json();
+  //         setSubscriptions(result);
+  //       }
+  //     } catch (error) {
+  //        console.log(error.message);
+  //     }
+  //   };
+  //   getSubscriptions();
+  // }, [prop.newmail]);
 
-  useEffect(() => {
-    const getFeaturedChannels = async () => {
-      try {
-        const response = await fetch(
-          `${backendURL}/getfeaturedchannels/${prop.newmail}`
-        );
-        const featuredChannelData = await response.json();
-        setFeaturedChannelsData(featuredChannelData);
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-    const interval = setInterval(getFeaturedChannels, 100);
+  // useEffect(() => {
+  //   const getFeaturedChannels = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         `${backendURL}/getfeaturedchannels/${prop.newmail}`
+  //       );
+  //       const featuredChannelData = await response.json();
+  //       setFeaturedChannelsData(featuredChannelData);
+  //     } catch (error) {
+  //       // console.log(error.message);
+  //     }
+  //   };
+  //   const interval = setInterval(getFeaturedChannels, 100);
 
-    return () => clearInterval(interval);
-  }, [prop.newmail]);
+  //   return () => clearInterval(interval);
+  // }, [prop.newmail]);
 
   //POST REQUESTS
 
