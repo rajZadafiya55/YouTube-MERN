@@ -21,7 +21,6 @@ import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined
 import noImage from "../../img/no-video2.png";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,7 +30,7 @@ import {
   deleteVideoDetails,
   getSelectedVideo,
 } from "../../redux/actions/videoAction";
-import { APIHttp, avatar } from "../../constant/Api";
+import { APIHttp, CancelNotify, commonNotify } from "../../constant/Api";
 import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -95,6 +94,18 @@ const Content = () => {
 
   //TOASTS
 
+  const CancelNotify = () =>
+    toast.warning("Video upload was cancelled!", {
+      position: "bottom-center",
+      autoClose: 950,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: theme ? "dark" : "light",
+    });
+
   const CopiedNotify = () =>
     toast.success("Link Copied!", {
       position: "bottom-center",
@@ -137,7 +148,7 @@ const Content = () => {
     });
     setIsVideoSelected(false);
     setIsThumbnailSelected(false);
-    setVisibility("Private");
+    setVisibility("private");
     setIsVisibilityClicked(false);
     setIsClicked(false);
     setisChannel(true);
@@ -358,10 +369,9 @@ const Content = () => {
   const DeleteVideo = async (id) => {
     try {
       if (id !== undefined) {
-        await dispatch(deleteVideoDetails(id));
+        dispatch(deleteVideoDetails(id));
         setIsDeleteClicked(false);
         document.body.classList.remove("bg-css2");
-        dispatch(getAllChannelVideos());
       }
     } catch (error) {
       console.log(error.message);
@@ -372,7 +382,7 @@ const Content = () => {
     navigator.clipboard
       .writeText(`${videoUrl}/${id}`)
       .then(() => {
-        CopiedNotify();
+        commonNotify("Link Copied!");
       })
       .catch((error) => {
         console.log("Error copying link to clipboard:", error);
@@ -478,12 +488,20 @@ const Content = () => {
                 style={{ color: "gray" }}
                 onClick={() => {
                   if (Progress !== 100) {
+                    CancelNotify();
                     setIsClicked(false);
-                    setisChannel(true);
+
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 1000);
                   } else if (
                     Progress === 100 &&
                     formData.isPublished === "true"
                   ) {
+                    CancelNotify();
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 1000);
                   }
                   if (isClicked === true) {
                     clearFormState();
