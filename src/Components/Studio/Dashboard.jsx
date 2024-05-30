@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
+
+// material-ui
+import Chip from "@mui/material/Chip";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
+import PersonIcon from "@mui/icons-material/Person";
 // ====================================================
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-// project import
 import MainCard from "./Chart/MainCard";
-import AnalyticEcommerce from "./Chart/AnalyticEcommerce";
 import MonthlyBarChart from "./Chart/MonthlyBarChart";
 import UniqueVisitorCard from "./Chart/UniqueVisitorCard";
 // ====================================================
@@ -72,41 +77,112 @@ const Dashboard = () => {
         }}
       >
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
-          {/* row 1 */}
           <Grid item xs={12} sx={{ mb: -2.25 }}>
             <Typography variant="h5">Dashboard</Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
-            <AnalyticEcommerce
-              title="Total Page Views"
-              count="55"
-              percentage={59.3}
-            />
+            <MainCard contentSX={{ p: 2.25 }} sx={{ boxShadow: 3 }}>
+              <Stack spacing={0.5}>
+                <Typography variant="h6" color="text.secondary">
+                  Total Views
+                </Typography>
+                <Grid container alignItems="center">
+                  <Grid item>
+                    <Typography variant="h4" color="inherit">
+                      {statsData?.totalViews || 0}
+                    </Typography>
+                  </Grid>
+
+                  <Grid item>
+                    <Chip
+                      variant="combined"
+                      style={{ background: "#ff0000" }}
+                      sx={{ ml: 1.25, pl: 1, py: 2 }}
+                      size="small"
+                      avatar={<RemoveRedEyeIcon style={{ color: "white" }} />}
+                    />
+                  </Grid>
+                </Grid>
+              </Stack>
+            </MainCard>
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
-            <AnalyticEcommerce
-              title="Total Users"
-              count="78,250"
-              percentage={70.5}
-            />
+            <MainCard contentSX={{ p: 2.25 }} sx={{ boxShadow: 3 }}>
+              <Stack spacing={0.5}>
+                <Typography variant="h6" color="text.secondary">
+                  Total Likes
+                </Typography>
+                <Grid container alignItems="center">
+                  <Grid item>
+                    <Typography variant="h4" color="inherit">
+                      {statsData?.totalLikes || 0}
+                    </Typography>
+                  </Grid>
+
+                  <Grid item>
+                    <Chip
+                      variant="combined"
+                      style={{ background: "#ff0000" }}
+                      sx={{ ml: 1.25, pl: 1, py: 2 }}
+                      size="small"
+                      avatar={<ThumbUpIcon style={{ color: "white" }} />}
+                    />
+                  </Grid>
+                </Grid>
+              </Stack>
+            </MainCard>
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
-            <AnalyticEcommerce
-              title="Total Order"
-              count="18,800"
-              percentage={27.4}
-              isLoss
-              color="warning"
-            />
+            <MainCard contentSX={{ p: 2.25 }} sx={{ boxShadow: 3 }}>
+              <Stack spacing={0.5}>
+                <Typography variant="h6" color="text.secondary">
+                  Total Videos
+                </Typography>
+                <Grid container alignItems="center">
+                  <Grid item>
+                    <Typography variant="h4" color="inherit">
+                      {statsData?.totalVideos || 0}
+                    </Typography>
+                  </Grid>
+
+                  <Grid item>
+                    <Chip
+                      variant="combined"
+                      style={{ background: "#ff0000" }}
+                      sx={{ ml: 1.25, pl: 1, py: 2 }}
+                      size="small"
+                      avatar={<VideoLibraryIcon style={{ color: "white" }} />}
+                    />
+                  </Grid>
+                </Grid>
+              </Stack>
+            </MainCard>
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
-            <AnalyticEcommerce
-              title="Total Sales"
-              count="$35,078"
-              percentage={27.4}
-              isLoss
-              color="warning"
-            />
+            <MainCard contentSX={{ p: 2.25 }} sx={{ boxShadow: 3 }}>
+              <Stack spacing={0.5}>
+                <Typography variant="h6" color="text.secondary">
+                  Total Subscribers
+                </Typography>
+                <Grid container alignItems="center">
+                  <Grid item>
+                    <Typography variant="h4" color="inherit">
+                      {statsData?.totalSubscribers || 0}
+                    </Typography>
+                  </Grid>
+
+                  <Grid item>
+                    <Chip
+                      variant="combined"
+                      sx={{ ml: 1.25, pl: 1, py: 2 }}
+                      size="small"
+                      style={{ background: "#ff0000" }}
+                      avatar={<PersonIcon style={{ color: "white" }} />}
+                    />
+                  </Grid>
+                </Grid>
+              </Stack>
+            </MainCard>
           </Grid>
 
           <Grid
@@ -117,14 +193,13 @@ const Dashboard = () => {
             }}
           />
 
-          {/* row 2 */}
           <Grid item xs={12} md={7} lg={7}>
             <UniqueVisitorCard />
           </Grid>
           <Grid item xs={12} md={5} lg={5}>
             <Grid container alignItems="center" justifyContent="space-between">
               <Grid item>
-                <Typography variant="h5">Income Overview</Typography>
+                <Typography variant="h5">Videos watches</Typography>
               </Grid>
               <Grid item />
             </Grid>

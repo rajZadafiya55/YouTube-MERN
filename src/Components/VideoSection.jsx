@@ -2310,7 +2310,7 @@ const VideoSection = () => {
             )}
 
             <div className="video-comments">
-              {comments.map((element, index) => {
+              {comments?.map((element, index) => {
                 return (
                   <>
                     <div
@@ -2397,9 +2397,7 @@ const VideoSection = () => {
                               cursor: "pointer",
                             }}
                             onClick={() => {
-                             
-                                LikeComment(element._id);
-                             
+                              LikeComment(element._id);
                             }}
                             className="comment-like"
                           />

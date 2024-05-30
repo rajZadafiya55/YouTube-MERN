@@ -18,7 +18,6 @@ function Browse() {
   const AllVideo = useSelector((state) => state.videos.videosDetails);
   const [videoDetails, setVideoDetails] = useState([]);
 
-
   const [menuClicked, setMenuClicked] = useState(() => {
     const menu = localStorage.getItem("menuClicked");
     return menu ? JSON.parse(menu) : false;

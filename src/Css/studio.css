@@ -3,6 +3,8 @@
 .studio {
   background-color: #1f1f1f;
   height: 100vh;
+  width: 100%;
+  padding-bottom: 150px;
 }
 
 .bg-css::before {
@@ -25,7 +27,7 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background-color: #282828;
+  background-color: white;
   color: white;
   padding: 50px;
   display: flex;
@@ -189,13 +191,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px;
 }
 
+.btn-cen {
+  display: flex;
+  justify-content: center;
+}
 .last-segment {
-  position: absolute;
-  width: 100%;
+  width: 90%;
   bottom: 0px;
+  padding: 10px;
 }
 
 .save-video-data {
@@ -228,14 +233,14 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background-color: #282828;
+  background-color: white;
   color: white;
   display: flex;
   flex-direction: column;
   border-radius: 10px;
-  max-width: 100%;
-  min-width: 800px;
-  height: 750px;
+  width: 60%;
+  overflow-y: scroll;
+  height: 90%;
   z-index: 11;
   animation: fadeUp 0.25s ease-out forwards;
 }
@@ -313,7 +318,7 @@
 
 .video-title,
 .video-tags {
-  background-color: #282828;
+  background-color: white;
   height: 50px;
   width: 380px;
   border: 2px solid rgba(128, 128, 128, 0.337);
@@ -328,7 +333,7 @@
 }
 
 .video-description {
-  background-color: #282828;
+  background-color: white;
   height: 70px;
   width: 380px;
   border: 2px solid rgba(128, 128, 128, 0.337);
@@ -638,7 +643,8 @@
   z-index: 2;
 }
 
-.close-channel,.close-channel-light {
+.close-channel,
+.close-channel-light {
   cursor: pointer;
   position: absolute;
   right: 12px;

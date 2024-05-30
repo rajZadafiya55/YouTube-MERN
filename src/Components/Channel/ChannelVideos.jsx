@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useDispatch, useSelector } from "react-redux";
+import nothing from "../../img/nothing.png";
+import "../../Css/channel.css";
 import { getAllChannelVideos } from "../../redux/actions/dashboardAction.js";
 
 function ChannelVideos() {
@@ -233,7 +235,7 @@ function ChannelVideos() {
               : { visibility: "visible", display: "grid" }
           }
         >
-          {myVideos.length > 0 &&
+          {myVideos.length > 0 ? (
             myVideos.map((element, index) => {
               return (
                 <div
@@ -330,7 +332,12 @@ function ChannelVideos() {
                   </div>
                 </div>
               );
-            })}
+            })
+          ) : (
+            <div className="PerrorVideo">
+              <img src={nothing} alt="no results" className="nothing-found" />
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -99,11 +99,11 @@ export default function IncomeAreaChart({ slot }) {
 
   const [series, setSeries] = useState([
     {
-      name: "Page Views",
+      name: " Views",
       data: [0, 86, 28, 115, 48, 210, 136],
     },
     {
-      name: "Sessions",
+      name: "Watch time (hours)",
       data: [0, 43, 14, 56, 24, 105, 68],
     },
   ]);
@@ -111,14 +111,14 @@ export default function IncomeAreaChart({ slot }) {
   useEffect(() => {
     setSeries([
       {
-        name: "Page Views",
+        name: " Views",
         data:
           slot === "month"
             ? [76, 85, 101, 98, 87, 105, 91, 114, 94, 86, 115, 35]
             : [31, 40, 28, 51, 42, 109, 100],
       },
       {
-        name: "Sessions",
+        name: "Watch time (hours)",
         data:
           slot === "month"
             ? [110, 60, 150, 35, 60, 36, 26, 45, 65, 52, 53, 41]
@@ -132,7 +132,7 @@ export default function IncomeAreaChart({ slot }) {
       options={options}
       series={series}
       type="area"
-      height={450}
+      height={417}
     />
   );
 }
