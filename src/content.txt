@@ -1,15 +1,29 @@
-import { useNavigate, useParams } from "react-router-dom";
+import "../../Css/Studio/content.css";
+import "../../Css/studio.css";
+import { LiaUploadSolid } from "react-icons/lia";
+
+import SouthIcon from "@mui/icons-material/South";
 import { useEffect, useState } from "react";
-import Navbar from "../Navbar";
-import LeftPanel from "../LeftPanel";
-import "../../Css/channel.css";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
+import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
+import YouTubeIcon from "@mui/icons-material/YouTube";
+import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
+import NorthOutlinedIcon from "@mui/icons-material/NorthOutlined";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+import KeyboardTabOutlinedIcon from "@mui/icons-material/KeyboardTabOutlined";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import Tooltip from "@mui/material/Tooltip";
+import Zoom from "@mui/material/Zoom";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
+import noImage from "../../img/no-video2.png";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import BasicTabs from "../../Components/Channel/BasicTabs";
-import { coverImage, email, username } from "../../constant/Api";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllChannelVideos } from "../../redux/actions/dashboardAction";
 import {
@@ -33,22 +47,25 @@ const Content = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const channelData = useSelector((state) => state.user.channelDetails);
+  const AllVideos = useSelector((state) => state.dashboard.videosDetails);
 
-  const { id } = useParams();
-  const [Email, setEmail] = useState(email);
-  const [channelName, setChannelname] = useState(username);
-  const [myVideos, setMyVideos] = useState([]);
-  const [isbtnClicked, setisbtnClicked] = useState(false);
-  const [Section, setSection] = useState(
-    localStorage.getItem("Section") || "Videos"
-  );
-  const token = localStorage.getItem("userToken");
-  const [isSubscribed, setIsSubscribed] = useState();
-  const [Subscribers, setSubscribers] = useState();
-  const [Top, setTop] = useState("155px");
-  const [coverIMG, setCoverIMG] = useState(coverImage);
+  const selectedVideos = useSelector((state) => state.videos.selectedVideo);
+  const [isChannel, setisChannel] = useState(true);
+  const [userVideos, setUserVideos] = useState([]);
+  const [sortByDateAsc, setSortByDateAsc] = useState(true);
+  const [changeSort, setChangeSort] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+  const [DeleteVideoID, setDeleteVideoID] = useState();
+  const [isDeleteClicked, setIsDeleteClicked] = useState(false);
+  const [DeleteVideoData, setDeleteVideoData] = useState();
+  const [boxclicked, setBoxClicked] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
+  const videoUrl = `${APIHttp}videos`;
   const [loading, setLoading] = useState(true);
+  const [menu, setmenu] = useState(() => {
+    const menu = localStorage.getItem("studioMenuClicked");
+    return menu ? JSON.parse(menu) : false;
+  });
   const [theme, setTheme] = useState(() => {
     const Dark = localStorage.getItem("Dark");
     return Dark ? JSON.parse(Dark) : true;
@@ -81,7 +98,7 @@ const Content = () => {
   const CopiedNotify = () =>
     toast.success("Link Copied!", {
       position: "bottom-center",
-      autoClose: 2000,
+      autoClose: 1000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -92,10 +109,22 @@ const Content = () => {
 
   //USE EFFECTS
 
+  //IMAGE UPLOAD
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1200);
+    const handleClick = () => {
+      setIsClicked(true);
+    };
+
+    const uploadBtn = document.querySelector(".uploadnewone-video");
+    if (uploadBtn) {
+      uploadBtn.addEventListener("click", handleClick);
+
+      return () => {
+        if (uploadBtn) {
+          uploadBtn.removeEventListener("click", handleClick);
+        }
+      };
+    }
   }, []);
 
   const clearFormState = () => {
@@ -205,76 +234,84 @@ const Content = () => {
   };
 
   useEffect(() => {
-    if (theme === false && !window.location.href.includes("/studio")) {
+    if (theme === false && window.location.href.includes("/studio/video")) {
       document.body.style.backgroundColor = "white";
-    } else if (theme === true && !window.location.href.includes("/studio")) {
-      document.body.style.backgroundColor = "0f0f0f";
+    } else if (
+      theme === true &&
+      window.location.href.includes("/studio/video")
+    ) {
+      document.body.style.backgroundColor = "#282828";
     }
   }, [theme]);
 
-  // useEffect(() => {
-  //   const checkSubscription = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         `${backendURL}/checksubscription/${id}/${newEmail}`
-  //       );
-  //       const { existingChannelID } = await response.json();
-  //       if (existingChannelID !== undefined) {
-  //         setIsSubscribed(true);
-  //       } else {
-  //         setIsSubscribed(false);
-  //       }
-  //     } catch (error) {
-  //       // console.log(error.message);
-  //     }
-  //   };
+  useEffect(() => {
+    const handleMenuButtonClick = () => {
+      setmenu((prevMenuClicked) => !prevMenuClicked);
+    };
 
-  //   const interval = setInterval(checkSubscription, 200);
+    const menuButton = document.querySelector(".menu2");
+    if (menuButton) {
+      menuButton.addEventListener("click", handleMenuButtonClick);
+    }
 
-  //   return () => clearInterval(interval);
-  // }, [id, newEmail]);
-
-  //POST REQUESTS
-
-  // const SubscribeChannel = async () => {
-  //   try {
-  //     const channelData = {
-  //       youtuberName: channelName,
-  //       youtuberProfile: ChannelProfile,
-  //       youtubeChannelID: id,
-  //     };
-
-  //     const response = await fetch(
-  //       `${backendURL}/subscribe/${id}/${newEmail}/${Email}`,
-  //       {
-  //         method: "POST",
-  //         body: JSON.stringify(channelData),
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-  //     const data = await response.json();
-  //     if (data === "Subscribed") {
-  //       SubscribeNotify();
-  //     }
-  //   } catch (error) {
-  //     // console.log(error.message);
-  //   }
-  // };
-
-  // Function to handle tab changes
-  const handleTabChange = (newSection) => {
-    setSection(newSection);
-    localStorage.setItem("Section", newSection);
-  };
+    return () => {
+      if (menuButton) {
+        menuButton.removeEventListener("click", handleMenuButtonClick);
+      }
+    };
+  }, []);
 
   useEffect(() => {
-    if (id != undefined) {
-      dispatch(getUserChannelProfile(id));
-    }
-  }, [id]);
+    localStorage.setItem("studioMenuClicked", JSON.stringify(menu));
+  }, [menu]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    const handleClick = () => {
+      document
+        .querySelector(".channel-content-section")
+        .classList.add("channel-dark");
+    };
+
+    const searchInp = document.getElementById("searchType2");
+
+    if (searchInp) {
+      searchInp.addEventListener("click", handleClick);
+    }
+
+    return () => {
+      if (searchInp) {
+        searchInp.removeEventListener("click", handleClick);
+      }
+    };
+  });
+
+  useEffect(() => {
+    const handleClick = () => {
+      document
+        .querySelector(".channel-content-section")
+        .classList.remove("channel-dark");
+    };
+
+    const clearBtn = document.querySelector(".clear-search");
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", handleClick);
+    }
+
+    return () => {
+      if (clearBtn) {
+        clearBtn.removeEventListener("click", handleClick);
+      }
+    };
+  });
+
+  // get all channel videos
   useEffect(() => {
     dispatch(getAllChannelVideos());
   }, []);
@@ -977,196 +1014,454 @@ const Content = () => {
                               </div>
                             </SkeletonTheme>
 
-              <div
-                className="channel-top-content"
-                style={
-                  loading === true
-                    ? { visibility: "hidden", display: "none" }
-                    : { visibility: "visible", display: "flex" }
-                }
-              >
-                <div
+                            {/*===================  video description and title show ================= */}
+                            <div
+                              className="no-skeleton2"
+                              style={
+                                loading === true
+                                  ? { visibility: "hidden", display: "none" }
+                                  : { visibility: "visible", display: "flex" }
+                              }
+                            >
+                              <p
+                                className={
+                                  theme
+                                    ? "studio-video-title"
+                                    : "studio-video-title text-light-mode"
+                                }
+                                onClick={() => {
+                                  navigate(`/studio/video/edit/${element._id}`);
+                                }}
+                              >
+                                {element.title && element.title.length <= 40
+                                  ? element.title
+                                  : `${element.title?.slice(0, 40)}...`}
+                              </p>
+                              {element.description ? (
+                                <p
+                                  className={
+                                    theme
+                                      ? "studio-video-desc"
+                                      : "studio-video-desc text-light-mode2"
+                                  }
+                                >
+                                  {element.description.length <= 85
+                                    ? element.description
+                                    : `${element.description.slice(0, 85)}...`}
+                                </p>
+                              ) : (
+                                <p>Add description</p>
+                              )}
+                            </div>
+
+                            {/* edit video Details page open in this button click event  */}
+                            <div className="video-editable-section">
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="Details"
+                                placement="bottom"
+                              >
+                                <ModeEditOutlineOutlinedIcon
+                                  className={
+                                    theme
+                                      ? "video-edit-icons"
+                                      : "video-edit-icons-light"
+                                  }
+                                  fontSize="medium"
+                                  style={{ color: theme ? "#aaa" : "#606060" }}
+                                  onClick={() => {
+                                    navigate(
+                                      `/studio/video/edit/${element._id}`
+                                    );
+                                  }}
+                                />
+                              </Tooltip>
+
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="Comments"
+                                placement="bottom"
+                              >
+                                <ChatOutlinedIcon
+                                  className={
+                                    theme
+                                      ? "video-edit-icons"
+                                      : "video-edit-icons-light"
+                                  }
+                                  fontSize="medium"
+                                  style={{ color: theme ? "#aaa" : "#606060" }}
+                                  onClick={() => {
+                                    navigate(
+                                      `/studio/video/comments/${element._id}`
+                                    );
+                                  }}
+                                />
+                              </Tooltip>
+
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="View on YouTube"
+                                placement="bottom"
+                              >
+                                <YouTubeIcon
+                                  className={
+                                    theme
+                                      ? "video-edit-icons"
+                                      : "video-edit-icons-light"
+                                  }
+                                  fontSize="medium"
+                                  style={{ color: theme ? "#aaa" : "#606060" }}
+                                  onClick={() => {
+                                    navigate(`/video/${element._id}`);
+                                  }}
+                                />
+                              </Tooltip>
+
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="Options"
+                                placement="bottom"
+                              >
+                                <MoreVertOutlinedIcon
+                                  className={
+                                    theme
+                                      ? "video-edit-icons"
+                                      : "video-edit-icons-light"
+                                  }
+                                  fontSize="medium"
+                                  style={{ color: theme ? "#aaa" : "#606060" }}
+                                  onClick={() => setShowOptions(!showOptions)}
+                                />
+                              </Tooltip>
+
+                              {/*=============== three dot click so open card data ======================== */}
+                              <div
+                                className={
+                                  theme
+                                    ? "extra-options-menu"
+                                    : "extra-options-menu light-mode"
+                                }
+                                style={
+                                  showOptions === true
+                                    ? { display: "flex" }
+                                    : { display: "none" }
+                                }
+                              >
+                                <div
+                                  className={
+                                    theme
+                                      ? "share-video-data-row option-row"
+                                      : "share-video-data-row option-row preview-lightt"
+                                  }
+                                  onClick={() => {
+                                    handleCopyLink(element._id);
+                                    setShowOptions(false);
+                                  }}
+                                >
+                                  <ShareOutlinedIcon
+                                    className={
+                                      theme
+                                        ? "video-edit-icons"
+                                        : "video-edit-icons-light"
+                                    }
+                                    fontSize="medium"
+                                    style={{
+                                      color: theme ? "#aaa" : "#606060",
+                                    }}
+                                  />
+                                  <p>Get shareable link</p>
+                                </div>
+                                <div
+                                  className={
+                                    theme
+                                      ? "download-video-data-row option-row"
+                                      : "download-video-data-row option-row preview-lightt"
+                                  }
+                                  onClick={() => {
+                                    downloadVideo(element.videoFile.url);
+                                    setShowOptions(false);
+                                  }}
+                                >
+                                  <KeyboardTabOutlinedIcon
+                                    className={
+                                      theme
+                                        ? "video-edit-icons"
+                                        : "video-edit-icons-light"
+                                    }
+                                    fontSize="medium"
+                                    style={{
+                                      color: theme ? "#aaa" : "#606060",
+                                      transform: "rotate(90deg)",
+                                    }}
+                                  />
+                                  <p>Download</p>
+                                </div>
+                                <div
+                                  className={
+                                    theme
+                                      ? "delete-video-data-row option-row"
+                                      : "delete-video-data-row option-row preview-lightt"
+                                  }
+                                  onClick={() => {
+                                    setDeleteVideoID(element._id);
+                                    if (element._id !== undefined) {
+                                      setShowOptions(false);
+                                      setIsDeleteClicked(true);
+                                      document.body.classList.add("bg-css2");
+                                    }
+                                  }}
+                                >
+                                  <DeleteOutlineOutlinedIcon
+                                    className={
+                                      theme
+                                        ? "video-edit-icons"
+                                        : "video-edit-icons-light"
+                                    }
+                                    fontSize="medium"
+                                    style={{
+                                      color: theme ? "#aaa" : "#606060",
+                                    }}
+                                  />
+                                  <p>Delete forever</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td>
+                          <div className="privacy-table">
+                            {element.isPublished === true ? (
+                              <RemoveRedEyeOutlinedIcon
+                                fontSize="small"
+                                style={{ color: "#2ba640" }}
+                              />
+                            ) : (
+                              <VisibilityOffOutlinedIcon
+                                fontSize="small"
+                                style={{
+                                  color: theme
+                                    ? "rgb(170 170 170 / 53%)"
+                                    : "#909090",
+                                }}
+                              />
+                            )}
+                            <p
+                              className={theme ? "" : "text-light-mode2"}
+                              style={{ marginLeft: "8px" }}
+                            >
+                              {element.isPublished === true
+                                ? "Public"
+                                : "Private"}
+                            </p>
+                          </div>
+                        </td>
+                        <td>
+                          <p className={theme ? "" : "text-light-mode2"}>
+                            {uploaded.toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })}
+                          </p>
+                        </td>
+                        <td>
+                          <p className={theme ? "" : "text-light-mode2"}>
+                            {element.views && element.views.toLocaleString()}
+                          </p>
+                        </td>
+                        <td>
+                          <p className={theme ? "" : "text-light-mode2"}>
+                            {element.commentCount}
+                          </p>
+                        </td>
+                        <td>
+                          <p className={theme ? "" : "text-light-mode2"}>
+                            {element.likeCount}
+                          </p>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          {/*============== empty video so show ================ */}
+          <div
+            className="novideo-available"
+            style={
+              userVideos.length === 0
+                ? { display: "flex" }
+                : { display: "none" }
+            }
+          >
+            <img src={noImage} alt="no-video" className="no-content-img" />
+            <p>No content available</p>
+          </div>
+        </div>
+
+        {/* delete dialogbox  */}
+
+        <div
+          className={
+            theme
+              ? "last-delete-warning"
+              : "last-delete-warning light-mode text-light-mode"
+          }
+          style={
+            isDeleteClicked === true && DeleteVideoData
+              ? { display: "block" }
+              : { display: "none" }
+          }
+        >
+          <div className="delete-question">
+            <p>Permanently delete this video?</p>
+          </div>
+          <div className="deleted-video-data">
+            <div
+              className={
+                theme ? "thisdelete-data" : "thisdelete-data social-lightt"
+              }
+            >
+              <img
+                src={DeleteVideoData && DeleteVideoData.thumbnail.url}
+                alt="thumbnail"
+                className="deletevideo-thumbnail"
+              />
+              <p className="thisdelete-duration">
+                {Math.floor(DeleteVideoData && DeleteVideoData.duration / 60) +
+                  ":" +
+                  (Math.round(
+                    DeleteVideoData && DeleteVideoData.duration % 60
+                  ) < 10
+                    ? "0" +
+                      Math.round(
+                        DeleteVideoData && DeleteVideoData.duration % 60
+                      )
+                    : Math.round(
+                        DeleteVideoData && DeleteVideoData.duration % 60
+                      ))}
+              </p>
+              <div className="thisdelete-video-details">
+                <p className="delete-title">
+                  {DeleteVideoData && DeleteVideoData.title.length <= 15
+                    ? DeleteVideoData.title
+                    : `${
+                        DeleteVideoData && DeleteVideoData.title.slice(0, 15)
+                      }...`}
+                </p>
+                <p
                   className={
                     theme
-                      ? "channel-left-content"
-                      : "channel-left-content text-light-mode"
+                      ? "delete-uploaded"
+                      : "delete-uploaded text-light-mode2"
                   }
                 >
-                  <img
-                    src={element.avatar}
-                    alt="channelDP"
-                    className="channel_profile"
-                  />
-                  <div className="channel-topleft-data">
-                    <div className="channel-left">
-                      <div className="channel-name-verified">
-                        <p className="channelname">{element.username}</p>
-                        <Tooltip
-                          TransitionComponent={Zoom}
-                          title="Verified"
-                          placement="right"
-                        >
-                          <CheckCircleIcon
-                            fontSize="small"
-                            style={{
-                              color: "rgb(138, 138, 138)",
-                              marginLeft: "6px",
-                            }}
-                          />
-                        </Tooltip>
-                      </div>
-                      <div
-                        className={
-                          theme
-                            ? "channel-extra"
-                            : "channel-extra text-light-mode2"
-                        }
-                      >
-                        <p className="channeluser">@{element.username}</p>
-                        <p className="my-subs">
-                          {element.subscribersCount} subscribers
-                        </p>
-                        {myVideos &&
-                        myVideos.message !== "USER DOESN'T EXIST" ? (
-                          <p className="my-videoscount">
-                            {/* {myVideos && myVideos.length} videos */}
-                          </p>
-                        ) : (
-                          <p className="my-videoscount">0 videos</p>
-                        )}
-                      </div>
-
-                      <div
-                        className={
-                          theme ? "more-about" : "more-about text-light-mode2"
-                        }
-                        onClick={() => {
-                          localStorage.setItem("Section", "About");
-                          window.location.reload();
-                        }}
-                      >
-                        <p className="more-text">More about this channel</p>
-                        <ArrowForwardIosIcon
-                          fontSize="15px"
-                          style={{ color: "#aaa", marginLeft: "7px" }}
-                        />
-                      </div>
-                    </div>
-                    {element.email === Email ? (
-                      <div className="channel-right-content channel-dualbtns">
-                        <button
-                          className={
-                            theme
-                              ? "customize-channel"
-                              : "customize-channel btn-light-mode"
-                          }
-                          onClick={() => {
-                            navigate("/studio/customize");
-                          }}
-                        >
-                          Customize channel
-                        </button>
-                        <button
-                          className={
-                            theme
-                              ? "manage-videos"
-                              : "manage-videos btn-light-mode"
-                          }
-                          onClick={() => {
-                            navigate("/studio/video");
-                          }}
-                        >
-                          Manage videos
-                        </button>
-                        <div
-                          className="setting-btn"
-                          onClick={() => {
-                            navigate("/studio/video");
-                          }}
-                        >
-                          <RiUserSettingsLine
-                            fontSize="28px"
-                            color={theme ? "white" : "black"}
-                            className={
-                              theme
-                                ? "channel-settings"
-                                : "channel-settings channel-settings-light"
-                            }
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="channel-right-content">
-                        <button
-                          className={
-                            theme
-                              ? "subscribethis-channel"
-                              : "subscribethis-channel-light text-dark-mode"
-                          }
-                          style={
-                            isSubscribed === true
-                              ? { display: "none" }
-                              : { display: "block" }
-                          }
-                          onClick={() => {
-                            if (token) {
-                              // SubscribeChannel();
-                            } else {
-                              setisbtnClicked(true);
-                              document.body.classList.add("bg-css");
-                            }
-                          }}
-                        >
-                          Subscribe
-                        </button>
-                        <button
-                          className={
-                            theme
-                              ? "subscribethis-channel2"
-                              : "subscribethis-channel2-light"
-                          }
-                          style={
-                            isSubscribed === true
-                              ? { display: "block" }
-                              : { display: "none" }
-                          }
-                          onClick={() => {
-                            if (token) {
-                              // SubscribeChannel();
-                            } else {
-                              setisbtnClicked(true);
-                              document.body.classList.add("bg-css");
-                            }
-                          }}
-                        >
-                          Subscribed
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="channel-mid-content">
-                <BasicTabs
-                  section={Section}
-                  handleTabChange={handleTabChange}
-                  newemail={element.email}
-                />
-              </div>
-              <br />
-            </div>
-          ) : (
-            <div className="main-trending-section">
-              <div className="spin23" style={{ top: "200px" }}>
-                <span className={theme ? "loader2" : "loader2-light"}></span>
+                  {"Uploaded " +
+                    DeleteVideoUploadDate.toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                </p>
+                <p
+                  className={
+                    theme ? "delete-views" : "delete-views text-light-mode2"
+                  }
+                >
+                  {DeleteVideoData && DeleteVideoData.views + " views"}
+                </p>
               </div>
             </div>
-          )}
+          </div>
+
+          <div className="delete-consent">
+            <CheckBoxOutlineBlankIcon
+              onClick={() => {
+                setBoxClicked(!boxclicked);
+              }}
+              fontSize="medium"
+              style={
+                boxclicked === false
+                  ? { color: theme ? "#aaa" : "#606060", cursor: "pointer" }
+                  : { display: "none" }
+              }
+            />
+            <CheckBoxIcon
+              onClick={() => {
+                setBoxClicked(!boxclicked);
+              }}
+              fontSize="medium"
+              style={
+                boxclicked === true
+                  ? { color: theme ? "white" : "606060", cursor: "pointer" }
+                  : { display: "none" }
+              }
+            />
+            <p>
+              I understand that deleting a video from YouTube is permanent and
+              cannot be undone.
+            </p>
+          </div>
+          <div className="delete-video-buttons">
+            <button
+              className={
+                theme
+                  ? "download-delete-video delete-css"
+                  : "download-delete-video delete-css blue-txt"
+              }
+              onClick={() => {
+                if (DeleteVideoData) {
+                  downloadVideo(DeleteVideoData.videoFile.url);
+                }
+              }}
+            >
+              DOWNLOAD VIDEO
+            </button>
+            <div className="extra-two-delete-btns">
+              <button
+                className={
+                  theme
+                    ? "cancel-delete delete-css"
+                    : "cancel-delete delete-css blue-txt"
+                }
+                onClick={() => {
+                  setIsDeleteClicked(false);
+                  document.body.classList.remove("bg-css2");
+                }}
+              >
+                CANCEL
+              </button>
+              <button
+                className={
+                  theme
+                    ? "delete-video-btn delete-css"
+                    : `delete-video-btn delete-css ${
+                        !boxclicked ? "" : "blue-txt"
+                      }`
+                }
+                disabled={!boxclicked}
+                onClick={() => {
+                  if (boxclicked === true && DeleteVideoData) {
+                    DeleteVideo(DeleteVideoData._id);
+                  }
+                }}
+                style={{
+                  opacity: boxclicked === false ? 0.7 : 1,
+                  color: boxclicked === false ? "#aaa" : "#3eaffe",
+                  cursor: boxclicked === false ? "not-allowed" : "pointer",
+                }}
+              >
+                DELETE VIDEO
+              </button>
+            </div>
+          </div>
         </div>
-      ))}
+      </div>
     </>
   );
-}
+};
 
-export default OtherChannel;
+export default Content;

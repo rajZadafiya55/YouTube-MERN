@@ -7,9 +7,8 @@ import {
   USER_LOGIN,
 } from "../types";
 
-
-import { toast } from "react-toastify";
-import { APIHttp, Header } from "../../constant/Api";
+import { APIHttp } from 'constant/Api';
+import { toast } from 'react-toastify';
 
 const showToastMessage = () => {
   toast.success("You have successfully registered!", {
@@ -125,10 +124,10 @@ const getChannelProfile = (profile) => ({
 export const getUserChannelProfile = (id) => {
   return (dispatch) => {
     axios
-      .get(`${APIHttp}users/c/${id}`,Header)
-      .then(async (res) => {
-        await dispatch(getChannelProfile(res.data.data));
-        console.log("channel data ", res.data.data);
+      .post(`${APIHttp}users/c/raj`)
+      .then((res) => {
+        dispatch(getChannelProfile(res.data.data));
+        console.log('channel details', res.data.data);
       })
       .catch((err) => {
         console.log(err);
