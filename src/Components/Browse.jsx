@@ -274,8 +274,7 @@ function Browse() {
                     }
               }
             >
-              {videoDetails &&
-                videoDetails.length > 0 &&
+              {videoDetails && videoDetails.length > 0 ? (
                 videoDetails.map((element, index) => {
                   const {
                     thumbnail,
@@ -417,7 +416,10 @@ function Browse() {
                       </div>
                     </div>
                   );
-                })}
+                })
+              ) : (
+                <div className="no-data-found">No data found</div>
+              )}
             </div>
           </div>
         </div>

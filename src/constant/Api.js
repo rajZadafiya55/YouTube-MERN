@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-export const APIHttp = "http://localhost:5000/api/v1/";
+export const APIHttp = "http://localhost:4000/api/v1/";
 import Uavatar from "../img/Uavatar.png";
 
 // const userData = JSON.parse(localStorage.getItem('loginData'));

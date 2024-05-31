@@ -54,19 +54,6 @@ upload-content .channel-content-top > p:nth-child(1) {
   margin-top: 30px;
 }
 
-.channel-videosss::before {
-  content: "";
-  position: absolute;
-  bottom: -10px;
-  left: -5px;
-  height: 4px;
-  width: 57px;
-  background-color: #3eaffe;
-  border-radius: 50px;
-  transform: scaleX(1);
-  transition: all 0.2s linear;
-}
-
 .breakk2 {
   top: 189px;
   left: 271px;

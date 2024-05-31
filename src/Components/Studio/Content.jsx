@@ -1,7 +1,12 @@
+import React from "react";
 import "../../Css/Studio/content.css";
 import "../../Css/studio.css";
 import { LiaUploadSolid } from "react-icons/lia";
-
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import SouthIcon from "@mui/icons-material/South";
 import { useEffect, useState } from "react";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
@@ -12,7 +17,7 @@ import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 import NorthOutlinedIcon from "@mui/icons-material/NorthOutlined";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import KeyboardTabOutlinedIcon from "@mui/icons-material/KeyboardTabOutlined";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import VideoSettingsIcon from "@mui/icons-material/VideoSettings";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
@@ -30,7 +35,13 @@ import {
   deleteVideoDetails,
   getSelectedVideo,
 } from "../../redux/actions/videoAction";
-import { APIHttp, CancelNotify, commonNotify } from "../../constant/Api";
+import {
+  APIHttp,
+  CancelNotify,
+  commonNotify,
+  _id,
+  Header,
+} from "../../constant/Api";
 import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -39,16 +50,53 @@ import HdIcon from "@mui/icons-material/Hd";
 import CloudDoneRoundedIcon from "@mui/icons-material/CloudDoneRounded";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
-
 import Upload from "../../img/upload.png";
+import axios from "axios";
+
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import { ValidatorForm } from "react-material-ui-form-validator";
+import { Grid, TextField } from "@mui/material";
 
 const Content = () => {
+  // ===================(New Playlist)============================================
+
+  const [newPlaylist, setnewPlaylist] = useState({
+    email: "",
+    fullName: "",
+  });
+
+  const handlePlaylistChange = (e) => {
+    e.persist();
+    setnewPlaylist({ ...newPlaylist, [e.target.name]: e.target.value });
+  };
+
+  const handlePlaylistSubmit = async (e) => {
+    e.preventDefault();
+    //code write here new playlist
+  };
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  // ===============================================================
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const AllVideos = useSelector((state) => state.dashboard.videosDetails);
-
   const selectedVideos = useSelector((state) => state.videos.selectedVideo);
+
   const [isChannel, setisChannel] = useState(true);
   const [userVideos, setUserVideos] = useState([]);
   const [sortByDateAsc, setSortByDateAsc] = useState(true);
@@ -69,6 +117,42 @@ const Content = () => {
     const Dark = localStorage.getItem("Dark");
     return Dark ? JSON.parse(Dark) : true;
   });
+
+  // ==============(Play-list add video)==============================================
+
+  const [playlist, setPlaylistdata] = useState([]);
+  const [selectedValue, setSelectedValue] = useState("");
+
+  useEffect(() => {
+    axios.get(`${APIHttp}playlist/user/${_id}`, Header).then((r) => {
+      setPlaylistdata(r.data.data);
+    });
+  }, []);
+
+  const handleChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
+
+  const AddToPlaylist = () => {
+    if (selectedValue && DeleteVideoID) {
+      axios
+        .patch(`${APIHttp}playlist/add/${DeleteVideoID}/${selectedValue}`)
+        .then((response) => {
+          commonNotify("Video successfully added to the playlist.");
+          setTimeout(() => {
+            setIsDeleteClicked(false);
+            document.body.classList.remove("bg-css2");
+          }, 1500);
+        })
+        .catch((error) => {
+          CancelNotify("There was an error adding the video to the playlist.");
+        });
+    } else {
+      CancelNotify("Please select a playlist.");
+    }
+  };
+
+  // ============================================================
 
   // upload video
   const [selectedVideo, setSelectedVideo] = useState(null);
@@ -253,7 +337,7 @@ const Content = () => {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 800);
   }, []);
 
   useEffect(() => {
@@ -392,6 +476,71 @@ const Content = () => {
                 }
               >
                 Videos
+                <Button
+                  variant="text"
+                  onClick={handleClickOpen}
+                  style={{ marginLeft: "20px" }}
+                >
+                  <PlaylistAddIcon />
+                </Button>
+                <Dialog
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle id="alert-dialog-title">
+                    {"Create a new playlist"}
+                  </DialogTitle>
+                  <DialogContent>
+                    <ValidatorForm
+                      onSubmit={handlePlaylistSubmit}
+                      onError={() => null}
+                      className="signup-form"
+                    >
+                      <Grid container spacing={0}>
+                        <Grid item sm={12} xs={12}>
+                          <TextField
+                            type="email"
+                            name="email"
+                            label="Email"
+                            value={newPlaylist.email}
+                            onChange={handlePlaylistChange}
+                            validators={["required", "isEmail"]}
+                            errorMessages={[
+                              "Email is required",
+                              "Email is not valid",
+                            ]}
+                          />
+                        </Grid>
+                        <Grid item sm={12} xs={12}>
+                          <TextField
+                            type="text"
+                            name="fullName"
+                            id="standard-basic"
+                            value={newPlaylist.fullName}
+                            onChange={handlePlaylistChange}
+                            label="Full Name"
+                            errorMessages={["Full Name is required"]}
+                            validators={["required"]}
+                          />
+                        </Grid>
+                      </Grid>
+
+                      <Button
+                        type="submit"
+                        style={{ width: "50%" }}
+                        variant="contained"
+                        color="primary"
+                      >
+                        Change Basic Info
+                      </Button>
+                    </ValidatorForm>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleClose}>Close</Button>
+                  </DialogActions>
+                </Dialog>
               </p>
             </div>
 
@@ -420,7 +569,6 @@ const Content = () => {
             >
               CREATE
             </div>
-
             <div
               style={
                 isChannel === true ? { display: "flex" } : { display: "none" }
@@ -464,18 +612,11 @@ const Content = () => {
                   if (Progress !== 100) {
                     CancelNotify("Video upload was cancelled!");
                     setIsClicked(false);
-
-                    setTimeout(() => {
-                      window.location.reload();
-                    }, 1000);
                   } else if (
                     Progress === 100 &&
                     formData.isPublished === "true"
                   ) {
                     CancelNotify("Video upload was cancelled!");
-                    setTimeout(() => {
-                      window.location.reload();
-                    }, 1000);
                   }
                   if (isClicked === true) {
                     clearFormState();
@@ -1203,7 +1344,7 @@ const Content = () => {
                                     }
                                   }}
                                 >
-                                  <DeleteOutlineOutlinedIcon
+                                  <VideoSettingsIcon
                                     className={
                                       theme
                                         ? "video-edit-icons"
@@ -1214,7 +1355,7 @@ const Content = () => {
                                       color: theme ? "#aaa" : "#606060",
                                     }}
                                   />
-                                  <p>Delete forever</p>
+                                  <p>Manage video </p>
                                 </div>
                               </div>
                             </div>
@@ -1397,6 +1538,26 @@ const Content = () => {
               cannot be undone.
             </p>
           </div>
+          <div className="video-visibility">
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">
+                select playlist
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={selectedValue}
+                label="select playlist"
+                onChange={handleChange}
+              >
+                {playlist.map((val, index) => (
+                  <MenuItem key={index} value={val._id}>
+                    {val.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </div>
           <div className="delete-video-buttons">
             <button
               className={
@@ -1405,12 +1566,10 @@ const Content = () => {
                   : "download-delete-video delete-css blue-txt"
               }
               onClick={() => {
-                if (DeleteVideoData) {
-                  downloadVideo(DeleteVideoData.videoFile.url);
-                }
+                AddToPlaylist();
               }}
             >
-              DOWNLOAD VIDEO
+              ADD TO PLAYLIST
             </button>
             <div className="extra-two-delete-btns">
               <button

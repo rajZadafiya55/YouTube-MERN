@@ -177,7 +177,6 @@ function OtherChannel() {
 
   return (
     <>
-      <Navbar />
       <LeftPanel />
 
       {userProfile?.map((element, index) => (

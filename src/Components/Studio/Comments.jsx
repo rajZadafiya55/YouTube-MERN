@@ -22,8 +22,6 @@ const Comments = () => {
 
   const AllCommentData = useSelector((state) => state.comments.commentsDetails);
 
-  const isLiked = useSelector((state) => state.like.isLiked);
-
   const [AllComments, setAllComments] = useState([]);
   const [filterComment, setFilterComment] = useState("");
   const [loading, setLoading] = useState(true);
@@ -123,18 +121,6 @@ const Comments = () => {
   useEffect(() => {
     setAllComments(AllCommentData);
   }, [AllCommentData]);
-
-  console.log("All video Data", AllComments);
-
-  const LikeComment = async (id) => {
-    try {
-      if (id !== undefined) {
-        dispatch(getLikeCommentToggle(id, isLiked));
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
 
   const DeleteComment = async (commentId) => {
     try {

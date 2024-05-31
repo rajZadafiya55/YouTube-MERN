@@ -24,6 +24,9 @@ const commentReducer = (state = initialState, action) => {
         selectedComment: action.payload,
       };
     case DELETE_COMMENT:
+      // return {
+      //   ...state,
+      // };
       const updatedComments = state.selectedComment?.filter(
         (comment) => comment.id !== action.payload
       );

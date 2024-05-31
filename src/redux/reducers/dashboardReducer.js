@@ -1,7 +1,7 @@
-import { GET_CHANNEL_ALL_VIDEOS } from '../types';
+import { GET_CHANNEL_ALL_VIDEOS } from "../types";
 
 export const initialState = {
-  videosDetails: [] //for store all video data
+  videosDetails: [], //for store all video data
 };
 
 const dashboardReducer = (state = initialState, action) => {
@@ -9,7 +9,7 @@ const dashboardReducer = (state = initialState, action) => {
     case GET_CHANNEL_ALL_VIDEOS:
       return {
         ...state,
-        videosDetails: action.payload
+        videosDetails: action.payload,
       };
 
     default:
