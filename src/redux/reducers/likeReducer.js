@@ -14,7 +14,7 @@ const likeReducer = (state = initialState, action) => {
     case GET_LIKED_VIDEOS:
       return {
         ...state,
-        isLiked: action.payload,
+        videosDetails: action.payload,
       };
 
     case TOGGLE_COMMENT_LIKE:

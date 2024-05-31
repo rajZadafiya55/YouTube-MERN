@@ -160,9 +160,9 @@ function VideoComments() {
     }
   };
 
-  const DeleteComment = async (commentId) => {
+  const DeleteComment = async (commentId, id) => {
     try {
-      dispatch(deleteCommentsDetails(commentId));
+      dispatch(deleteCommentsDetails(commentId, id));
     } catch (error) {
       console.log(error.message);
     }
@@ -437,7 +437,7 @@ function VideoComments() {
                                 style={{ color: theme ? "#aaa" : "#606060" }}
                                 className="deletethis-cmmt"
                                 onClick={() => {
-                                  DeleteComment(element._id);
+                                  DeleteComment(element._id, id);
                                 }}
                               />
                             </Tooltip>
@@ -556,7 +556,7 @@ function VideoComments() {
                               style={{ color: theme ? "#aaa" : "#606060" }}
                               className="deletethis-cmmt"
                               onClick={() => {
-                                DeleteComment(element._id);
+                                DeleteComment(element._id, id);
                               }}
                             />
                           </Tooltip>

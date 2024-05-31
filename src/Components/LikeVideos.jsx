@@ -16,8 +16,6 @@ function LikeVideos() {
   const [likeVideos, setLikedVideos] = useState([]);
 
   const navigate = useNavigate();
-  const backendURL = "http://localhost:3000";
-  const [email, setEmail] = useState();
   const [name, setName] = useState();
   const [menuClicked, setMenuClicked] = useState(() => {
     const menu = localStorage.getItem("menuClicked");
@@ -33,32 +31,22 @@ function LikeVideos() {
 
   useEffect(() => {
     const token = localStorage.getItem("userToken");
-    setEmail(jwtDecode(token).email);
     setName(jwtDecode(token).name);
   }, []);
 
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 1200);
   }, []);
 
   useEffect(() => {
     localStorage.setItem("menuClicked", JSON.stringify(menuClicked));
   }, [menuClicked]);
 
-  //==================== like video api call spark didho che aaya thi ================================
   useEffect(() => {
     dispatch(getAllLikedVideos());
-
-    // const interval = setInterval(() => {
-    //   dispatch(getAllLikedVideos());
-    // }, 100);
-
-    // return () => clearInterval(interval);
   }, []);
-
-  //------------- selecter je select karo che state tene useState ma set kari didho ===================
 
   useEffect(() => {
     setLikedVideos(likeVideosFromRedux);
@@ -105,20 +93,6 @@ function LikeVideos() {
       document.body.style.backgroundColor = "0f0f0f";
     }
   }, [theme]);
-
-  const updateViews = async (id) => {
-    try {
-      const response = await fetch(`${backendURL}/updateview/${id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      await response.json();
-    } catch (error) {
-      // console.log(error.message);
-    }
-  };
 
   const formatDate = (createdAt) => {
     const currentDate = new Date();
@@ -191,12 +165,11 @@ function LikeVideos() {
                     className="firstvideo-thumbnail"
                     onClick={() => {
                       if (token) {
-                        updateViews(likeVideos[0]._id);
                         setTimeout(() => {
-                          navigate(`/video/${likeVideos[0]._id}`);
+                          navigate(`/video/${likeVideos[0].videos._id}`);
                         }, 400);
                       } else {
-                        navigate(`/video/${likeVideos[0]._id}`);
+                        navigate(`/video/${likeVideos[0].videos._id}`);
                       }
                     }}
                   >
@@ -253,12 +226,11 @@ function LikeVideos() {
                   className="playvideo-btn"
                   onClick={() => {
                     if (token) {
-                      updateViews(likeVideos[0]._id);
                       setTimeout(() => {
-                        navigate(`/video/${likeVideos[0]._id}`);
+                        navigate(`/video/${likeVideos[0].videos._id}`);
                       }, 400);
                     } else {
-                      navigate(`/video/${likeVideos[0]._id}`);
+                      navigate(`/video/${likeVideos[0].videos._id}`);
                     }
                   }}
                 >
@@ -278,7 +250,7 @@ function LikeVideos() {
                 }
               >
                 {likeVideos.length > 0
-                  ? likeVideos.map((element, index) => {
+                  ? likeVideos?.map((element, index) => {
                       return (
                         <div
                           className={
@@ -289,9 +261,7 @@ function LikeVideos() {
                           key={index}
                           style={{
                             display:
-                              element.videoprivacy === "Public"
-                                ? "flex"
-                                : "none",
+                              element.isPublished === true ? "flex" : "none",
                           }}
                         >
                           <div className="liked-videos-all-data">
@@ -340,7 +310,7 @@ function LikeVideos() {
               }
             >
               {likeVideos.length > 0
-                ? likeVideos.map((element, index) => {
+                ? likeVideos?.map((element, index) => {
                     return (
                       <div
                         className={
@@ -361,12 +331,11 @@ function LikeVideos() {
                           className="liked-videos-all-data"
                           onClick={() => {
                             if (token) {
-                              updateViews(element._id);
                               setTimeout(() => {
-                                navigate(`/video/${element._id}`);
+                                navigate(`/video/${element.videos._id}`);
                               }, 400);
                             } else {
-                              navigate(`/video/${element._id}`);
+                              navigate(`/video/${element.videos._id}`);
                             }
                           }}
                         >
@@ -388,9 +357,9 @@ function LikeVideos() {
                           </p>
                           <div className="its-content">
                             {window.innerWidth <= 1000 ? (
-                              <p>{element.videos.Title}</p>
+                              <p>{element.videos.title}</p>
                             ) : (
-                              <p>{element.videos.Title}</p>
+                              <p>{element.videos.title}</p>
                             )}
 
                             <p className="">{element.videos.owner.username}</p>
@@ -444,12 +413,11 @@ function LikeVideos() {
                       className="firstvideo-thumbnail"
                       onClick={() => {
                         if (token) {
-                          updateViews(likeVideos[0]._id);
                           setTimeout(() => {
-                            navigate(`/video/${likeVideos[0]._id}`);
+                            navigate(`/video/${likeVideos[0].videos._id}`);
                           }, 400);
                         } else {
-                          navigate(`/video/${likeVideos[0]._id}`);
+                          navigate(`/video/${likeVideos[0].videos._id}`);
                         }
                       }}
                     >
@@ -507,12 +475,11 @@ function LikeVideos() {
                   className="playvideo-btn"
                   onClick={() => {
                     if (token) {
-                      updateViews(likeVideos[0]._id);
                       setTimeout(() => {
-                        navigate(`/video/${likeVideos[0]._id}`);
+                        navigate(`/video/${likeVideos[0].videos._id}`);
                       }, 400);
                     } else {
-                      navigate(`/video/${likeVideos[0]._id}`);
+                      navigate(`/video/${likeVideos[0].videos._id}`);
                     }
                   }}
                 >
@@ -532,7 +499,7 @@ function LikeVideos() {
                 }
               >
                 {likeVideos.length > 0
-                  ? likeVideos.map((element, index) => {
+                  ? likeVideos?.map((element, index) => {
                       return (
                         <div
                           className={
@@ -594,7 +561,7 @@ function LikeVideos() {
               }
             >
               {likeVideos.length > 0
-                ? likeVideos.map((element, index) => {
+                ? likeVideos?.map((element, index) => {
                     return (
                       <div
                         className={
@@ -615,12 +582,11 @@ function LikeVideos() {
                           className="liked-videos-all-data2"
                           onClick={() => {
                             if (token) {
-                              updateViews(element._id);
                               setTimeout(() => {
-                                navigate(`/video/${element._id}`);
+                                navigate(`/video/${element.videos._id}`);
                               }, 400);
                             } else {
-                              navigate(`/video/${element._id}`);
+                              navigate(`/video/${element.videos._id}`);
                             }
                           }}
                         >
@@ -642,12 +608,12 @@ function LikeVideos() {
                           </p>
                           <div className="its-content2">
                             {window.innerWidth <= 1000 ? (
-                              <p>{element.videos.Title}</p>
+                              <p>{element.videos.title}</p>
                             ) : (
-                              <p>{element.videos.Title}</p>
+                              <p>{element.videos.title}</p>
                             )}
 
-                            <p className="">{element.videos.owner.username}</p>
+                            <p className="">{element.videos.owner?.username}</p>
                             <p className="liked-views">
                               {element.videos.views} views &#183;{" "}
                               {formatDate(element.videos.createdAt)}

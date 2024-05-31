@@ -32,18 +32,18 @@ const getLikeComment = (isLiked) => ({
   payload: isLiked,
 });
 
-export const getLikeCommentToggle = (id, isLiked) => {
+export const getLikeCommentToggle = (commentId, id, isLiked) => {
   return async (dispatch) => {
     try {
       const res = await axios.post(
-        `${APIHttp}likes/toggle/c/${id}`,
+        `${APIHttp}likes/toggle/c/${commentId}`,
         { isLiked },
         Header
       );
       const updatedLikeStatus = res.data.data.isLiked;
 
       await dispatch(getLikeComment(updatedLikeStatus));
-      dispatch(getSelectedComment());
+      dispatch(getSelectedComment(id));
 
       if (updatedLikeStatus) {
         showToast("Comment liked successfully!");

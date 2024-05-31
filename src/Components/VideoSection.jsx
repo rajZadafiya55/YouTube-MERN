@@ -1,6 +1,5 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Plyr from "plyr";
 import Navbar from "./Navbar";
 import Share from "./Share";
 import "../Css/videoSection.css";
@@ -23,27 +22,25 @@ import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import jwtDecode from "jwt-decode";
-import Signin from "./Signin";
-import Signup from "./Signup";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import "react-toastify/dist/ReactToastify.css";
 import LeftPanel from "./LeftPanel";
 import Error from "./Error";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllVideos, getSelectedVideo } from "../redux/actions/videoAction";
 import {
   createComment,
+  deleteCommentsDetails,
   getSelectedComment,
 } from "../redux/actions/commentAction";
-import { EmptyMessage, avatar, commonNotify } from "../constant/Api";
+import { EmptyMessage, avatar, commonNotify, email } from "../constant/Api";
 import {
   getLikeCommentToggle,
   getLikeVideoToggle,
 } from "../redux/actions/likeAction";
+import { getSubscriptionToggle } from "../redux/actions/subscriptionAction";
 
 const VideoSection = () => {
   const dispatch = useDispatch();
@@ -57,29 +54,25 @@ const VideoSection = () => {
   const listVideo = useSelector((state) => state.videos.videosDetails);
 
   const isLikedStatus = useSelector((state) => state.like.isLiked);
-  console.log("isLiked", isLikedStatus);
 
   const [listVideoDetails, setListVideoDetails] = useState([]);
 
   const isLikedComment = useSelector((state) => state.like.isLiked);
 
   const isSubscribe = useSelector((state) => state.subscription.isSubscribed);
-  console.log("isSubscription", isSubscribe);
 
   const backendURL = "http://localhost:3000";
   const { id } = useParams();
   const [videoData, setVideoData] = useState([]);
-  const [email, setEmail] = useState();
+  const [loginEmail, setLoginEmail] = useState(email);
   const [plyrInitialized, setPlyrInitialized] = useState(false);
   const [Display, setDisplay] = useState("none");
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [shareClicked, setShareClicked] = useState(false);
   const [usermail, setUserMail] = useState();
-  const [channelID, setChannelID] = useState();
-  const [isSwitch, setisSwitched] = useState(false);
   const [isbtnClicked, setisbtnClicked] = useState(false);
-  const videoRef = useRef(null);
+  // const videoRef = useRef(null);
   const [TagSelected, setTagSelected] = useState("All");
   const [checkTrending, setCheckTrending] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -95,7 +88,6 @@ const VideoSection = () => {
   });
 
   //EXTRAS
-  const [isLiked, setIsLiked] = useState();
   const [isSaved, setIsSaved] = useState();
   const [createPlaylistClicked, setcreatePlaylistClicked] = useState(false);
   const [privacyClicked, setprivacyClicked] = useState(false);
@@ -106,23 +98,10 @@ const VideoSection = () => {
   const [playlistID, setplaylistID] = useState([]);
   const [isHeart, setIsHeart] = useState([]);
 
-  //Get Channel Data
-  const [youtuberName, setyoutuberName] = useState();
-  const [youtuberProfile, setyoutuberProfile] = useState();
-  const [youtubeChannelID, setyoutubeChannelID] = useState();
-  const [isSubscribed, setIsSubscribed] = useState();
-
   //Signup user Profile Pic
   const [userProfile, setUserProfile] = useState(avatar);
 
   // USE EFFECTS
-
-  useEffect(() => {
-    if (token) {
-      setEmail(jwtDecode(token).email);
-    }
-  }, [token]);
-
   useEffect(() => {
     function handleResize() {
       window.innerWidth <= 1100;
@@ -221,8 +200,6 @@ const VideoSection = () => {
     setListVideoDetails(listVideo);
   }, [listVideo]);
 
-  console.log("list", listVideoDetails);
-
   // get all comment
   useEffect(() => {
     const getComments = async () => {
@@ -302,25 +279,6 @@ const VideoSection = () => {
   //   return () => clearInterval(interval);
   // }, []);
 
-  // comment
-  // useEffect(() => {
-  //   const CommentLikes = async () => {
-  //     try {
-  //       if (id !== undefined) {
-  //         const response = await fetch(`${backendURL}/likecomment/${id}`);
-  //         const result = await response.json();
-  //         setCommentLikes(result);
-  //       }
-  //     } catch (error) {
-  //       //console.log(error.message);
-  //     }
-  //   };
-
-  //   const interval = setInterval(CommentLikes, 200);
-
-  //   return () => clearInterval(interval);
-  // }, []);
-
   // watch later history
   // useEffect(() => {
   //   const getWatchlater = async () => {
@@ -345,31 +303,6 @@ const VideoSection = () => {
 
   //   return () => clearInterval(interval);
   // }, []);
-
-  // check subscription data
-  // useEffect(() => {
-  //   const checkSubscription = async () => {
-  //     try {
-  //       if (email !== undefined && channelID !== undefined) {
-  //         const response = await fetch(
-  //           `${backendURL}/checksubscription/${channelID}/${email}`
-  //         );
-  //         const { existingChannelID } = await response.json();
-  //         if (existingChannelID !== undefined) {
-  //           setIsSubscribed(true);
-  //         } else {
-  //           setIsSubscribed(false);
-  //         }
-  //       }
-  //     } catch (error) {
-  //       //console.log(error.message);
-  //     }
-  //   };
-
-  //   const interval = setInterval(checkSubscription, 400);
-
-  //   return () => clearInterval(interval);
-  // }, [channelID]);
 
   // get playlist
   // useEffect(() => {
@@ -420,32 +353,16 @@ const VideoSection = () => {
   }, []);
 
   //POST REQUESTS
-  const uploadComment = async () => {
+  const uploadComment = async (_id) => {
     try {
       setCommentLoading(true);
-      // const response1 = await fetch(`${backendURL}/getchannelid/${email}`);
-      // const { channelID } = await response1.json();
-      // const data = {
-      //   comment,
-      //   email,
-      //   channelID,
-      // };
-      // const response = await fetch(`${backendURL}/comments/${id}`, {
-      //   method: "POST",
-      //   body: JSON.stringify(data),
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      // });
-
-      dispatch(createComment(id, comment));
+      dispatch(createComment(_id, comment));
       setCommentLoading(false);
+      setComment("");
     } catch (error) {
       console.log(error.message);
     }
   };
-
-  console.log("comment", comment);
 
   if (!videoData) {
     return (
@@ -463,6 +380,7 @@ const VideoSection = () => {
     );
   }
   const {
+    _id,
     videoFile: videoURL,
     title,
     thumbnail: thumbnailURL,
@@ -474,8 +392,6 @@ const VideoSection = () => {
     isPublished,
     subscribersCount,
   } = videoData;
-  console.log("thumb", thumbnailURL?.url);
-  console.log("videoFile", videoURL?.url);
 
   document.title =
     title && title !== undefined ? `${title} - YouTube` : "YouTube";
@@ -491,35 +407,21 @@ const VideoSection = () => {
     }
   };
 
-  const LikeComment = async (commentId) => {
+  const LikeComment = async (commentId, _id) => {
     try {
-      dispatch(getLikeCommentToggle(commentId, isLikedComment));
+      dispatch(getLikeCommentToggle(commentId, _id, isLikedComment));
     } catch (error) {
       console.log(error.message);
     }
   };
 
-  const DeleteComment = async (commentId) => {
+  const DeleteComment = async (commentId, _id) => {
     try {
       setCommentOpacity(0.34);
-
-      const response = await fetch(
-        `${backendURL}/deletecomment/${id}/${commentId}/${email}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      if (data === "Comment Deleted") {
-        setCommentOpacity(1);
-        commonNotify("Comment deleted!");
-      }
-      // window.location.reload();
+      dispatch(deleteCommentsDetails(commentId, _id));
+      setCommentOpacity(1);
     } catch (error) {
-      //console.log(error.message);
+      console.log(error.message);
     }
   };
 
@@ -533,9 +435,9 @@ const VideoSection = () => {
 
   const saveVideo = async () => {
     try {
-      if (id !== undefined && email !== undefined) {
+      if (id !== undefined) {
         const response = await fetch(
-          `${backendURL}/watchlater/${id}/${email}/${usermail}`,
+          `${backendURL}/watchlater/${id}/${usermail}`,
           {
             method: "POST",
             headers: {
@@ -553,29 +455,11 @@ const VideoSection = () => {
     }
   };
 
-  const SubscribeChannel = async () => {
+  const SubscribeChannel = async (id, channelId) => {
     try {
-      const channelData = {
-        youtuberName,
-        youtuberProfile,
-        youtubeChannelID,
-      };
-      const response = await fetch(
-        `${backendURL}/subscribe/${channelID}/${email}/${usermail}`,
-        {
-          method: "POST",
-          body: JSON.stringify(channelData),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      if (data === "Subscribed") {
-        commonNotify("Channel subscribed!");
-      }
+      dispatch(getSubscriptionToggle(id, channelId, isSubscribe));
     } catch (error) {
-      //console.log(error.message);
+      console.log(error.message);
     }
   };
 
@@ -724,7 +608,7 @@ const VideoSection = () => {
             <video
               className="play-video"
               controls
-              ref={videoRef}
+              // ref={videoRef}
               poster={thumbnailURL?.url}
             >
               <source src={videoURL?.url} type="video/mp4" />
@@ -793,21 +677,21 @@ const VideoSection = () => {
               </div>
 
               {/* ===================== Subscribe toggle button ====================================== */}
-              {isSubscribed === false ? (
+              {isSubscribe === false ? (
                 <button
                   className={
                     theme
                       ? "subscribe"
                       : `subscribe-light ${
-                          email === usermail ? "dull-subs" : ""
+                          loginEmail === owner?.email ? "dull-subs" : ""
                         }`
                   }
-                  disabled={email === usermail ? true : false}
+                  disabled={loginEmail === owner?.email ? true : false}
                   onClick={() => {
-                    SubscribeChannel();
+                    SubscribeChannel(owner?._id, _id);
                   }}
                   style={
-                    email === usermail
+                    loginEmail === owner?.email
                       ? { cursor: "not-allowed" }
                       : { cursor: "pointer" }
                   }
@@ -821,9 +705,9 @@ const VideoSection = () => {
                       ? "subscribe subscribe2"
                       : "subscribe subscribe2-light text-light-mode"
                   }
-                  disabled={email === usermail ? true : false}
+                  disabled={loginEmail === owner?.email ? true : false}
                   onClick={() => {
-                    SubscribeChannel();
+                    SubscribeChannel(owner?._id, _id);
                   }}
                 >
                   Subscribed
@@ -960,12 +844,7 @@ const VideoSection = () => {
                       : "save-later save-later-light text-light-mode"
                   }
                   onClick={() => {
-                    if (token) {
-                      saveVideo();
-                    } else {
-                      setisbtnClicked(true);
-                      document.body.classList.add("bg-css");
-                    }
+                    saveVideo();
                   }}
                 >
                   {isSaved === true ? (
@@ -996,7 +875,7 @@ const VideoSection = () => {
                       : "add-playlist add-playlist-light text-light-mode"
                   }
                   onClick={() => {
-                    if (playlistClicked === false && token) {
+                    if (playlistClicked === false) {
                       setPlaylistClicked(true);
                       document.body.classList.add("bg-css");
                     } else if (!token) {
@@ -1158,12 +1037,7 @@ const VideoSection = () => {
                         : " save-later save-later-light text-light-mode"
                     }
                     onClick={() => {
-                      if (token) {
-                        saveVideo();
-                      } else {
-                        setisbtnClicked(true);
-                        document.body.classList.add("bg-css");
-                      }
+                      saveVideo();
                     }}
                   >
                     {isSaved === true ? (
@@ -1354,12 +1228,7 @@ const VideoSection = () => {
                         : "save-later save-later-light text-light-mode"
                     }
                     onClick={() => {
-                      if (token) {
-                        saveVideo();
-                      } else {
-                        setisbtnClicked(true);
-                        document.body.classList.add("bg-css");
-                      }
+                      saveVideo();
                     }}
                   >
                     {isSaved === true ? (
@@ -1589,10 +1458,9 @@ const VideoSection = () => {
                 <button
                   className={theme ? "upload-comment" : "upload-comment-light"}
                   onClick={() => {
-                    if (token && comment !== "") {
-                      // setComment("");
-                      uploadComment();
-                    } else if (token && comment === "") {
+                    if (comment !== "") {
+                      uploadComment(_id);
+                    } else if (comment === "") {
                       EmptyMessage("Comment can't be empty");
                     } else {
                       setisbtnClicked(true);
@@ -1695,7 +1563,7 @@ const VideoSection = () => {
                               cursor: "pointer",
                             }}
                             onClick={() => {
-                              LikeComment(element._id);
+                              LikeComment(element._id, _id);
                             }}
                             className="comment-like"
                           />
@@ -1706,7 +1574,7 @@ const VideoSection = () => {
                             <FavoriteBorderOutlinedIcon
                               fontSize="small"
                               style={
-                                email === usermail
+                                loginEmail === owner?.email
                                   ? {
                                       color: theme ? "white" : "black",
                                       marginLeft: "20px",
@@ -1741,8 +1609,8 @@ const VideoSection = () => {
                             </Tooltip>
                           )}
 
-                          {element.user_email === email ||
-                          email === usermail ? (
+                          {element.owner?.email === loginEmail ||
+                          loginEmail === owner?.email ? (
                             <button
                               className={
                                 theme
@@ -1750,7 +1618,7 @@ const VideoSection = () => {
                                   : "delete-comment-btn-light text-dark-mode"
                               }
                               style={{ marginLeft: "17px" }}
-                              onClick={() => DeleteComment(element._id)}
+                              onClick={() => DeleteComment(element._id, _id)}
                             >
                               Delete
                             </button>
@@ -1910,13 +1778,9 @@ const VideoSection = () => {
                     }
                     key={index}
                     onClick={() => {
-                      if (token) {
-                        setTimeout(() => {
-                          navigate(`/video/${element._id}`);
-                        }, 400);
-                      } else {
-                        navigate(`/video/${element._id}`);
-                      }
+                      navigate(`/video/${element._id}`);
+                      dispatch(getSelectedVideo(element._id));
+                      setVideoData([selectedVideo]);
                     }}
                   >
                     <div className="video-left-side">
@@ -2045,13 +1909,7 @@ const VideoSection = () => {
                       }
                       key={index}
                       onClick={() => {
-                        if (token) {
-                          setTimeout(() => {
-                            navigate(`/video/${element._id}`);
-                          }, 400);
-                        } else {
-                          navigate(`/video/${element._id}`);
-                        }
+                        navigate(`/video/${element._id}`);
                       }}
                     >
                       <div className="video-left-side">
@@ -2243,10 +2101,9 @@ const VideoSection = () => {
                 <button
                   className={theme ? "upload-comment" : "upload-comment-light"}
                   onClick={() => {
-                    if (token && comment !== "") {
-                      setComment("");
-                      uploadComment();
-                    } else if (token && comment === "") {
+                    if (comment !== "") {
+                      uploadComment(_id);
+                    } else if (comment === "") {
                       EmptyMessage("Comment can't be empty");
                     } else {
                       setisbtnClicked(true);
@@ -2349,7 +2206,7 @@ const VideoSection = () => {
                               cursor: "pointer",
                             }}
                             onClick={() => {
-                              LikeComment(element._id);
+                              LikeComment(element._id, _id);
                             }}
                             className="comment-like"
                           />
@@ -2360,7 +2217,7 @@ const VideoSection = () => {
                             <FavoriteBorderOutlinedIcon
                               fontSize="small"
                               style={
-                                email === usermail
+                                loginEmail === owner?.email
                                   ? {
                                       color: theme ? "white" : "black",
                                       marginLeft: "20px",
@@ -2369,11 +2226,6 @@ const VideoSection = () => {
                                   : { display: "none" }
                               }
                               className="heart-comment"
-                              onClick={() => {
-                                if (email === usermail) {
-                                  // HeartComment(element._id);
-                                }
-                              }}
                             />
                           ) : (
                             <Tooltip
@@ -2384,11 +2236,6 @@ const VideoSection = () => {
                               <div
                                 className="heart-liked"
                                 style={{ cursor: "pointer" }}
-                                onClick={() => {
-                                  if (email === usermail) {
-                                    // HeartComment(element._id);
-                                  }
-                                }}
                               >
                                 <img
                                   src={owner?.avatar}
@@ -2405,8 +2252,8 @@ const VideoSection = () => {
                             </Tooltip>
                           )}
 
-                          {element.user_email === email ||
-                          email === usermail ? (
+                          {element.owner?.email === loginEmail ||
+                          loginEmail === owner?.email ? (
                             <button
                               className={
                                 theme
@@ -2414,7 +2261,7 @@ const VideoSection = () => {
                                   : "delete-comment-btn-light text-dark-mode"
                               }
                               style={{ marginLeft: "17px" }}
-                              onClick={() => DeleteComment(element._id)}
+                              onClick={() => DeleteComment(element._id, _id)}
                             >
                               Delete
                             </button>
@@ -2439,73 +2286,6 @@ const VideoSection = () => {
         }
       >
         <Share />
-      </div>
-
-      {/* ===================== SIGNUP/SIGNIN pop up================================== */}
-
-      <div
-        className={
-          theme ? "auth-popup" : "auth-popup light-mode text-light-mode"
-        }
-        style={
-          isbtnClicked === true ? { display: "block" } : { display: "none" }
-        }
-      >
-        <ClearRoundedIcon
-          onClick={() => {
-            if (isbtnClicked === false) {
-              setisbtnClicked(true);
-            } else {
-              setisbtnClicked(false);
-              document.body.classList.remove("bg-css");
-            }
-          }}
-          className="cancel"
-          fontSize="large"
-          style={{ color: "gray" }}
-        />
-        <div
-          className="signup-last"
-          style={
-            isSwitch === false ? { display: "block" } : { display: "none" }
-          }
-        >
-          <Signup />
-          <div className="already">
-            <p>Already have an account?</p>
-            <p
-              onClick={() => {
-                if (isSwitch === false) {
-                  setisSwitched(true);
-                } else {
-                  setisSwitched(false);
-                }
-              }}
-            >
-              Signin
-            </p>
-          </div>
-        </div>
-        <div
-          className="signin-last"
-          style={isSwitch === true ? { display: "block" } : { display: "none" }}
-        >
-          <Signin />
-          <div className="already">
-            <p>Don&apos;t have an account?</p>
-            <p
-              onClick={() => {
-                if (isSwitch === false) {
-                  setisSwitched(true);
-                } else {
-                  setisSwitched(false);
-                }
-              }}
-            >
-              Signup
-            </p>
-          </div>
-        </div>
       </div>
 
       {/*================================= PLAYLIST POPUP ================================= */}

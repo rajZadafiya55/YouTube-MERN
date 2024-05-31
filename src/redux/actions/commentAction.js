@@ -5,7 +5,13 @@ import {
   GET_COMMENT_BY_ID,
   GET_USER_ALL_COMMENT,
 } from "../types";
-import { APIHttp, Header, showErrorToast, showToast } from "../../constant/Api";
+import {
+  APIHttp,
+  Header,
+  commonNotify,
+  showErrorToast,
+  showToast,
+} from "../../constant/Api";
 import Swal from "sweetalert2";
 
 const getAllComment = (comment) => ({
@@ -46,7 +52,7 @@ const deleteComment = (commentId) => ({
   payload: commentId,
 });
 
-export const deleteCommentsDetails = (commentId) => async (dispatch) => {
+export const deleteCommentsDetails = (commentId, id) => async (dispatch) => {
   try {
     const result = await Swal.fire({
       title: "Are you sure Delete?",
@@ -64,6 +70,7 @@ export const deleteCommentsDetails = (commentId) => async (dispatch) => {
         .then(async (res) => {
           await dispatch(deleteComment(commentId));
           dispatch(getUserAllComments());
+          dispatch(getSelectedComment(id));
           if (res.data.success) {
             showToast("Comment Deleted successfully!");
           }
@@ -82,12 +89,13 @@ const addComment = () => ({
   type: CREATE_COMMENT,
 });
 
-export const createComment = (id, commentData) => (dispatch) => {
+export const createComment = (id, comment) => (dispatch) => {
   axios
-    .post(`${APIHttp}comments/${id}`, commentData, Header)
+    .post(`${APIHttp}comments/${id}`, { content: comment }, Header)
     .then(async (res) => {
       await dispatch(addComment(res.data.data));
-      dispatch(getSelectedComment());
+      dispatch(getSelectedComment(id));
+      commonNotify("Comment addded Successfully.!");
 
       console.log("res data data", res.data.data);
     })

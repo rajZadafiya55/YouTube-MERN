@@ -9,18 +9,18 @@ const getSubscription = (isSubscribed) => ({
   payload: isSubscribed,
 });
 
-export const getSubscriptionToggle = (id, isSubscribed) => {
+export const getSubscriptionToggle = (id, channelId, isSubscribed) => {
   return async (dispatch) => {
     try {
       const res = await axios.post(
-        `${APIHttp}likes/toggle/c/${id}`,
+        `${APIHttp}subscriptions/c/${id}`,
         { isSubscribed },
         Header
       );
       const updatedSubStatus = res.data.data.isSubscribed;
-
       await dispatch(getSubscription(updatedSubStatus));
-      dispatch(getSelectedVideo(id));
+
+      dispatch(getSelectedVideo(channelId));
 
       if (updatedSubStatus) {
         commonNotify("Channel subscribed successfully!");

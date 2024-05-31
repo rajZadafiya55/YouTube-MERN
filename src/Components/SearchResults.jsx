@@ -11,8 +11,7 @@ import Signin from "./Signin";
 import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
 import nothing from "../img/nothing.png";
 import Zoom from "@mui/material/Zoom";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { commonNotify } from "../constant/Api";
 
 function SearchResults() {
   const navigate = useNavigate();
@@ -33,26 +32,12 @@ function SearchResults() {
     return Dark ? JSON.parse(Dark) : true;
   });
 
-  //TOASTS
-
-  const SubscribeNotify = () =>
-    toast.success("Channel subscribed!", {
-      position: "bottom-center",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
   //USE EFFECTS
 
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 4000);
+    }, 1200);
   }, []);
 
   document.title = data && data !== undefined ? `${data} - YouTube` : "YouTube";
@@ -490,7 +475,7 @@ function SearchResults() {
                                     element.channelProfile,
                                     element._id
                                   );
-                                  SubscribeNotify();
+                                  commonNotify("Channel subscribed!");
                                 } else {
                                   setisbtnClicked(true);
                                   document.body.classList.add("bg-css");
@@ -1341,7 +1326,6 @@ function SearchResults() {
   ) {
     return (
       <>
-
         {/* EDIT HERE  */}
         <SkeletonTheme
           baseColor={theme ? "#353535" : "#aaaaaa"}
@@ -1616,7 +1600,7 @@ function SearchResults() {
                                     element.channelProfile,
                                     element._id
                                   );
-                                  SubscribeNotify();
+                                  commonNotify("Channel subscribed!");
                                 } else {
                                   setisbtnClicked(true);
                                   document.body.classList.add("bg-css");

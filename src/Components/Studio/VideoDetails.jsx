@@ -116,6 +116,7 @@ function VideoDetails() {
         videoURL: selectedVideos.videoFile.url,
         visibility: selectedVideos.isPublished == true ? "Public" : "Private",
       });
+      setprivacy(selectedVideos.isPublished ? "Public" : "Private");
     }
   }, [selectedVideos]);
 
@@ -188,7 +189,7 @@ function VideoDetails() {
     if (thumbnailImage) {
       const anchor = document.createElement("a");
       anchor.href = URL.createObjectURL(thumbnailImage);
-      anchor.download = "thumbnail.png"; 
+      anchor.download = "thumbnail.png";
       anchor.click();
     }
   };
@@ -200,8 +201,6 @@ function VideoDetails() {
       );
       if (userConfirmation) {
         window.location.reload();
-      } else {
-        // User clicked on "Cancel", do nothing
       }
     }
   };
@@ -233,7 +232,7 @@ function VideoDetails() {
       const updatedVideoData = {
         title: videoData.title,
         description: videoData.description,
-        thumbnail:  thumbnailImage ? thumbnailImage : videoData.thumbnailURL,
+        thumbnail: thumbnailImage ? thumbnailImage : videoData.thumbnailURL,
         videoFile: videoData.videoURL,
         isPublished: updatePrivacy === "Public" ? true : false,
       };
@@ -245,7 +244,7 @@ function VideoDetails() {
       setLoading(true);
     }
   };
-console.log("videodata",videoData)
+  console.log("videodata", videoData);
   return (
     <>
       <div className="back-menu-edit" onClick={() => navigate("/studio/video")}>
