@@ -7,6 +7,7 @@ import {
   SEARCH_VIDEO,
   TOGGLE_WATCH_LATER,
   UPDATE_VIDEO,
+  VIDEO_VIEWS,
 } from "../types";
 
 export const initialState = {
@@ -60,6 +61,17 @@ const videoReducer = (state = initialState, action) => {
       return {
         ...state,
         searchTerm: action.payload,
+      };
+    case VIDEO_VIEWS:
+      const updatedVideoDetails = state.videosDetails.map((video) => {
+        if (video.id === action.payload) {
+          return { ...video, views: video.views + 1 };
+        }
+        return video;
+      });
+      return {
+        ...state,
+        videosDetails: updatedVideoDetails,
       };
     default:
       return state;

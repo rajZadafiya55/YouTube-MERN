@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import "../../Css/subscriptions.css";
 import nothing from "../../img/nothing.png";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useNavigate } from "react-router-dom";
-import { APIHttp, Header, _id } from "../../constant/Api";
+import { _id } from "../../constant/Api";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchChannelToSubScribeMe } from "../../redux/actions/subscriptionAction";
 
 const Subscriptions = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { channelSubscriber } = useSelector((state) => state.subscription);
+
   const [subscriptions, setSubscriptions] = useState([]);
   const [menuClicked, setMenuClicked] = useState(() => {
     const menu = localStorage.getItem("menuClicked");
@@ -23,26 +27,19 @@ const Subscriptions = () => {
   document.title = "Subscriptions - YouTube";
 
   useEffect(() => {
-    const getSubscriptions = async () => {
-      try {
-        const response = await axios.get(
-          `${APIHttp}subscriptions/c/${_id}`,
-          Header
-        );
-        const result = response.data;
-        if (result.success && result.data.length > 0) {
-          setSubscriptions(result.data[0].subscriberDetails);
-        } else {
-          setSubscriptions([]);
-        }
-      } catch (error) {
-        console.error(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getSubscriptions();
+    setTimeout(() => {
+      setLoading(false);
+    }, 1200);
   }, []);
+
+  useEffect(() => {
+    dispatch(fetchChannelToSubScribeMe(_id));
+  }, [dispatch, _id]);
+
+  useEffect(() => {
+    setSubscriptions(channelSubscriber);
+  }, [channelSubscriber]);
+  console.log("subscriber", subscriptions);
 
   useEffect(() => {
     localStorage.setItem("menuClicked", JSON.stringify(menuClicked));
@@ -121,14 +118,14 @@ const Subscriptions = () => {
       <div className={"text-light-mode"}>
         <p>A user who subscribed to me</p>
         <div style={{ display: "flex", flexWrap: "wrap" }}>
-          {subscriptions.map((subscriber, index) => (
+          {subscriptions?.map((subscriber, index) => (
             <div
               className={theme ? "sub-channels" : "sub-channels2"}
               key={index}
               onClick={() => navigate(`/channel/${subscriber._id}`)}
             >
               <img
-                src={subscriber.avatar}
+                src={subscriber?.avatar}
                 alt="channelDP"
                 className="sub-channelDP"
               />
@@ -137,7 +134,7 @@ const Subscriptions = () => {
                   theme ? "sub-channelname" : "sub-channelname text-light-mode"
                 }
               >
-                {subscriber.username}
+                {subscriber?.username}
               </p>
             </div>
           ))}

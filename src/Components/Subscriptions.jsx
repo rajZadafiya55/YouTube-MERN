@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import "../Css/subscriptions.css";
 import nothing from "../img/nothing.png";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useNavigate } from "react-router-dom";
-import { APIHttp, Header, _id } from "../constant/Api";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSubscriptionsDetails } from "../redux/actions/subscriptionAction";
+import { _id } from "../constant/Api";
 
 const Subscriptions = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [subscriptions, setSubscriptions] = useState([]);
+  const { subscriptions } = useSelector((state) => state.subscription);
+
+  const [subscriptionsData, setSubscriptionsData] = useState([]);
   const [menuClicked, setMenuClicked] = useState(() => {
     const menu = localStorage.getItem("menuClicked");
     return menu ? JSON.parse(menu) : false;
@@ -25,32 +28,20 @@ const Subscriptions = () => {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 1200);
   }, []);
+
+  useEffect(() => {
+    dispatch(fetchSubscriptionsDetails(_id));
+  }, [dispatch]);
+
+  useEffect(() => {
+    setSubscriptionsData(subscriptions);
+  }, [subscriptions]);
 
   useEffect(() => {
     localStorage.setItem("menuClicked", JSON.stringify(menuClicked));
   }, [menuClicked]);
-
-  useEffect(() => {
-    const getSubscriptions = async () => {
-      try {
-        const response = await axios.get(
-          `${APIHttp}subscriptions/u/${_id}`,
-          Header
-        );
-        const result = response.data;
-        if (result.success && result.data.length > 0) {
-          setSubscriptions(result.data[0].channelDetails);
-        } else {
-          setSubscriptions([]);
-        }
-      } catch (error) {
-        console.error(error.message);
-      }
-    };
-    getSubscriptions();
-  }, []);
 
   useEffect(() => {
     const handleMenuButtonClick = () => {
@@ -94,13 +85,13 @@ const Subscriptions = () => {
     }
   }, [theme]);
 
-  if (subscriptions?.length === 0) {
-    console.log("jjjjjjjj", subscriptions);
+  if (subscriptionsData?.length === 0) {
+    console.log("jjjjjjjj", subscriptionsData);
     return (
       <div className="searched-content">
         <img src={nothing} alt="no results" className="nothing-found" />
         <p className={theme ? "no-results" : "no-results text-light-mode"}>
-          No subscriptions found!
+          No Data found!
         </p>
       </div>
     );
@@ -161,8 +152,8 @@ const Subscriptions = () => {
                 : { visibility: "visible", display: "flex" }
             }
           >
-            {subscriptions?.length > 0 &&
-              subscriptions?.map((subscriber, index) => (
+            {subscriptionsData?.length > 0 &&
+              subscriptionsData?.map((subscriber, index) => (
                 <div
                   className={theme ? "sub-channels" : "sub-channels2"}
                   key={index}
@@ -171,7 +162,7 @@ const Subscriptions = () => {
                   }}
                 >
                   <img
-                    src={subscriber.avatar}
+                    src={subscriber?.avatar}
                     alt="channelDP"
                     className="sub-channelDP"
                   />
@@ -182,7 +173,7 @@ const Subscriptions = () => {
                         : "sub-channelname text-light-mode"
                     }
                   >
-                    {subscriber.username}
+                    {subscriber?.username}
                   </p>
                 </div>
               ))}

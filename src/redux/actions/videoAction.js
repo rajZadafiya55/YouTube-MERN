@@ -7,6 +7,7 @@ import {
   SEARCH_VIDEO,
   TOGGLE_WATCH_LATER,
   UPDATE_VIDEO,
+  VIDEO_VIEWS,
 } from "../types";
 import {
   APIHttp,
@@ -172,3 +173,15 @@ export const setSearch = (searchTerm) => ({
   type: SEARCH_VIDEO,
   payload: searchTerm,
 });
+
+export const updateVideoViews = (id) => async (dispatch) => {
+  try {
+    await axios.patch(`${APIHttp}videos/views/${id}`);
+    dispatch({
+      type: VIDEO_VIEWS,
+      payload: id,
+    });
+  } catch (error) {
+    console.error("view error", error.message);
+  }
+};

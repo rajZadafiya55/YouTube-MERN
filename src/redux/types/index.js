@@ -12,6 +12,7 @@ export const ADD_VIDEOS = "ADD_VIDEOS";
 export const DELETE_VIDEO = "DELETE_VIDEO";
 export const UPDATE_VIDEO = "UPDATE_VIDEO";
 export const TOGGLE_WATCH_LATER = "TOGGLE_WATCH_LATER";
+export const VIDEO_VIEWS = "VIDEO_VIEWS";
 
 //Like
 export const GET_LIKED_VIDEOS = "GET_LIKED_VIDEOS";
@@ -37,6 +38,8 @@ export const CREATE_COMMENT = "CREATE_COMMENT";
 
 // subscribtion
 export const SUBSCRIBE_TOGGLE = "SUBSCRIBE_TOGGLE";
+export const FETCH_SUBSCRIPTIONS_USER = 'FETCH_SUBSCRIPTIONS_USER';
+export const CHANNEL_SUBCRIBE_TO_MYCH = 'CHANNEL_SUBCRIBE_TO_MYCH';
 
 // search
 export const SEARCH_VIDEO = "SEARCH_VIDEO";

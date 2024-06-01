@@ -34,6 +34,7 @@ import {
   getAllVideos,
   getSelectedVideo,
   toggleWatchLater,
+  updateVideoViews,
 } from "../redux/actions/videoAction";
 import {
   createComment,
@@ -125,6 +126,11 @@ const VideoSection = () => {
 
     fetchData();
   }, [id]);
+
+  // videoID based patch view api
+  useEffect(() => {
+    dispatch(updateVideoViews(id));
+  }, [dispatch, id]);
 
   // USE EFFECTS
   useEffect(() => {
