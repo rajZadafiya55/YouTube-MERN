@@ -6,7 +6,6 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import SouthIcon from "@mui/icons-material/South";
 import { useEffect, useState } from "react";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
@@ -52,18 +51,8 @@ import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternate
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import Upload from "../../img/upload.png";
 import axios from "axios";
+import { addVideoToPlaylist } from "../../redux/actions/playlistAction";
 
-<<<<<<< HEAD
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import { ValidatorForm } from "react-material-ui-form-validator";
-import { Grid, TextField } from "@mui/material";
-
-=======
->>>>>>> 7cb5fb74cf5bcc3946f42f326c235a4355b22c36
 const Content = () => {
   // ===============================================================
 
@@ -111,18 +100,9 @@ const Content = () => {
 
   const AddToPlaylist = () => {
     if (selectedValue && DeleteVideoID) {
-      axios
-        .patch(`${APIHttp}playlist/add/${DeleteVideoID}/${selectedValue}`)
-        .then((response) => {
-          commonNotify("Video successfully added to the playlist.");
-          setTimeout(() => {
-            setIsDeleteClicked(false);
-            document.body.classList.remove("bg-css2");
-          }, 1500);
-        })
-        .catch((error) => {
-          CancelNotify("There was an error adding the video to the playlist.");
-        });
+      dispatch(addVideoToPlaylist(DeleteVideoID, selectedValue));
+      setIsDeleteClicked(false);
+      document.body.classList.remove("bg-css2");
     } else {
       CancelNotify("Please select a playlist.");
     }

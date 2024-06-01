@@ -1,15 +1,11 @@
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Grid, styled, Dialog } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import SendIcon from "@mui/icons-material/Send";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
-import axios from "axios";
-import { APIHttp, Header } from "../../../constant/Api";
+import { useDispatch } from "react-redux";
+import { createPlaylist } from "../../../redux/actions/playlistAction";
 
 const TextField = styled(TextValidator)(() => ({
   width: "100%",
@@ -17,6 +13,7 @@ const TextField = styled(TextValidator)(() => ({
 }));
 
 export default function NewPlaylistDialog(props) {
+  const dispatch = useDispatch();
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -38,10 +35,8 @@ export default function NewPlaylistDialog(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // --------------------------API----------------------------
-    axios.post(`${APIHttp}playlist`, data, Header).then((r) => {
-      console.log(r.data.data);
-    });
+
+    dispatch(createPlaylist(data));
     setdata("");
     handleClose();
     props.refreshData();

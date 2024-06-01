@@ -1,13 +1,11 @@
 import * as React from "react";
-import { useEffect, useState, useCallback } from "react";
-import Swal from "sweetalert2";
+import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import FeaturedPlayListIcon from "@mui/icons-material/FeaturedPlayList";
 import PlaylistRemoveIcon from "@mui/icons-material/PlaylistRemove";
-import axios from "axios";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import {
   Card,
@@ -21,17 +19,19 @@ import {
 } from "@mui/material";
 import { ValidatorForm } from "react-material-ui-form-validator";
 import NewPlaylistDialog from "./Playlist/NewPlaylistDialog";
-import {
-  APIHttp,
-  _id,
-  Header,
-  commonNotify,
-  CancelNotify,
-} from "../../constant/Api";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deletePlaylist,
+  fetchPlaylists,
+  removeVideoFromPlaylist,
+  updatePlaylist,
+} from "../../redux/actions/playlistAction";
 
 export default function PlayList() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { playlists } = useSelector((state) => state.playlist);
   // ==========================(UI code)==================================================
   const [theme, setTheme] = useState(false);
   if (theme === false && window.location.href.includes("/studio/playList")) {
@@ -69,6 +69,14 @@ export default function PlayList() {
     description: "",
   });
 
+  useEffect(() => {
+    dispatch(fetchPlaylists());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setRows(playlists);
+  }, [playlists]);
+
   const handlePlistClick = (row) => () => {
     setEditRow(row);
     setOpen(true);
@@ -89,17 +97,8 @@ export default function PlayList() {
   };
 
   const handleDeleteClick = (row) => () => {
-    Swal.fire({
-      title: "Do you want to Delete?",
-      showCancelButton: true,
-      confirmButtonText: "Delete",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios.delete(`${APIHttp}playlist/${row.row._id}`, Header).then(() => {
-          refreshData();
-        });
-      }
-    });
+    dispatch(deletePlaylist(row.row._id));
+    refreshData();
   };
 
   const columns = [
@@ -137,52 +136,16 @@ export default function PlayList() {
       ],
     },
   ];
-  // ==========================(data show )==================================================
-
-  const fetchData = useCallback(() => {
-    axios
-      .get(`${APIHttp}playlist/user/${_id}`, Header)
-      .then((r) => {
-        if (Array.isArray(r.data.data)) {
-          const d = r.data.data.map((value, index) => {
-            return { ...value, id: index + 1 };
-          });
-          setRows(d);
-        } else {
-          console.error("Data is not an array", r.data);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching data", error);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
   // ==========================(remove playlist)==================================================
   const RemoveToPlaylist = (playListId, videoId) => {
-    if (videoId && playListId) {
-      axios
-        .patch(`${APIHttp}playlist/remove/${videoId}/${playListId}`)
-        .then((response) => {
-          commonNotify("Video successfully removed from the playlist.");
-          setOpen(false);
-          refreshData();
-        })
-        .catch((error) => {
-          CancelNotify(
-            "There was an error removing the video from the playlist."
-          );
-        });
-    } else {
-      CancelNotify("Please select a playlist.");
-    }
+    dispatch(removeVideoFromPlaylist(playListId, videoId));
+    refreshData();
+    setOpen(false);
   };
 
   const refreshData = () => {
-    fetchData();
+    dispatch(fetchPlaylists());
   };
 
   const handleFormChange = (e) => {
@@ -192,16 +155,9 @@ export default function PlayList() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios
-      .patch(`${APIHttp}playlist/${editRow._id}`, formData, Header)
-      .then((response) => {
-        commonNotify("Playlist updated successfully.");
-        setEditOpen(false);
-        refreshData();
-      })
-      .catch((error) => {
-        CancelNotify("There was an error updating the playlist.");
-      });
+    dispatch(updatePlaylist(editRow._id, formData));
+    refreshData();
+    setEditOpen(false);
   };
 
   return (
@@ -258,8 +214,8 @@ export default function PlayList() {
         </DialogTitle>
         <DialogContent>
           <div>
-            {editRow.videos && editRow.videos.length > 0 ? (
-              editRow.videos.map((val, index) => (
+            {editRow.videos && editRow.videos?.length > 0 ? (
+              editRow.videos?.map((val, index) => (
                 <div key={index}>
                   <Grid container spacing={2} mt={2}>
                     <Grid item sm={3}>
@@ -293,7 +249,7 @@ export default function PlayList() {
                             navigate(`/video/${val._id}`);
                           }}
                         >
-                          {val.title && val.title.length <= 40
+                          {val.title && val.title?.length <= 40
                             ? val.title
                             : `${val.title?.slice(0, 40)}...`}
                         </p>
@@ -305,9 +261,9 @@ export default function PlayList() {
                                 : "studio-video-desc text-light-mode2"
                             }
                           >
-                            {val.description.length <= 85
+                            {val.description?.length <= 85
                               ? val.description
-                              : `${val.description.slice(0, 85)}...`}
+                              : `${val.description?.slice(0, 85)}...`}
                           </p>
                         ) : (
                           <p>Add description</p>

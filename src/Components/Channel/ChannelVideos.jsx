@@ -5,9 +5,13 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { useDispatch, useSelector } from "react-redux";
 import nothing from "../../img/nothing.png";
 import "../../Css/channel.css";
-import { getAllChannelVideos } from "../../redux/actions/dashboardAction.js";
+import {
+  getAllChannelVideosById,
+} from "../../redux/actions/dashboardAction.js";
 
-function ChannelVideos() {
+const ChannelVideos = (props) => {
+  const { id } = props;
+
   const dispatch = useDispatch();
   const AllVideo = useSelector((state) => state.dashboard.videosDetails);
 
@@ -40,8 +44,8 @@ function ChannelVideos() {
   }, []);
 
   useEffect(() => {
-    dispatch(getAllChannelVideos());
-  }, [dispatch]);
+    dispatch(getAllChannelVideosById(id));
+  }, [id]);
 
   useEffect(() => {
     setMyVideos(AllVideo);
@@ -342,6 +346,6 @@ function ChannelVideos() {
       </div>
     </>
   );
-}
+};
 
 export default ChannelVideos;

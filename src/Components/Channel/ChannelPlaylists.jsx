@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import jwtDecode from "jwt-decode";
 import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import deleteIMG from "../../img/delete.jpg";
 import { useNavigate, useParams } from "react-router-dom";
-import { APIHttp, Header } from "../../constant/Api";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPlaylists } from "../../redux/actions/playlistAction";
 
 function generateRandomColors(count) {
   const transparency = 0.7; // Adjust transparency as needed (0 to 1)
@@ -25,7 +24,10 @@ function generateRandomColors(count) {
 function ChannelPlaylists(prop) {
   const { id } = useParams();
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { playlists } = useSelector((state) => state.playlist);
+
   const [PlaylistData, setPlaylistData] = useState([]);
   const [playlistColors, setPlaylistColors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,14 +50,16 @@ function ChannelPlaylists(prop) {
   }, [PlaylistData]);
 
   useEffect(() => {
-    axios.get(`${APIHttp}playlist/user/${id}`, Header).then((res) => {
-      setPlaylistData(res.data.data);
-    });
+    dispatch(fetchPlaylists(id));
   }, []);
+
+  useEffect(() => {
+    setPlaylistData(playlists);
+  }, [playlists]);
 
   if (
     (loading === false && PlaylistData === "No playlists available...") ||
-    (loading === false && PlaylistData.length === 0)
+    (loading === false && PlaylistData?.length === 0)
   ) {
     return (
       <p
@@ -96,7 +100,7 @@ function ChannelPlaylists(prop) {
             />
             <div className="thischannel-playlists">
               {sampleArr &&
-                sampleArr.map(() => {
+                sampleArr?.map(() => {
                   return (
                     <div className="created-all-playlistss" key={Math.random()}>
                       <Skeleton
@@ -157,7 +161,7 @@ function ChannelPlaylists(prop) {
         >
           <p>Created playlists</p>
           <div className="thischannel-playlists">
-            {PlaylistData.map((playlist, index) => (
+            {PlaylistData?.map((playlist, index) => (
               <div
                 className="created-all-playlistss"
                 key={playlist._id}

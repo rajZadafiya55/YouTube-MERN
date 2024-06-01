@@ -90,7 +90,7 @@ export default function BasicTabs({ section, handleTabChange, newemail }) {
       </Box>
 
       <CustomTabPanel value={section} index="Videos">
-        <ChannelVideos newmail={Email} />
+        <ChannelVideos newmail={Email} id={id}/>
       </CustomTabPanel>
 
       <CustomTabPanel value={section} index="Playlists">

@@ -8,7 +8,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserWatchHistory } from "../redux/actions/userAction";
-import { username } from "../constant/Api";
+import { formatDate, username } from "../constant/Api";
 import { Tooltip } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Zoom from "@mui/material/Zoom";
@@ -105,32 +105,6 @@ function WatchLater() {
   }, [watchHistory]);
 
   console.log("watch", watchlater);
-
-  const formatDate = (createdAt) => {
-    const currentDate = new Date();
-    const createdDate = new Date(createdAt);
-    const timeDifference = currentDate - createdDate;
-    const seconds = Math.floor(timeDifference / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-    const weeks = Math.floor(days / 7);
-    const months = Math.floor(days / 30);
-
-    if (months > 0) {
-      return `${months} month${months > 1 ? "s" : ""} ago`;
-    } else if (weeks > 0) {
-      return `${weeks} week${weeks > 1 ? "s" : ""} ago`;
-    } else if (days > 0) {
-      return `${days} day${days > 1 ? "s" : ""} ago`;
-    } else if (hours > 0) {
-      return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-    } else if (minutes > 0) {
-      return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
-    } else {
-      return `${seconds} second${seconds > 1 ? "s" : ""} ago`;
-    }
-  };
 
   if (watchlater?.length == 0 || watchlater?.length < 0) {
     return (

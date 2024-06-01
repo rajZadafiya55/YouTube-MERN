@@ -13,7 +13,7 @@
     <script>
       const currentURL = window.location.href;
       const local = "http://localhost:5173";
-      localStorage.setItem("Dark", false);
+      localStorage.setItem("Dark", false); 
 
       if (currentURL === `${local}/studio`) {
         document.body.style.backgroundColor = "#1f1f1f";
@@ -28,7 +28,7 @@
       } else if (currentURL.includes(`/studio/customize`)) {
         document.body.style.backgroundColor = "#282828";
       } else {
-        document.body.style.backgroundColor = "#0f0f0f";
+        document.body.style.backgroundColor = "white";
       }
     </script>
   </body>

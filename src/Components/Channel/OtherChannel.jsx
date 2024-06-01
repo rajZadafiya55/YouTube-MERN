@@ -1,6 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Navbar from "../Navbar";
 import LeftPanel from "../LeftPanel";
 import "../../Css/channel.css";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -10,18 +9,20 @@ import Tooltip from "@mui/material/Tooltip";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Zoom from "@mui/material/Zoom";
 import { RiUserSettingsLine } from "react-icons/ri";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import BasicTabs from "./BasicTabs";
 import { coverImage, email, username } from "../../constant/Api";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserChannelProfile } from "../../redux/actions/userAction";
+import { getSubscriptionToggle } from "../../redux/actions/subscriptionAction";
 
 function OtherChannel() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const channelData = useSelector((state) => state.user.channelDetails);
+
+  const isSubscribe = useSelector((state) => state.subscription.isSubscribed);
 
   const { id } = useParams();
   const [Email, setEmail] = useState(email);
@@ -32,8 +33,7 @@ function OtherChannel() {
     localStorage.getItem("Section") || "Videos"
   );
   const token = localStorage.getItem("userToken");
-  const [isSubscribed, setIsSubscribed] = useState();
-  const [Subscribers, setSubscribers] = useState();
+  // const [isSubscribed, setIsSubscribed] = useState();
   const [Top, setTop] = useState("155px");
   const [coverIMG, setCoverIMG] = useState(coverImage);
   const [loading, setLoading] = useState(true);
@@ -43,20 +43,6 @@ function OtherChannel() {
   });
 
   const [userProfile, setUserProfile] = useState([]);
-  //TOAST FUNCTIONS
-
-  const SubscribeNotify = () =>
-    toast.success("Channel subscribed!", {
-      position: "bottom-center",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
   //USE EFFECTS
 
   useEffect(() => {
@@ -69,22 +55,6 @@ function OtherChannel() {
     channelName && channelName !== undefined
       ? `${channelName} - YouTube`
       : "YouTube";
-
-  // useEffect(() => {
-  //   const getSubscribers = async () => {
-  //     try {
-  //       const response = await fetch(`${backendURL}/getchannelid/${Email}`);
-  //       const { subscribers } = await response.json();
-  //       setSubscribers(subscribers);
-  //     } catch (error) {
-  //       // console.log(error.message);
-  //     }
-  //   };
-
-  //   const interval = setInterval(getSubscribers, 200);
-
-  //   return () => clearInterval(interval);
-  // }, [Email]);
 
   useEffect(() => {
     if (Section === "Videos" && coverIMG !== "No data") {
@@ -106,56 +76,15 @@ function OtherChannel() {
     }
   }, [theme]);
 
-  // useEffect(() => {
-  //   const checkSubscription = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         `${backendURL}/checksubscription/${id}/${newEmail}`
-  //       );
-  //       const { existingChannelID } = await response.json();
-  //       if (existingChannelID !== undefined) {
-  //         setIsSubscribed(true);
-  //       } else {
-  //         setIsSubscribed(false);
-  //       }
-  //     } catch (error) {
-  //       // console.log(error.message);
-  //     }
-  //   };
-
-  //   const interval = setInterval(checkSubscription, 200);
-
-  //   return () => clearInterval(interval);
-  // }, [id, newEmail]);
-
   //POST REQUESTS
 
-  // const SubscribeChannel = async () => {
-  //   try {
-  //     const channelData = {
-  //       youtuberName: channelName,
-  //       youtuberProfile: ChannelProfile,
-  //       youtubeChannelID: id,
-  //     };
-
-  //     const response = await fetch(
-  //       `${backendURL}/subscribe/${id}/${newEmail}/${Email}`,
-  //       {
-  //         method: "POST",
-  //         body: JSON.stringify(channelData),
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-  //     const data = await response.json();
-  //     if (data === "Subscribed") {
-  //       SubscribeNotify();
-  //     }
-  //   } catch (error) {
-  //     // console.log(error.message);
-  //   }
-  // };
+  const SubscribeChannel = async (id,channelId) => {
+    try {
+      dispatch(getSubscriptionToggle(id,channelId, isSubscribe));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   // Function to handle tab changes
   const handleTabChange = (newSection) => {
@@ -196,7 +125,7 @@ function OtherChannel() {
           {element.avatar ? (
             <div
               className={
-                Top === "2%"
+                Top === "2%" 
                   ? "channel-main-content-nocover"
                   : "channel-main-content"
               }
@@ -414,17 +343,12 @@ function OtherChannel() {
                               : "subscribethis-channel-light text-dark-mode"
                           }
                           style={
-                            isSubscribed === true
+                            isSubscribe === true
                               ? { display: "none" }
                               : { display: "block" }
                           }
                           onClick={() => {
-                            if (token) {
-                              // SubscribeChannel();
-                            } else {
-                              setisbtnClicked(true);
-                              document.body.classList.add("bg-css");
-                            }
+                            SubscribeChannel(element._id,id);
                           }}
                         >
                           Subscribe
@@ -436,17 +360,12 @@ function OtherChannel() {
                               : "subscribethis-channel2-light"
                           }
                           style={
-                            isSubscribed === true
+                            isSubscribe === true
                               ? { display: "block" }
                               : { display: "none" }
                           }
                           onClick={() => {
-                            if (token) {
-                              // SubscribeChannel();
-                            } else {
-                              setisbtnClicked(true);
-                              document.body.classList.add("bg-css");
-                            }
+                            SubscribeChannel(element?._id,id);
                           }}
                         >
                           Subscribed

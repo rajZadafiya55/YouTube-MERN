@@ -1,27 +1,26 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import nothing from "../img/nothing.png";
-import DeleteIcon from "@mui/icons-material/Delete";
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import PlaylistAddOutlinedIcon from "@mui/icons-material/PlaylistAddOutlined";
-import PlaylistAddCheckOutlinedIcon from "@mui/icons-material/PlaylistAddCheckOutlined";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import jwtDecode from "jwt-decode";
-import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import "../Css/likevideos.css";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPlaylistById } from "../redux/actions/playlistAction";
+import { commonNotify, email, formatDate } from "../constant/Api";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
-function Playlists() {
+const Playlists = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const backendURL = "http://localhost:3000";
+
+  const playlists = useSelector((state) => state.playlist.playlists);
+  console.log("playlist", playlists);
+
   const { id } = useParams();
   const [menuClicked, setMenuClicked] = useState(() => {
     const menu = localStorage.getItem("menuClicked");
@@ -32,123 +31,39 @@ function Playlists() {
     const Dark = localStorage.getItem("Dark");
     return Dark ? JSON.parse(Dark) : true;
   });
-  const [isbtnClicked, setisbtnClicked] = useState(false);
 
-  const [Email, setEmail] = useState();
+  const [Email, setEmail] = useState(email);
   const [playlistsVideos, setPlaylistsVideos] = useState([]);
   const [playlistDetails, setplaylistDetails] = useState();
   const [isEditmode, setIsEditmode] = useState(false);
-  const [privacyClicked, setprivacyClicked] = useState(false);
-  const [channelID, setChannelID] = useState();
   const [PlaylistName, setPlaylistName] = useState("");
-  const [isSaved, setIsSaved] = useState(false);
-  const [deleteClicked, setDeleteClicked] = useState(false);
   const token = localStorage.getItem("userToken");
-
-  const privacyRef = useRef();
-  const deleteRef = useRef();
-
-  //TOAST FUNCTIONS
-
-  const savePlaylistNotify = () =>
-    toast.success("Playlist added to library!", {
-      position: "bottom-center",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const RemovePlaylistNotify = () =>
-    toast.success("Playlist removed from library!", {
-      position: "bottom-center",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
-
-  const CopiedNotify = () =>
-    toast.success("Link Copied!", {
-      position: "bottom-center",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: theme ? "dark" : "light",
-    });
 
   //USE EFFECTS
 
   useEffect(() => {
-    if (token) {
-      setEmail(jwtDecode(token).email);
-    }
-  }, [token]);
-
-  useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 3600);
-  }, []);
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (!privacyRef.current.contains(e.target)) {
-        setprivacyClicked(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handler);
-  }, []);
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (!deleteRef.current.contains(e.target)) {
-        setDeleteClicked(false);
-        document.body.classList.remove("bg-css");
-      }
-    };
-
-    document.addEventListener("mousedown", handler);
+    }, 1200);
   }, []);
 
   useEffect(() => {
     localStorage.setItem("menuClicked", JSON.stringify(menuClicked));
   }, [menuClicked]);
 
-  // useEffect(() => {
-  //   axios.get(`${APIHttp}playlist/${id}`, Header).then((res) => {
-  //     setPlaylistData(res.data.data);
-  //   });
-  // }, []);
+  useEffect(() => {
+    if (id !== undefined) {
+      dispatch(fetchPlaylistById(id));
+    }
+  }, [id, dispatch]);
 
   useEffect(() => {
-    const getPlaylists = async () => {
-      try {
-        if (id !== undefined) {
-          const response = await fetch(`${backendURL}/getplaylists/${id}`);
-          const { playlistVideos, myPlaylists } = await response.json();
-          setPlaylistsVideos(playlistVideos);
-          setplaylistDetails(myPlaylists);
-          setPlaylistName(myPlaylists.playlist_name);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
+    setplaylistDetails(playlists);
+    setPlaylistName(playlists[0]?.name);
+    setPlaylistsVideos(playlists[0]?.videos);
+  }, [playlists]);
 
-    getPlaylists();
-  }, [id]);
-
+  console.log("videos",playlistsVideos)
   document.title =
     PlaylistName && PlaylistName !== undefined
       ? `${PlaylistName} - YouTube`
@@ -196,132 +111,20 @@ function Playlists() {
     }
   }, [theme]);
 
-  const updateViews = async (id) => {
-    try {
-      const response = await fetch(`${backendURL}/updateview/${id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      await response.json();
-    } catch (error) {
-      // console.log(error.message);
-    }
-  };
-
-  useEffect(() => {
-    const getChannelID = async () => {
-      try {
-        if (playlistDetails.owner_email !== undefined) {
-          const response = await fetch(
-            `${backendURL}/getchannelid/${playlistDetails.owner_email}`
-          );
-          const { channelID } = await response.json();
-          setChannelID(channelID);
-        }
-      } catch (error) {
-        // console.log("Error fetching user data:", error.message);
-      }
-    };
-
-    getChannelID();
-  });
-
-  useEffect(() => {
-    const GetSavedPlaylistData = async () => {
-      try {
-        if (id !== undefined && Email !== undefined) {
-          const response = await fetch(
-            `${backendURL}/getsavedplaylist/${id}/${Email}`
-          );
-          const data = await response.json();
-          if (data === "Found") {
-            setIsSaved(true);
-          } else {
-            setIsSaved(false);
-          }
-        }
-      } catch (error) {
-        // console.log("Error fetching user data:", error.message);
-      }
-    };
-    const interval = setInterval(GetSavedPlaylistData, 250);
-
-    return () => clearInterval(interval);
-  }, [id, Email]);
-
-  //POST REQUEST
-
-  const saveEditData = async () => {
-    try {
-      const response = await fetch(`${backendURL}/saveplaylist/${id}`, {
-        method: "POST",
-        body: JSON.stringify({ playlist_name: PlaylistName }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      await response.json();
-    } catch (error) {
-      // console.log(error.message);
-    }
-  };
-
   const handleCopyLink = () => {
     navigator.clipboard
       .writeText(window.location.href)
       .then(() => {
-        CopiedNotify();
+        commonNotify("Link Copied!");
       })
       .catch((error) => {
         console.log("Error copying link to clipboard:", error);
       });
   };
 
-  const setPrivacy = async (privacy) => {
-    try {
-      const response = await fetch(`${backendURL}/saveplaylistprivacy/${id}`, {
-        method: "POST",
-        body: JSON.stringify({ privacy }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      await response.json();
-    } catch (error) {
-      // console.log(error.message);
-    }
-  };
-
-  const SaveOtherPlaylist = async () => {
-    try {
-      const response = await fetch(
-        `${backendURL}/addotherplaylist/${id}/${Email}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      if (data === "Saved") {
-        savePlaylistNotify();
-      } else if (data === "Removed") {
-        RemovePlaylistNotify();
-      }
-    } catch (error) {
-      // console.log(error.message);
-    }
-  };
-
   if (
     playlistsVideos === "No Playlists Found" ||
-    (playlistsVideos &&
-      playlistsVideos.length === 1 &&
-      playlistsVideos[0].videoprivacy === "Private")
+    (playlistsVideos && playlistsVideos?.length === 0)
   ) {
     return (
       <>
@@ -335,7 +138,7 @@ function Playlists() {
 
   if (
     playlistDetails &&
-    playlistDetails.owner_email !== Email &&
+    playlistDetails.owner?.email !== Email &&
     playlistsVideos !== "No Playlists Found" &&
     playlistDetails.playlist_privacy === "Private"
   ) {
@@ -365,7 +168,7 @@ function Playlists() {
             : "liked-video-data light-mode text-light-mode"
         }
       >
-        {playlistsVideos && playlistsVideos.length > 0 ? (
+        {playlistsVideos && playlistsVideos?.length > 0 ? (
           <div
             className="like-video-sections"
             style={menuClicked === false ? { left: "80px" } : { left: "255px" }}
@@ -375,7 +178,7 @@ function Playlists() {
                 theme ? "like-left-section" : "like-left-section-light"
               }
               style={{
-                backgroundImage: `url(${playlistsVideos[0]?.thumbnail})`,
+                backgroundImage: `url(${playlistsVideos[0]?.thumbnail?.url})`,
               }}
             >
               <div className="page-cover">
@@ -384,12 +187,9 @@ function Playlists() {
                     className="firstvideo-thumbnail"
                     onClick={() => {
                       if (token) {
-                        updateViews(playlistsVideos[0].videoID);
-                        setTimeout(() => {
-                          navigate(`/video/${playlistsVideos[0].videoID}`);
-                        }, 400);
+                        navigate(`/video/${playlistsVideos[0]._id}`);
                       } else {
-                        navigate(`/video/${playlistsVideos[0].videoID}`);
+                        navigate(`/video/${playlistsVideos[0]._id}`);
                       }
                     }}
                   >
@@ -415,7 +215,7 @@ function Playlists() {
                       </div>
                     </SkeletonTheme>
                     <img
-                      src={playlistsVideos[0].thumbnail}
+                      src={playlistsVideos[0]?.thumbnail?.url}
                       alt="first-like-thumbnail"
                       className="first-thumbnail playlist-first-thumbnail"
                       loading="lazy"
@@ -438,10 +238,9 @@ function Playlists() {
                     }
                   >
                     <p className="like-head playlist-name-edit">
-                      {/* {playlistDetails.playlist_name.length <= 15
-                          ? playlistDetails.playlist_name
-                          : `${playlistDetails.playlist_name.slice(0, 15)}..`} */}
-                      {playlistDetails.playlist_name}
+                      {playlistDetails[0]?.name?.length <= 15
+                        ? playlistDetails[0]?.name
+                        : `${playlistDetails[0]?.name?.slice(0, 15)}..`}
                     </p>
                   </div>
 
@@ -455,13 +254,17 @@ function Playlists() {
                   >
                     <p
                       className="like-username"
-                      onClick={() => navigate(`/channel/${channelID}`)}
+                      onClick={() =>
+                        navigate(
+                          `/channel/${playlistDetails[0]?.owner[0]?._id}`
+                        )
+                      }
                     >
-                      {playlistDetails.playlist_owner}
+                      {playlistDetails?.[0]?.owner?.[0]?.username || " "}
                     </p>
 
                     <p className="like-total-videos">
-                      {playlistsVideos.length} videos
+                      {playlistsVideos?.length} videos
                     </p>
                   </div>
 
@@ -484,12 +287,9 @@ function Playlists() {
                   className="playvideo-btn"
                   onClick={() => {
                     if (token) {
-                      updateViews(playlistsVideos[0].videoID);
-                      setTimeout(() => {
-                        navigate(`/video/${playlistsVideos[0].videoID}`);
-                      }, 400);
+                      navigate(`/video/${playlistsVideos[0]._id}`);
                     } else {
-                      navigate(`/video/${playlistsVideos[0].videoID}`);
+                      navigate(`/video/${playlistsVideos[0]._id}`);
                     }
                   }}
                 >
@@ -508,8 +308,8 @@ function Playlists() {
                   loading === true ? { display: "block" } : { display: "none" }
                 }
               >
-                {playlistsVideos.length > 0
-                  ? playlistsVideos.map((element, index) => {
+                {playlistsVideos?.length > 0
+                  ? playlistsVideos?.map((element, index) => {
                       return (
                         <div
                           className={
@@ -520,9 +320,7 @@ function Playlists() {
                           key={index}
                           style={{
                             display:
-                              element.videoprivacy === "Public"
-                                ? "flex"
-                                : "none",
+                              element.isPublished === true ? "flex" : "none",
                           }}
                         >
                           <div className="liked-videos-all-data">
@@ -570,8 +368,8 @@ function Playlists() {
                   : { visibility: "visible", display: "block" }
               }
             >
-              {playlistsVideos.length > 0
-                ? playlistsVideos.map((element, index) => {
+              {playlistsVideos?.length > 0
+                ? playlistsVideos?.map((element, index) => {
                     return (
                       <div
                         className={
@@ -582,7 +380,7 @@ function Playlists() {
                         key={index}
                         style={{
                           display:
-                            element.videoprivacy === "Public" ? "flex" : "none",
+                            element.isPublished === true ? "flex" : "none",
                         }}
                       >
                         <p style={{ color: "#aaa" }}>{index + 1}</p>
@@ -590,17 +388,14 @@ function Playlists() {
                           className="liked-videos-all-data playlistvideos"
                           onClick={() => {
                             if (token) {
-                              updateViews(element.videoID);
-                              setTimeout(() => {
-                                navigate(`/video/${element.videoID}`);
-                              }, 400);
+                              navigate(`/video/${element._id}`);
                             } else {
-                              navigate(`/video/${element.videoID}`);
+                              navigate(`/video/${element._id}`);
                             }
                           }}
                         >
                           <img
-                            src={element.thumbnail}
+                            src={element.thumbnail?.url}
                             alt="first-like-thumbnail"
                             loading="lazy"
                           />
@@ -611,24 +406,51 @@ function Playlists() {
                                 : "durationn3 playlist-duration text-dark-mode"
                             }
                           >
-                            {Math.floor(element.videolength / 60) +
+                            {Math.floor(element.duration / 60) +
                               ":" +
-                              (Math.round(element.videolength % 60) < 10
-                                ? "0" + Math.round(element.videolength % 60)
-                                : Math.round(element.videolength % 60))}
+                              (Math.round(element.duration % 60) < 10
+                                ? "0" + Math.round(element.duration % 60)
+                                : Math.round(element.duration % 60))}
                           </p>
                           <div className="its-content playlist-contentt">
                             {window.innerWidth <= 1000 ? (
                               <p>
-                                {element.title.length <= 50
+                                {element.title?.length <= 50
                                   ? element.title
-                                  : `${element.title.slice(0, 50)}..`}
+                                  : `${element.title?.slice(0, 50)}..`}
                               </p>
                             ) : (
                               <p>{element.title}</p>
                             )}
 
-                            <p>{element.video_uploader}</p>
+                            <div
+                              className={
+                                theme
+                                  ? "thisvide-oneliner-1"
+                                  : "thisvide-oneliner-1 text-light-mode2"
+                              }
+                            >
+                              <p>{element?.owner?.username}</p>
+
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="Verified"
+                                placement="right"
+                              >
+                                <CheckCircleIcon
+                                  fontSize="100px"
+                                  style={{
+                                    color: "rgb(138, 138, 138)",
+                                    marginLeft: "4px",
+                                  }}
+                                />
+                              </Tooltip>
+                            </div>
+
+                            <p className="liked-views ">
+                              {element?.views} views &#183;{" "}
+                              {formatDate(element?.createdAt)}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -655,7 +477,7 @@ function Playlists() {
             : "liked-video-data-new light-mode text-light-mode"
         }
       >
-        {playlistsVideos && playlistsVideos.length > 0 ? (
+        {playlistsVideos && playlistsVideos?.length > 0 ? (
           <div
             className="like-video-sections2"
             style={menuClicked === false ? { left: "80px" } : { left: "255px" }}
@@ -665,7 +487,7 @@ function Playlists() {
                 theme ? "like-left-section2" : "like-left-section2-light"
               }
               style={{
-                backgroundImage: `url(${playlistsVideos[0]?.thumbnail})`,
+                backgroundImage: `url(${playlistsVideos[0]?.thumbnail?.url})`,
               }}
             >
               <div className="page-cover2">
@@ -675,12 +497,9 @@ function Playlists() {
                       className="firstvideo-thumbnail"
                       onClick={() => {
                         if (token) {
-                          updateViews(playlistsVideos[0].videoID);
-                          setTimeout(() => {
-                            navigate(`/video/${playlistsVideos[0].videoID}`);
-                          }, 400);
+                          navigate(`/video/${playlistsVideos[0]._id}`);
                         } else {
-                          navigate(`/video/${playlistsVideos[0].videoID}`);
+                          navigate(`/video/${playlistsVideos[0]._id}`);
                         }
                       }}
                     >
@@ -706,7 +525,7 @@ function Playlists() {
                         </div>
                       </SkeletonTheme>
                       <img
-                        src={playlistsVideos[0].thumbnail}
+                        src={playlistsVideos[0].thumbnail?.url}
                         alt="first-like-thumbnail"
                         className="first-thumbnail2 playlist-first-thumbnail"
                         loading="lazy"
@@ -729,10 +548,9 @@ function Playlists() {
                       }
                     >
                       <p className="like-head playlist-name-edit">
-                        {/* {playlistDetails.playlist_name.length <= 15
-                          ? playlistDetails.playlist_name
-                          : `${playlistDetails.playlist_name.slice(0, 15)}..`} */}
-                        {playlistDetails.playlist_name}
+                        {playlistDetails[0].name?.length <= 15
+                          ? playlistDetails[0].name
+                          : `${playlistDetails[0].name?.slice(0, 15)}..`}
                       </p>
                       <Tooltip
                         TransitionComponent={Zoom}
@@ -743,7 +561,7 @@ function Playlists() {
                           className="edit-name-btn"
                           fontSize="medium"
                           style={
-                            playlistDetails.owner_email === Email
+                            playlistDetails?.[0]?.owner?.[0]?.email === Email
                               ? { color: "white" }
                               : { display: "none" }
                           }
@@ -755,43 +573,7 @@ function Playlists() {
                         />
                       </Tooltip>
                     </div>
-                    <div
-                      className="like-div"
-                      style={
-                        isEditmode === true
-                          ? { display: "block" }
-                          : { display: "none" }
-                      }
-                    >
-                      <input
-                        type="text"
-                        name="playlist-name"
-                        className="like-head like-head2 playlist-name-edit"
-                        value={PlaylistName}
-                        maxLength={50}
-                        onChange={(e) => setPlaylistName(e.target.value)}
-                      />
-                      <div className="two-main-btns">
-                        <button
-                          className="cancel-edit"
-                          onClick={() => setIsEditmode(false)}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          className="save-edit"
-                          onClick={() => {
-                            saveEditData();
 
-                            setTimeout(() => {
-                              window.location.reload();
-                            }, 300);
-                          }}
-                        >
-                          Save
-                        </button>
-                      </div>
-                    </div>
                     <div
                       className="last-like2"
                       style={
@@ -802,192 +584,19 @@ function Playlists() {
                     >
                       <p
                         className="like-username"
-                        onClick={() => navigate(`/channel/${channelID}`)}
-                      >
-                        {playlistDetails.playlist_owner}
-                      </p>
-
-                      <div
-                        className="update-privacy"
-                        style={
-                          playlistDetails &&
-                          playlistDetails.owner_email === Email
-                            ? { display: "block" }
-                            : { display: "none" }
+                        onClick={() =>
+                          navigate(
+                            `/channel/${playlistDetails[0]?.owner[0]?._id}`
+                          )
                         }
                       >
-                        <div
-                          className="updateit-one"
-                          onClick={() => {
-                            if (privacyClicked === false) {
-                              setprivacyClicked(true);
-                            } else {
-                              setprivacyClicked(false);
-                            }
-                          }}
-                        >
-                          <p>{playlistDetails.playlist_privacy}</p>
-                          <KeyboardArrowDownIcon
-                            fontSize="medium"
-                            style={
-                              playlistDetails.owner_email === Email
-                                ? { color: "white" }
-                                : { display: "none" }
-                            }
-                          />
-                        </div>
-                        <div
-                          className={
-                            theme
-                              ? "choose-privacy2"
-                              : "choose-privacy2 light-mode text-light-mode"
-                          }
-                          ref={window.innerWidth <= 1290 ? privacyRef : null}
-                          style={
-                            privacyClicked === true
-                              ? { display: "block" }
-                              : { display: "none" }
-                          }
-                        >
-                          <div
-                            className={
-                              theme
-                                ? "first-privacy"
-                                : "first-privacy feature-light text-light-mode"
-                            }
-                            onClick={() => {
-                              setprivacyClicked(false);
-                              setPrivacy("Public");
-                              setTimeout(() => {
-                                window.location.reload();
-                              }, 200);
-                            }}
-                          >
-                            <PublicOutlinedIcon
-                              fontSize="medium"
-                              style={{ color: theme ? "white" : "black" }}
-                            />
-                            <div className="right-privacy">
-                              <p>Public</p>
-                              <p className={theme ? "" : "text-light-mode2"}>
-                                Anyone can view
-                              </p>
-                            </div>
-                          </div>
-                          <div
-                            className={
-                              theme
-                                ? "second-privacy"
-                                : "second-privacy feature-light text-light-mode"
-                            }
-                            onClick={() => {
-                              setprivacyClicked(false);
-                              setPrivacy("Private");
-                              setTimeout(() => {
-                                window.location.reload();
-                              }, 200);
-                            }}
-                          >
-                            <LockOutlinedIcon
-                              fontSize="medium"
-                              style={{ color: theme ? "white" : "black" }}
-                            />
-                            <div className="right-privacy">
-                              <p>Private</p>
-                              <p className={theme ? "" : "text-light-mode2"}>
-                                Only you can view
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                        {playlistDetails?.[0]?.owner?.[0]?.username || ""}
+
+                      </p>
 
                       <p className="like-total-videos">
-                        {playlistsVideos.length} videos
+                        {playlistsVideos?.length} videos
                       </p>
-                    </div>
-
-                    <div className="playlist-btns">
-                      {isSaved === false ? (
-                        <Tooltip
-                          TransitionComponent={Zoom}
-                          title="Add to Library"
-                          placement="bottom"
-                        >
-                          <PlaylistAddOutlinedIcon
-                            className="savethis-playlist"
-                            fontSize="medium"
-                            style={
-                              playlistDetails.owner_email === Email
-                                ? { display: "none" }
-                                : { display: "block", color: "white" }
-                            }
-                            onClick={() => {
-                              if (token) {
-                                SaveOtherPlaylist();
-                              } else {
-                                setisbtnClicked(true);
-                                document.body.classList.add("bg-css");
-                              }
-                            }}
-                          />
-                        </Tooltip>
-                      ) : (
-                        <Tooltip
-                          TransitionComponent={Zoom}
-                          title="Add to Library"
-                          placement="bottom"
-                        >
-                          <PlaylistAddCheckOutlinedIcon
-                            className="savethis-playlist"
-                            fontSize="medium"
-                            style={
-                              playlistDetails.owner_email === Email
-                                ? { display: "none" }
-                                : { display: "block", color: "white" }
-                            }
-                            onClick={() => {
-                              if (token) {
-                                SaveOtherPlaylist();
-                              } else {
-                                setisbtnClicked(true);
-                                document.body.classList.add("bg-css");
-                              }
-                            }}
-                          />
-                        </Tooltip>
-                      )}
-                      <Tooltip
-                        TransitionComponent={Zoom}
-                        title="Share"
-                        placement="bottom"
-                      >
-                        <ReplyOutlinedIcon
-                          className="share-playlist"
-                          fontSize="medium"
-                          style={{ color: "white" }}
-                          onClick={handleCopyLink}
-                        />
-                      </Tooltip>
-                      <Tooltip
-                        TransitionComponent={Zoom}
-                        title="Delete"
-                        placement="bottom"
-                      >
-                        <DeleteIcon
-                          className="delete-playlist"
-                          fontSize="medium"
-                          style={
-                            playlistDetails.owner_email === Email
-                              ? { color: "white" }
-                              : { display: "none" }
-                          }
-                          onClick={() => {
-                            setDeleteClicked(true);
-                            document.body.classList.add("bg-css");
-                          }}
-                        />
-                      </Tooltip>
                     </div>
                   </div>
                 </div>
@@ -995,12 +604,9 @@ function Playlists() {
                   className="playvideo-btn"
                   onClick={() => {
                     if (token) {
-                      updateViews(playlistsVideos[0].videoID);
-                      setTimeout(() => {
-                        navigate(`/video/${playlistsVideos[0].videoID}`);
-                      }, 400);
+                      navigate(`/video/${playlistsVideos[0]._id}`);
                     } else {
-                      navigate(`/video/${playlistsVideos[0].videoID}`);
+                      navigate(`/video/${playlistsVideos[0]._id}`);
                     }
                   }}
                 >
@@ -1019,8 +625,8 @@ function Playlists() {
                   loading === true ? { display: "block" } : { display: "none" }
                 }
               >
-                {playlistsVideos.length > 0
-                  ? playlistsVideos.map((element, index) => {
+                {playlistsVideos?.length > 0
+                  ? playlistsVideos?.map((element, index) => {
                       return (
                         <div
                           className={
@@ -1031,9 +637,7 @@ function Playlists() {
                           key={index}
                           style={{
                             display:
-                              element.videoprivacy === "Public"
-                                ? "flex"
-                                : "none",
+                              element.isPublished === true ? "flex" : "none",
                           }}
                         >
                           <div className="liked-videos-all-data">
@@ -1081,8 +685,8 @@ function Playlists() {
                   : { visibility: "visible", display: "block" }
               }
             >
-              {playlistsVideos.length > 0
-                ? playlistsVideos.map((element, index) => {
+              {playlistsVideos?.length > 0
+                ? playlistsVideos?.map((element, index) => {
                     return (
                       <div
                         className={
@@ -1093,7 +697,7 @@ function Playlists() {
                         key={index}
                         style={{
                           display:
-                            element.videoprivacy === "Public" ? "flex" : "none",
+                            element.isPublished === true ? "flex" : "none",
                         }}
                       >
                         <p style={{ color: "#aaa" }}>{index + 1}</p>
@@ -1101,17 +705,14 @@ function Playlists() {
                           className="liked-videos-all-data playlistvideos"
                           onClick={() => {
                             if (token) {
-                              updateViews(element.videoID);
-                              setTimeout(() => {
-                                navigate(`/video/${element.videoID}`);
-                              }, 400);
+                              navigate(`/video/${element._id}`);
                             } else {
-                              navigate(`/video/${element.videoID}`);
+                              navigate(`/video/${element._id}`);
                             }
                           }}
                         >
                           <img
-                            src={element.thumbnail}
+                            src={element.thumbnail?.url}
                             alt="first-like-thumbnail"
                             loading="lazy"
                           />
@@ -1122,24 +723,51 @@ function Playlists() {
                                 : "durationn3 playlist-duration text-dark-mode"
                             }
                           >
-                            {Math.floor(element.videolength / 60) +
+                            {Math.floor(element.duration / 60) +
                               ":" +
-                              (Math.round(element.videolength % 60) < 10
-                                ? "0" + Math.round(element.videolength % 60)
-                                : Math.round(element.videolength % 60))}
+                              (Math.round(element.duration % 60) < 10
+                                ? "0" + Math.round(element.duration % 60)
+                                : Math.round(element.duration % 60))}
                           </p>
                           <div className="its-content playlist-contentt">
                             {window.innerWidth <= 1000 ? (
                               <p>
-                                {element.title.length <= 50
+                                {element.title?.length <= 50
                                   ? element.title
-                                  : `${element.title.slice(0, 50)}..`}
+                                  : `${element.title?.slice(0, 50)}..`}
                               </p>
                             ) : (
                               <p>{element.title}</p>
                             )}
 
-                            <p>{element.video_uploader}</p>
+                            <div
+                              className={
+                                theme
+                                  ? "thisvide-oneliner-1"
+                                  : "thisvide-oneliner-1 text-light-mode2"
+                              }
+                            >
+                              <p>{element?.owner?.username}</p>
+
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="Verified"
+                                placement="right"
+                              >
+                                <CheckCircleIcon
+                                  fontSize="100px"
+                                  style={{
+                                    color: "rgb(138, 138, 138)",
+                                    marginLeft: "4px",
+                                  }}
+                                />
+                              </Tooltip>
+                            </div>
+
+                            <p className="liked-views ">
+                              {element?.views} views &#183;{" "}
+                              {formatDate(element?.createdAt)}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -1158,6 +786,6 @@ function Playlists() {
       </div>
     </>
   );
-}
+};
 
 export default Playlists;

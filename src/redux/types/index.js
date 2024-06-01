@@ -27,6 +27,7 @@ export const GET_USER_WATCH_HISTORY = "GET_USER_WATCH_HISTORY";
 
 //dashboard
 export const GET_CHANNEL_ALL_VIDEOS = "GET_CHANNEL_ALL_VIDEOS";
+export const GET_CHANNEL_VIDEOS_BY_ID = "GET_CHANNEL_VIDEOS_BY_ID";
 
 // comment
 export const GET_USER_ALL_COMMENT = "GET_USER_ALL_COMMENT";
@@ -37,5 +38,15 @@ export const CREATE_COMMENT = "CREATE_COMMENT";
 // subscribtion
 export const SUBSCRIBE_TOGGLE = "SUBSCRIBE_TOGGLE";
 
-// search 
+// search
 export const SEARCH_VIDEO = "SEARCH_VIDEO";
+
+// src/redux/types.js
+export const GET_USER_ALL_PLAYLIST = "GET_USER_ALL_PLAYLIST";
+export const CREATE_PLAYLIST = "CREATE_PLAYLIST";
+export const GET_PLAYLIST_BY_ID = "GET_PLAYLIST_BY_ID";
+export const DELETE_PLAYLIST = "DELETE_PLAYLIST";
+export const UPDATE_PLAYLIST = "UPDATE_PLAYLIST";
+export const REMOVE_VIDEO_FROM_PLAYLIST = "REMOVE_VIDEO_FROM_PLAYLIST";
+export const ADD_VIDEO_TO_PLAYLIST = "ADD_VIDEO_TO_PLAYLIST";
+
