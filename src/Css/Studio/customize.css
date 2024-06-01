@@ -86,6 +86,11 @@
   color: #3eaffe !important;
 }
 
+.branding-txt1,
+.playlist-txt1 {
+  color: #3eaffe !important;
+}
+
 .branding-txt1::before {
   content: "";
   position: absolute;
@@ -104,6 +109,18 @@
   position: absolute;
   bottom: 0px;
   left: 137px;
+  height: 4px;
+  width: 72px;
+  background-color: #3eaffe;
+  border-radius: 50px;
+  transform: scaleX(1);
+  transition: all 0.2s linear;
+}
+.playlist-txt1::before {
+  content: "";
+  position: absolute;
+  bottom: 0px;
+  left: 237px;
   height: 4px;
   width: 72px;
   background-color: #3eaffe;
@@ -591,6 +608,9 @@
   }
   .basic-txt1::before {
     left: 116px !important;
+  }
+  .playlist-txt1s::before {
+    left: 136px !important;
   }
   .basic-info-section {
     padding-left: 25px;

@@ -1,6 +1,6 @@
 import errorImg from "../img/error.png";
 import "../Css/error.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Error() {
@@ -10,6 +10,14 @@ function Error() {
     return Dark ? JSON.parse(Dark) : true;
   });
 
+  useEffect(() => {
+    // Redirect to the home page after a short delay
+    const timer = setTimeout(() => {
+      navigate("/");
+    }, 1000); // Adjust the delay as needed
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
   return (
     <>
       <div className={theme ? "error-page" : "error-page light-mode"}>

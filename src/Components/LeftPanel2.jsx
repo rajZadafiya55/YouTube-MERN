@@ -4,6 +4,8 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import VideoLibraryOutlinedIcon from "@mui/icons-material/VideoLibraryOutlined";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import AutoFixHighOutlinedIcon from "@mui/icons-material/AutoFixHighOutlined";
+import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
+import FeaturedPlayListIcon from "@mui/icons-material/FeaturedPlayList";
 import { useLocation, useNavigate } from "react-router-dom";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -64,6 +66,8 @@ const LeftPanel2 = () => {
       selected = "Content";
     } else if (currentUrl === "/studio/comments") {
       selected = "Comments";
+    } else if (currentUrl === "/studio/playlist") {
+      selected = "Playlist";
     }
 
     localStorage.setItem("Studio-Section", selected);
@@ -242,6 +246,28 @@ const LeftPanel2 = () => {
               style={{ color: "#A9A9A9" }}
             />
             <p>Customization</p>
+          </div>
+          <div
+            className={
+              StudioSection === "Playlist"
+                ? `${theme ? "studio-active" : "studio-active-light"} panel ${
+                    theme ? "" : "panel-light"
+                  }`
+                : `Playlist panel ${theme ? "" : "panel-light"}`
+            }
+            onClick={() => {
+              localStorage.setItem("Studio-Section", "Playlist");
+              navigate("/studio/playlist");
+            }}
+          >
+            <PlaylistAddIcon
+              className={
+                StudioSection === "Playlist" ? "studio-icon2" : "studio-icon"
+              }
+              fontSize="medium"
+              style={{ color: "#A9A9A9" }}
+            />
+            <p>Playlist</p>
           </div>
         </div>
       </div>
@@ -433,6 +459,37 @@ const LeftPanel2 = () => {
               />
             </Tooltip>
           </div>
+          <div
+            className={
+              StudioSection === "PlayList"
+                ? `${theme ? "studio-active" : "studio-active-light"} panel ${
+                    theme ? "" : "panel-light"
+                  }`
+                : `playlist panel ${theme ? "" : "panel-light"}`
+            }
+            onClick={() => {
+              localStorage.setItem("Studio-Section", "PlayList");
+              navigate("/studio/playList");
+            }}
+          >
+            <Tooltip
+              TransitionComponent={Zoom}
+              title="PlayList"
+              placement="bottom"
+            >
+              <PlaylistAddIcon
+                className={
+                  StudioSection === "PlayList" ? "studio-icon2" : "studio-icon"
+                }
+                fontSize="medium"
+                style={{
+                  color: "#A9A9A9",
+                  paddingTop: "16px",
+                  paddingBottom: "16px",
+                }}
+              />
+            </Tooltip>
+          </div>
         </div>
       </div>
 
@@ -533,6 +590,31 @@ const LeftPanel2 = () => {
             <MdOutlineAutoFixHigh
               className={
                 StudioSection === "Customization"
+                  ? "studio-icon3"
+                  : "studio-icon-new"
+              }
+              fontSize="26px"
+              style={{
+                color: "#A9A9A9",
+              }}
+            />
+          </Tooltip>
+        </div>
+        <div
+          className="hori-customize"
+          onClick={() => {
+            localStorage.setItem("Studio-Section", "PlayList");
+            navigate("/studio/playList");
+          }}
+        >
+          <Tooltip
+            TransitionComponent={Zoom}
+            title="PlayList"
+            placement="bottom"
+          >
+            <FeaturedPlayListIcon
+              className={
+                StudioSection === "PlayList"
                   ? "studio-icon3"
                   : "studio-icon-new"
               }
