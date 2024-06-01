@@ -53,7 +53,6 @@ import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import Upload from "../../img/upload.png";
 import axios from "axios";
 
-<<<<<<< HEAD
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -62,8 +61,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { ValidatorForm } from "react-material-ui-form-validator";
 import { Grid, TextField } from "@mui/material";
 
-=======
->>>>>>> 7cb5fb74cf5bcc3946f42f326c235a4355b22c36
 const Content = () => {
   // ===============================================================
 
