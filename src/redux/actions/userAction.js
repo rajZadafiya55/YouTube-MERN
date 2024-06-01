@@ -3,6 +3,7 @@ import axios from "axios";
 import {
   CHANGE_PASSWORD,
   GET_USER_CHANNEL_PROFILE,
+  GET_USER_WATCH_HISTORY,
   NEW_REGISTRATION,
   USER_LOGIN,
 } from "../types";
@@ -128,6 +129,25 @@ export const getUserChannelProfile = (id) => {
       .then(async (res) => {
         await dispatch(getChannelProfile(res.data.data));
         console.log("channel data ", res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+};
+
+const getUserHistory = (histroy) => ({
+  type: GET_USER_WATCH_HISTORY,
+  payload: histroy,
+});
+
+export const getUserWatchHistory = () => {
+  return (dispatch) => {
+    axios
+      .get(`${APIHttp}users/histroy`, Header)
+      .then(async (res) => {
+        await dispatch(getUserHistory(res.data.data));
+        console.log("histroy data ", res.data.data);
       })
       .catch((err) => {
         console.log(err);

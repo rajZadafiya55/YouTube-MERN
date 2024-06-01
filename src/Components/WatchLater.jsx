@@ -6,12 +6,24 @@ import "../Css/likevideos.css";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getUserWatchHistory } from "../redux/actions/userAction";
+import { username } from "../constant/Api";
+import { Tooltip } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import Zoom from "@mui/material/Zoom";
 
 function WatchLater() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const backendURL = "http://localhost:3000";
+
+  const watchHistory = useSelector(
+    (state) => state.user.watchHistory.watchHistory
+  );
+  console.log("watcHistory", watchHistory);
+
   const [email, setEmail] = useState();
-  const [name, setName] = useState();
+  const [name, setName] = useState(username);
   const [menuClicked, setMenuClicked] = useState(() => {
     const menu = localStorage.getItem("menuClicked");
     return menu ? JSON.parse(menu) : false;
@@ -35,7 +47,7 @@ function WatchLater() {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 4000);
+    }, 1200);
   }, []);
 
   useEffect(() => {
@@ -85,36 +97,42 @@ function WatchLater() {
   }, [menuClicked]);
 
   useEffect(() => {
-    const getWatchLater = async () => {
-      try {
-        if (email !== undefined) {
-          const response = await fetch(`${backendURL}/getwatchlater/${email}`);
-          const savedData = await response.json();
-          setWatchLater(savedData);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
+    dispatch(getUserWatchHistory());
+  }, []);
 
-    getWatchLater();
-  }, [email]);
+  useEffect(() => {
+    setWatchLater(watchHistory);
+  }, [watchHistory]);
 
-  const updateViews = async (id) => {
-    try {
-      const response = await fetch(`${backendURL}/updateview/${id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      await response.json();
-    } catch (error) {
-      // console.log(error.message);
+  console.log("watch", watchlater);
+
+  const formatDate = (createdAt) => {
+    const currentDate = new Date();
+    const createdDate = new Date(createdAt);
+    const timeDifference = currentDate - createdDate;
+    const seconds = Math.floor(timeDifference / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const weeks = Math.floor(days / 7);
+    const months = Math.floor(days / 30);
+
+    if (months > 0) {
+      return `${months} month${months > 1 ? "s" : ""} ago`;
+    } else if (weeks > 0) {
+      return `${weeks} week${weeks > 1 ? "s" : ""} ago`;
+    } else if (days > 0) {
+      return `${days} day${days > 1 ? "s" : ""} ago`;
+    } else if (hours > 0) {
+      return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    } else if (minutes > 0) {
+      return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    } else {
+      return `${seconds} second${seconds > 1 ? "s" : ""} ago`;
     }
   };
 
-  if (watchlater.savedData === "NO DATA") {
+  if (watchlater?.length == 0 || watchlater?.length < 0) {
     return (
       <>
         <div className="searched-content">
@@ -136,7 +154,7 @@ function WatchLater() {
             : "liked-video-data light-mode text-light-mode"
         }
       >
-        {watchlater.length > 0 ? (
+        {watchlater?.length > 0 ? (
           <div
             className="like-video-sections"
             style={menuClicked === false ? { left: "80px" } : { left: "255px" }}
@@ -146,7 +164,7 @@ function WatchLater() {
                 theme ? "like-left-section" : "like-left-section-light"
               }
               style={{
-                backgroundImage: `url(${watchlater[0]?.thumbnailURL})`,
+                backgroundImage: `url(${watchlater[0]?.thumbnail?.url})`,
               }}
             >
               <div className="page-cover">
@@ -155,12 +173,11 @@ function WatchLater() {
                     className="firstvideo-thumbnail"
                     onClick={() => {
                       if (token) {
-                        updateViews(watchlater[0].savedVideoID);
                         setTimeout(() => {
-                          navigate(`/video/${watchlater[0].savedVideoID}`);
+                          navigate(`/video/${watchlater[0]._id}`);
                         }, 400);
                       } else {
-                        navigate(`/video/${watchlater[0].savedVideoID}`);
+                        navigate(`/video/${watchlater[0]._id}`);
                       }
                     }}
                   >
@@ -186,7 +203,7 @@ function WatchLater() {
                       </div>
                     </SkeletonTheme>
                     <img
-                      src={watchlater[0].thumbnailURL}
+                      src={watchlater[0].thumbnail?.url}
                       alt="first-like-thumbnail"
                       className="first-thumbnail"
                       loading="lazy"
@@ -209,7 +226,7 @@ function WatchLater() {
                   <div className="last-like2">
                     <p className="like-username">{name}</p>
                     <p className="like-total-videos">
-                      {watchlater.length} videos
+                      {watchlater?.length} videos
                     </p>
                   </div>
                 </div>
@@ -217,12 +234,11 @@ function WatchLater() {
                   className="playvideo-btn"
                   onClick={() => {
                     if (token) {
-                      updateViews(watchlater[0].savedVideoID);
                       setTimeout(() => {
-                        navigate(`/video/${watchlater[0].savedVideoID}`);
+                        navigate(`/video/${watchlater[0]._id}`);
                       }, 400);
                     } else {
-                      navigate(`/video/${watchlater[0].savedVideoID}`);
+                      navigate(`/video/${watchlater[0]._id}`);
                     }
                   }}
                 >
@@ -241,8 +257,8 @@ function WatchLater() {
                   loading === true ? { display: "block" } : { display: "none" }
                 }
               >
-                {watchlater.length > 0
-                  ? watchlater.map((element, index) => {
+                {watchlater?.length > 0
+                  ? watchlater?.map((element, index) => {
                       return (
                         <div
                           className={
@@ -253,9 +269,7 @@ function WatchLater() {
                           key={index}
                           style={{
                             display:
-                              element.videoprivacy === "Public"
-                                ? "flex"
-                                : "none",
+                              element.isPublished === true ? "flex" : "none",
                           }}
                         >
                           <div className="liked-videos-all-data">
@@ -303,8 +317,8 @@ function WatchLater() {
                   : { visibility: "visible", display: "block" }
               }
             >
-              {watchlater.length > 0
-                ? watchlater.map((element, index) => {
+              {watchlater?.length > 0
+                ? watchlater?.map((element, index) => {
                     return (
                       <div
                         className={
@@ -315,7 +329,7 @@ function WatchLater() {
                         key={index}
                         style={{
                           display:
-                            element.videoprivacy === "Public" ? "flex" : "none",
+                            element.isPublished === true ? "flex" : "none",
                         }}
                       >
                         <p style={{ color: "#aaa" }}>{index + 1}</p>
@@ -323,17 +337,16 @@ function WatchLater() {
                           className="liked-videos-all-data"
                           onClick={() => {
                             if (token) {
-                              updateViews(element.savedVideoID);
                               setTimeout(() => {
-                                navigate(`/video/${element.savedVideoID}`);
+                                navigate(`/video/${element._id}`);
                               }, 400);
                             } else {
-                              navigate(`/video/${element.savedVideoID}`);
+                              navigate(`/video/${element._id}`);
                             }
                           }}
                         >
                           <img
-                            src={element.thumbnailURL}
+                            src={element.thumbnail?.url}
                             alt="first-like-thumbnail"
                             loading="lazy"
                           />
@@ -342,24 +355,49 @@ function WatchLater() {
                               theme ? "durationn3" : "durationn3 text-dark-mode"
                             }
                           >
-                            {Math.floor(element.videoLength / 60) +
+                            {Math.floor(element.duration / 60) +
                               ":" +
-                              (Math.round(element.videoLength % 60) < 10
-                                ? "0" + Math.round(element.videoLength % 60)
-                                : Math.round(element.videoLength % 60))}
+                              (Math.round(element.duration % 60) < 10
+                                ? "0" + Math.round(element.duration % 60)
+                                : Math.round(element.duration % 60))}
                           </p>
                           <div className="its-content">
                             {window.innerWidth <= 1000 ? (
                               <p>
-                                {element.Title.length <= 50
-                                  ? element.Title
-                                  : `${element.Title.slice(0, 50)}..`}
+                                {element.title?.length <= 50
+                                  ? element.title
+                                  : `${element.title?.slice(0, 50)}..`}
                               </p>
                             ) : (
-                              <p>{element.Title}</p>
+                              <p>{element.title}</p>
                             )}
 
-                            <p>{element.uploader}</p>
+                            <div
+                              className={
+                                theme
+                                  ? "thisvide-oneliner-1"
+                                  : "thisvide-oneliner-1 text-light-mode2"
+                              }
+                            >
+                              <p>{element.owner?.username}</p>
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="Verified"
+                                placement="right"
+                              >
+                                <CheckCircleIcon
+                                  fontSize="100px"
+                                  style={{
+                                    color: "rgb(138, 138, 138)",
+                                    marginLeft: "4px",
+                                  }}
+                                />
+                              </Tooltip>
+                            </div>
+                            <p className="liked-views">
+                              {element.views} views &#183;{" "}
+                              {formatDate(element.createdAt)}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -386,7 +424,7 @@ function WatchLater() {
             : "liked-video-data-new light-mode text-light-mode"
         }
       >
-        {watchlater.length > 0 ? (
+        {watchlater?.length > 0 ? (
           <div
             className="like-video-sections2"
             style={menuClicked === false ? { left: "80px" } : { left: "255px" }}
@@ -396,7 +434,7 @@ function WatchLater() {
                 theme ? "like-left-section2" : "like-left-section2-light"
               }
               style={{
-                backgroundImage: `url(${watchlater[0]?.thumbnailURL})`,
+                backgroundImage: `url(${watchlater[0]?.thumbnail?.url})`,
               }}
             >
               <div className="page-cover2">
@@ -406,12 +444,11 @@ function WatchLater() {
                       className="firstvideo-thumbnail"
                       onClick={() => {
                         if (token) {
-                          updateViews(watchlater[0].savedVideoID);
                           setTimeout(() => {
-                            navigate(`/video/${watchlater[0].savedVideoID}`);
+                            navigate(`/video/${watchlater[0]._id}`);
                           }, 400);
                         } else {
-                          navigate(`/video/${watchlater[0].savedVideoID}`);
+                          navigate(`/video/${watchlater[0]._id}`);
                         }
                       }}
                     >
@@ -437,7 +474,7 @@ function WatchLater() {
                         </div>
                       </SkeletonTheme>
                       <img
-                        src={watchlater[0].thumbnailURL}
+                        src={watchlater[0].thumbnail?.url}
                         alt="first-like-thumbnail"
                         className="first-thumbnail2"
                         loading="lazy"
@@ -460,7 +497,7 @@ function WatchLater() {
                     <div className="last-like2">
                       <p className="like-username">{name}</p>
                       <p className="like-total-videos">
-                        {watchlater.length} videos
+                        {watchlater?.length} videos
                       </p>
                     </div>
                   </div>
@@ -469,12 +506,11 @@ function WatchLater() {
                   className="playvideo-btn"
                   onClick={() => {
                     if (token) {
-                      updateViews(watchlater[0].savedVideoID);
                       setTimeout(() => {
-                        navigate(`/video/${watchlater[0].savedVideoID}`);
+                        navigate(`/video/${watchlater[0]._id}`);
                       }, 400);
                     } else {
-                      navigate(`/video/${watchlater[0].savedVideoID}`);
+                      navigate(`/video/${watchlater[0]._id}`);
                     }
                   }}
                 >
@@ -493,8 +529,8 @@ function WatchLater() {
                   loading === true ? { display: "block" } : { display: "none" }
                 }
               >
-                {watchlater.length > 0
-                  ? watchlater.map((element, index) => {
+                {watchlater?.length > 0
+                  ? watchlater?.map((element, index) => {
                       return (
                         <div
                           className={
@@ -505,9 +541,7 @@ function WatchLater() {
                           key={index}
                           style={{
                             display:
-                              element.videoprivacy === "Public"
-                                ? "flex"
-                                : "none",
+                              element.isPublished === true ? "flex" : "none",
                           }}
                         >
                           <div className="liked-videos-all-data">
@@ -555,8 +589,8 @@ function WatchLater() {
                   : { visibility: "visible", display: "block" }
               }
             >
-              {watchlater.length > 0
-                ? watchlater.map((element, index) => {
+              {watchlater?.length > 0
+                ? watchlater?.map((element, index) => {
                     return (
                       <div
                         className={
@@ -567,7 +601,7 @@ function WatchLater() {
                         key={index}
                         style={{
                           display:
-                            element.videoprivacy === "Public" ? "flex" : "none",
+                            element.isPublished === true ? "flex" : "none",
                         }}
                       >
                         <p style={{ color: "#aaa" }}>{index + 1}</p>
@@ -575,17 +609,16 @@ function WatchLater() {
                           className="liked-videos-all-data2"
                           onClick={() => {
                             if (token) {
-                              updateViews(element.savedVideoID);
                               setTimeout(() => {
-                                navigate(`/video/${element.savedVideoID}`);
+                                navigate(`/video/${element._id}`);
                               }, 400);
                             } else {
-                              navigate(`/video/${element.savedVideoID}`);
+                              navigate(`/video/${element._id}`);
                             }
                           }}
                         >
                           <img
-                            src={element.thumbnailURL}
+                            src={element.thumbnail?.url}
                             alt="first-like-thumbnail"
                             loading="lazy"
                           />
@@ -594,11 +627,11 @@ function WatchLater() {
                               theme ? "durationn3" : "durationn3 text-dark-mode"
                             }
                           >
-                            {Math.floor(element.videoLength / 60) +
+                            {Math.floor(element.duration / 60) +
                               ":" +
-                              (Math.round(element.videoLength % 60) < 10
-                                ? "0" + Math.round(element.videoLength % 60)
-                                : Math.round(element.videoLength % 60))}
+                              (Math.round(element.duration % 60) < 10
+                                ? "0" + Math.round(element.duration % 60)
+                                : Math.round(element.duration % 60))}
                           </p>
                           <div className="its-content2">
                             {window.innerWidth <= 1000 ? (
@@ -608,10 +641,35 @@ function WatchLater() {
                                   : `${element.Title.slice(0, 50)}..`}
                               </p>
                             ) : (
-                              <p>{element.Title}</p>
+                              <p>{element.title}</p>
                             )}
 
-                            <p>{element.uploader}</p>
+                            <div
+                              className={
+                                theme
+                                  ? "thisvide-oneliner-1"
+                                  : "thisvide-oneliner-1 text-light-mode2"
+                              }
+                            >
+                              <p>{element.owner?.username}</p>
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="Verified"
+                                placement="right"
+                              >
+                                <CheckCircleIcon
+                                  fontSize="100px"
+                                  style={{
+                                    color: "rgb(138, 138, 138)",
+                                    marginLeft: "4px",
+                                  }}
+                                />
+                              </Tooltip>
+                            </div>
+                            <p className="liked-views">
+                              {element.views} views &#183;{" "}
+                              {formatDate(element.createdAt)}
+                            </p>
                           </div>
                         </div>
                       </div>

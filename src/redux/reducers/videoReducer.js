@@ -4,12 +4,16 @@ import {
   DELETE_VIDEO,
   GET_ALL_VIDEOS,
   GET_VIDEO_BY_ID,
+  SEARCH_VIDEO,
+  TOGGLE_WATCH_LATER,
   UPDATE_VIDEO,
 } from "../types";
 
 export const initialState = {
   videosDetails: [], //for store all video data
   selectedVideo: null, //for store single seleceted video data
+  isWatchLater: null,
+  searchTerm: "",
 };
 
 const videoReducer = (state = initialState, action) => {
@@ -46,6 +50,17 @@ const videoReducer = (state = initialState, action) => {
         selectedVideo: action.payload,
       };
 
+    case TOGGLE_WATCH_LATER:
+      return {
+        ...state,
+        isWatchLater: action.payload,
+      };
+
+    case SEARCH_VIDEO:
+      return {
+        ...state,
+        searchTerm: action.payload,
+      };
     default:
       return state;
   }

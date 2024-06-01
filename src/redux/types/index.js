@@ -11,6 +11,7 @@ export const GET_VIDEO_BY_ID = "GET_VIDEO_BY_ID";
 export const ADD_VIDEOS = "ADD_VIDEOS";
 export const DELETE_VIDEO = "DELETE_VIDEO";
 export const UPDATE_VIDEO = "UPDATE_VIDEO";
+export const TOGGLE_WATCH_LATER = "TOGGLE_WATCH_LATER";
 
 //Like
 export const GET_LIKED_VIDEOS = "GET_LIKED_VIDEOS";
@@ -22,6 +23,7 @@ export const NEW_REGISTRATION = "NEW_REGISTRATION";
 export const USER_LOGIN = "USER_LOGIN";
 export const CHANGE_PASSWORD = "CHANGE_PASSWORD";
 export const GET_USER_CHANNEL_PROFILE = "GET_USER_CHANNEL_PROFILE";
+export const GET_USER_WATCH_HISTORY = "GET_USER_WATCH_HISTORY";
 
 //dashboard
 export const GET_CHANNEL_ALL_VIDEOS = "GET_CHANNEL_ALL_VIDEOS";
@@ -34,3 +36,6 @@ export const CREATE_COMMENT = "CREATE_COMMENT";
 
 // subscribtion
 export const SUBSCRIBE_TOGGLE = "SUBSCRIBE_TOGGLE";
+
+// search 
+export const SEARCH_VIDEO = "SEARCH_VIDEO";

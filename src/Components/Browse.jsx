@@ -7,16 +7,19 @@ import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import "../Css/theme.css";
 import { useNavigate } from "react-router-dom";
-import { APIHttp, showLoginToast } from "../constant/Api";
+import { showLoginToast } from "../constant/Api";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllVideos } from "../redux/actions/videoAction";
 
-function Browse() {
+const Browse = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const searchTerm = useSelector((state) => state.videos.searchTerm);
+
   const AllVideo = useSelector((state) => state.videos.videosDetails);
   const [videoDetails, setVideoDetails] = useState([]);
+  const [filteredVideos, setFilteredVideos] = useState([]);
 
   const [menuClicked, setMenuClicked] = useState(() => {
     const menu = localStorage.getItem("menuClicked");
@@ -69,40 +72,6 @@ function Browse() {
     "Fashion",
   ];
 
-  // useEffect(() => {
-  //   const getVideos = async () => {
-  //     try {
-  //       const response = await fetch("http://localhost:3000/getvideos");
-  //       const {
-  //         thumbnailURLs,
-  //         titles,
-  //         Uploader,
-  //         Profile,
-  //         Duration,
-  //         videoID,
-  //         views,
-  //         uploadDate,
-  //         Visibility,
-  //         videoData,
-  //       } = await response.json();
-  //       setThumbnails(thumbnailURLs);
-  //       setTitles(titles);
-  //       setUploader(Uploader);
-  //       setProfilePic(Profile);
-  //       setDuration(Duration);
-  //       setVideoID(videoID);
-  //       setVideoViews(views);
-  //       setPublishDate(uploadDate);
-  //       setVisibility(Visibility);
-  //       setVideoData(videoData);
-  //     } catch (error) {
-  //       // console.log(error.message);
-  //     }
-  //   };
-
-  //   getVideos();
-  // }, []);
-
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
@@ -125,7 +94,20 @@ function Browse() {
     setVideoDetails(AllVideo);
   }, [AllVideo]);
 
-  console.log("videoDetails", videoDetails);
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = videoDetails.filter(
+        (video) =>
+          video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          video.owner[0].username
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+      );
+      setFilteredVideos(filtered);
+    } else {
+      setFilteredVideos(videoDetails);
+    }
+  }, [searchTerm, videoDetails]);
 
   return (
     <>
@@ -274,8 +256,8 @@ function Browse() {
                     }
               }
             >
-              {videoDetails && videoDetails.length > 0 ? (
-                videoDetails.map((element, index) => {
+              {filteredVideos && filteredVideos.length > 0 ? (
+                filteredVideos.map((element, index) => {
                   const {
                     thumbnail,
                     title,
@@ -426,6 +408,6 @@ function Browse() {
       </div>
     </>
   );
-}
+};
 
 export default Browse;

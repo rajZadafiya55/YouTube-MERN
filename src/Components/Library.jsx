@@ -2,50 +2,34 @@ import WatchLaterOutlinedIcon from "@mui/icons-material/WatchLaterOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import jwtDecode from "jwt-decode";
 import nothing from "../img/nothing.png";
-import PlaylistPlayOutlinedIcon from "@mui/icons-material/PlaylistPlayOutlined";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import { useState, useEffect } from "react";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
-import deleteIMG from "../img/delete.jpg";
 import "../Css/library.css";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getUserWatchHistory } from "../redux/actions/userAction";
+import { getAllLikedVideos } from "../redux/actions/likeAction";
 
-function generateRandomColors(count) {
-  const transparency = 0.65; // Adjust transparency as needed (0 to 1)
-  const colors = [];
-
-  for (let i = 0; i < count; i++) {
-    const r = Math.floor(Math.random() * 256);
-    const g = Math.floor(Math.random() * 256);
-    const b = Math.floor(Math.random() * 256);
-    colors.push(`rgba(${r}, ${g}, ${b}, ${transparency})`);
-  }
-
-  return colors;
-}
-
-function Library() {
+const Library = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const backendURL = "http://localhost:3000";
+  const watchHistory = useSelector(
+    (state) => state.user.watchHistory.watchHistory
+  );
+  const likeVideos = useSelector((state) => state.like.videosDetails);
+
   const [watchlater, setWatchLater] = useState([]);
-  const [PlaylistData, setPlaylistData] = useState([]);
-  const [playlistColors, setPlaylistColors] = useState([]);
-  const [channelID, setChannelID] = useState();
-  const [videolike, setLikedVideos] = useState([]);
-  const [email, setEmail] = useState();
-  const token = localStorage.getItem("userToken");
+  const [videolike, setVideolike] = useState([]);
   const [loading, setLoading] = useState(true);
   const [LibraryLoading, setLibraryLoading] = useState(true);
   const [menuClicked, setMenuClicked] = useState(() => {
     const menu = localStorage.getItem("menuClicked");
     return menu ? JSON.parse(menu) : false;
   });
-  const [savedPlaylist, setSavedPlaylist] = useState([]);
   document.title = "Library - YouTube";
   const [theme, setTheme] = useState(() => {
     const Dark = localStorage.getItem("Dark");
@@ -53,17 +37,8 @@ function Library() {
   });
 
   useEffect(() => {
-    setEmail(jwtDecode(token).email);
-  }, [token]);
-
-  useEffect(() => {
     localStorage.setItem("menuClicked", JSON.stringify(menuClicked));
   }, [menuClicked]);
-
-  useEffect(() => {
-    const colors = generateRandomColors(Math.max(1, PlaylistData.length));
-    setPlaylistColors(colors);
-  }, [PlaylistData]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -76,89 +51,27 @@ function Library() {
   useEffect(() => {
     setTimeout(() => {
       setLibraryLoading(false);
-    }, 4200);
+    }, 1200);
+  }, []);
+
+  // get watch later
+  useEffect(() => {
+    dispatch(getUserWatchHistory());
   }, []);
 
   useEffect(() => {
-    const getPlaylistData = async () => {
-      try {
-        if (email !== undefined) {
-          const response = await fetch(
-            `${backendURL}/getplaylistdata/${email}`
-          );
-          const playlistData = await response.json();
-          setPlaylistData(playlistData);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-    getPlaylistData();
-  }, [email]);
+    setWatchLater(watchHistory);
+  }, [watchHistory]);
+
+  // get video like
+  useEffect(() => {
+    dispatch(getAllLikedVideos());
+  }, []);
 
   useEffect(() => {
-    const getWatchLater = async () => {
-      try {
-        if (email !== undefined) {
-          const response = await fetch(`${backendURL}/getwatchlater/${email}`);
-          const savedData = await response.json();
-          setWatchLater(savedData);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-
-    getWatchLater();
-  }, [email]);
-
-  useEffect(() => {
-    const getLikeVideos = async () => {
-      try {
-        const response = await fetch(`${backendURL}/getlikevideos/${email}`);
-        const result = await response.json();
-        setLikedVideos(result);
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-
-    getLikeVideos();
-  }, [email]);
-
-  useEffect(() => {
-    const getChannelID = async () => {
-      try {
-        if (email !== undefined) {
-          const response = await fetch(`${backendURL}/getchannelid/${email}`);
-          const { channelID } = await response.json();
-          setChannelID(channelID);
-        }
-      } catch (error) {
-        // console.log("Error fetching user data:", error.message);
-      }
-    };
-
-    getChannelID();
-  }, [email]);
-
-  useEffect(() => {
-    const GetSavedPlaylist = async () => {
-      try {
-        if (email !== undefined) {
-          const response = await fetch(
-            `${backendURL}/getsavedplaylist/${email}`
-          );
-          const matchingPlaylists = await response.json();
-          setSavedPlaylist(matchingPlaylists);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-
-    GetSavedPlaylist();
-  }, [email]);
+    setVideolike(likeVideos);
+  }, [likeVideos]);
+  console.log("videolike", videolike);
 
   useEffect(() => {
     const handleMenuButtonClick = () => {
@@ -203,27 +116,16 @@ function Library() {
   }, [theme]);
 
   const watchLaterArray =
-    watchlater && watchlater.length > 0 && watchlater.savedData !== "NO DATA"
+    watchlater && watchlater?.length > 0
       ? watchlater.slice(0, 6) // Get the first four elements if available
       : [];
 
-  const PlaylistArray =
-    PlaylistData &&
-    PlaylistData.length > 0 &&
-    PlaylistData !== "No playlists available..."
-      ? PlaylistData.slice(0, 6) // Get the first four elements if available
-      : [];
-
   const LikedVideosArray =
-    videolike && videolike.length > 0 && videolike !== "NO DATA"
-      ? videolike.slice(0, 6) // Get the first four elements if available
+    videolike && videolike?.length > 0
+      ? videolike?.slice(0, 6) // Get the first four elements if available
       : [];
 
-  if (
-    PlaylistData === "No playlists available..." &&
-    watchlater.savedData === "NO DATA" &&
-    videolike === "NO DATA"
-  ) {
+  if (watchlater?.length === 0 && videolike?.length === 0) {
     return (
       <>
         <div className="searched-content">
@@ -278,7 +180,7 @@ function Library() {
             </div>
             <div className="watchlater-library-videos">
               {watchLaterArray &&
-                watchLaterArray.map((element, index) => {
+                watchLaterArray?.map((element, index) => {
                   return (
                     <div className="thiswatchlater-videoss" key={index}>
                       <Skeleton
@@ -338,9 +240,9 @@ function Library() {
                 style={{ color: theme ? "white" : "black" }}
               />
               <p onClick={() => navigate("/watchlater")}>Watch later</p>
-              <p>{watchlater && watchlater.length}</p>
+              <p>{watchlater && watchlater?.length}</p>
             </div>
-            {watchLaterArray && watchLaterArray.length >= 6 ? (
+            {watchLaterArray && watchLaterArray?.length >= 6 ? (
               <p
                 className="see-all"
                 onClick={() => {
@@ -361,17 +263,17 @@ function Library() {
             }
           >
             {watchLaterArray &&
-              watchLaterArray.map((element, index) => {
+              watchLaterArray?.map((element, index) => {
                 return (
                   <div
                     className="thiswatchlater-videoss"
                     key={index}
                     onClick={() => {
-                      navigate("/video/${element.savedVideoID}");
+                      navigate(`/video/${element._id}`);
                     }}
                   >
                     <img
-                      src={element.thumbnailURL}
+                      src={element.thumbnail?.url}
                       alt="thumbnail"
                       className="thiswatch-thumbnail"
                     />
@@ -382,17 +284,17 @@ function Library() {
                           : "thislibrary-duration text-dark-mode"
                       }
                     >
-                      {Math.floor(element.videoLength / 60) +
+                      {Math.floor(element.duration / 60) +
                         ":" +
-                        (Math.round(element.videoLength % 60) < 10
-                          ? "0" + Math.round(element.videoLength % 60)
-                          : Math.round(element.videoLength % 60))}
+                        (Math.round(element.duration % 60) < 10
+                          ? "0" + Math.round(element.duration % 60)
+                          : Math.round(element.duration % 60))}
                     </p>
                     <div className="thislibrary-video-details">
                       <p>
-                        {element.Title && element.Title.length <= 46
-                          ? element.Title
-                          : `${element.Title.slice(0, 46)}..`}
+                        {element.title && element.title?.length <= 46
+                          ? element.title
+                          : `${element.title?.slice(0, 46)}..`}
                       </p>
                       <div className="thisvideo-extra-daataa">
                         <div
@@ -402,7 +304,7 @@ function Library() {
                               : "thisvide-oneliner-1 text-light-mode2"
                           }
                         >
-                          <p>{element.uploader}</p>
+                          <p>{element.owner?.username}</p>
                           <Tooltip
                             TransitionComponent={Zoom}
                             title="Verified"
@@ -427,7 +329,7 @@ function Library() {
                           >
                             {(() => {
                               const timeDifference =
-                                new Date() - new Date(element.uploaded_date);
+                                new Date() - new Date(element.createdAt);
                               const minutes = Math.floor(
                                 timeDifference / 60000
                               );
@@ -472,383 +374,6 @@ function Library() {
           className={theme ? "seperate" : "seperate-light"}
           style={
             watchlater && watchlater.savedData !== "NO DATA"
-              ? { display: "block" }
-              : { display: "none" }
-          }
-        />
-
-        {/* SKELETON PLAYLIST  */}
-        <SkeletonTheme
-          baseColor={theme ? "#353535" : "#aaaaaa"}
-          highlightColor={theme ? "#444" : "#b6b6b6"}
-        >
-          <div
-            className="playlists-library"
-            style={{
-              display: LibraryLoading ? "block" : "none",
-              marginBottom: "50px",
-            }}
-          >
-            <div className="topplaylist-section">
-              <Skeleton count={1} width={160} height={22} />
-            </div>
-            <div className="thischannel-playlists2">
-              {PlaylistArray &&
-                PlaylistArray !== "No playlists available..." &&
-                PlaylistArray.slice(
-                  0,
-                  Math.min(6 - savedPlaylist.length, 6)
-                ).map((element, index) => {
-                  return (
-                    <div className="created-all-playlistss2" key={index}>
-                      <Skeleton
-                        count={1}
-                        width={225}
-                        height={129}
-                        style={{ borderRadius: "8px" }}
-                      />
-
-                      <div
-                        className={
-                          theme
-                            ? "playlistt-details playlists-details2"
-                            : "playlistt-details playlists-details2 text-light-mode"
-                        }
-                        style={{ position: "relative", top: "12px" }}
-                      >
-                        <Skeleton count={1} width={220} height={22} />
-                        <div
-                          className="extra-playlists-data"
-                          style={{ position: "relative", top: "5px" }}
-                        >
-                          <Skeleton count={1} width={180} height={16} />
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              {savedPlaylist &&
-                savedPlaylist.length > 0 &&
-                savedPlaylist
-                  .slice(0, Math.min(6 - PlaylistArray.length, 6))
-                  .map((element, index) => {
-                    return (
-                      <div className="created-all-playlistss2" key={index}>
-                        <Skeleton
-                          count={1}
-                          width={225}
-                          height={129}
-                          style={{ borderRadius: "8px" }}
-                        />
-
-                        <div
-                          className={
-                            theme
-                              ? "playlistt-details playlists-details2"
-                              : "playlistt-details playlists-details2 text-light-mode"
-                          }
-                          style={{ position: "relative", top: "12px" }}
-                        >
-                          <Skeleton count={1} width={220} height={22} />
-                          <div
-                            className="extra-playlists-data"
-                            style={{ position: "relative", top: "5px" }}
-                          >
-                            <Skeleton count={1} width={180} height={16} />
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-            </div>
-          </div>
-        </SkeletonTheme>
-        <div
-          className="playlists-library"
-          style={{
-            display:
-              (!LibraryLoading &&
-                PlaylistData &&
-                PlaylistData !== "No playlists available...") ||
-              (savedPlaylist && savedPlaylist.length > 0)
-                ? "block"
-                : "none",
-            visibility: LibraryLoading ? "hidden" : "visible",
-          }}
-        >
-          <div className="topplaylist-section">
-            <div
-              className={
-                theme
-                  ? "playlistt-left"
-                  : "playlistt-left text-light-mode light-mode"
-              }
-            >
-              <PlaylistPlayOutlinedIcon
-                fontSize="medium"
-                style={{ color: theme ? "white" : "black" }}
-              />
-              <p>Playlists</p>
-              <p>{savedPlaylist.length + PlaylistData.length}</p>
-            </div>
-
-            {PlaylistArray.length + savedPlaylist.length >= 6 && (
-              <p
-                className="see-all"
-                onClick={() => {
-                  localStorage.setItem("Section", "Playlists");
-                  navigate(`/channel/${channelID}`);
-                }}
-              >
-                See all
-              </p>
-            )}
-          </div>
-          <div className="thischannel-playlists2">
-            {PlaylistArray &&
-              PlaylistArray !== "No playlists available..." &&
-              PlaylistArray.slice(0, Math.min(6 - savedPlaylist.length, 6)).map(
-                (element, index) => {
-                  const backgroundColor =
-                    playlistColors[index] || playlistColors[0];
-
-                  const thumbnailURL =
-                    element.playlist_videos &&
-                    element.playlist_videos.length > 0 &&
-                    element.playlist_videos[0].thumbnail
-                      ? element.playlist_videos[0].thumbnail
-                      : deleteIMG;
-
-                  return (
-                    <div className="created-all-playlistss2" key={index}>
-                      <div className="playlist-main-img">
-                        <img
-                          src={thumbnailURL}
-                          alt=""
-                          className="playlist-thumbnail"
-                          onClick={() => {
-                            navigate(
-                              `/video/${element.playlist_videos[0].videoID}`
-                            );
-                          }}
-                        />
-                      </div>
-
-                      <div
-                        className="playlist-element"
-                        style={{ backgroundColor }}
-                        onClick={() => {
-                          navigate(
-                            `/video/${element.playlist_videos[0].videoID}`
-                          );
-                        }}
-                      >
-                        <PlaylistPlayIcon
-                          fontSize="medium"
-                          style={{ color: "white" }}
-                        />
-                        <p>{element.playlist_videos.length} videos</p>
-                      </div>
-                      <div
-                        className={
-                          theme
-                            ? "playlistt-details playlists-details2"
-                            : "playlistt-details playlists-details2 text-light-mode"
-                        }
-                      >
-                        <p>{element.playlist_name}</p>
-                        <div className="extra-playlists-data">
-                          <p
-                            className={
-                              theme
-                                ? "playlist-ownner"
-                                : "playlist-ownner owner-light"
-                            }
-                          >
-                            <div
-                              className={
-                                theme
-                                  ? "thisvide-oneliner-1"
-                                  : "thisvide-oneliner-1 text-light-mode2"
-                              }
-                            >
-                              {element.playlist_owner}
-                              <Tooltip
-                                TransitionComponent={Zoom}
-                                title="Verified"
-                                placement="right"
-                              >
-                                <CheckCircleIcon
-                                  fontSize="100px"
-                                  style={{
-                                    color: "rgb(138, 138, 138)",
-                                    marginLeft: "4px",
-                                  }}
-                                />
-                              </Tooltip>
-                            </div>
-                          </p>
-
-                          <div
-                            className={
-                              theme
-                                ? "private-privacyy"
-                                : "private-privacyy-light"
-                            }
-                            style={
-                              element.playlist_privacy === "Private"
-                                ? { display: "flex" }
-                                : { display: "none" }
-                            }
-                          >
-                            <LockOutlinedIcon
-                              fontSize="small"
-                              style={{ color: theme ? "#aaa" : "black" }}
-                              className="privateone"
-                            />
-                            <p>Private</p>
-                          </div>
-                        </div>
-                        <p
-                          onClick={() => navigate(`/playlist/${element._id}`)}
-                          className={theme ? "view-playlist" : "view-playlist2"}
-                        >
-                          View full playlist
-                        </p>
-                      </div>
-                    </div>
-                  );
-                }
-              )}
-            {savedPlaylist &&
-              savedPlaylist.length > 0 &&
-              savedPlaylist
-                .slice(0, Math.min(6 - PlaylistArray.length, 6))
-                .map((element, index) => {
-                  const backgroundColor =
-                    playlistColors[index] || playlistColors[0];
-
-                  const thumbnailURL =
-                    element.playlist_videos &&
-                    element.playlist_videos.length > 0 &&
-                    element.playlist_videos[0].thumbnail
-                      ? element.playlist_videos[0].thumbnail
-                      : deleteIMG;
-
-                  return (
-                    <div
-                      className="created-all-playlistss2"
-                      key={index}
-                      style={
-                        element.owner_email !== email &&
-                        element.playlist_privacy === "Private"
-                          ? { display: "none" }
-                          : { display: "block" }
-                      }
-                    >
-                      <div className="playlist-main-img">
-                        <img
-                          src={thumbnailURL}
-                          alt=""
-                          className="playlist-thumbnail"
-                          onClick={() => {
-                            navigate(
-                              `/video/${element.playlist_videos[0].videoID}`
-                            );
-                          }}
-                        />
-                      </div>
-
-                      <div
-                        className="playlist-element"
-                        style={{ backgroundColor }}
-                        onClick={() => {
-                          navigate(
-                            `/video/${element.playlist_videos[0].videoID}`
-                          );
-                        }}
-                      >
-                        <PlaylistPlayIcon
-                          fontSize="medium"
-                          style={{ color: "white" }}
-                        />
-                        <p>{element.playlist_videos.length} videos</p>
-                      </div>
-                      <div
-                        className={
-                          theme
-                            ? "playlistt-details playlists-details2"
-                            : "playlistt-details playlists-details2 text-light-mode"
-                        }
-                      >
-                        <p>{element.playlist_name}</p>
-                        <div className="extra-playlists-data">
-                          <p
-                            className={
-                              theme
-                                ? "playlist-ownner"
-                                : "playlist-ownner owner-light"
-                            }
-                          >
-                            <div
-                              className={
-                                theme
-                                  ? "thisvide-oneliner-1"
-                                  : "thisvide-oneliner-1 text-light-mode2"
-                              }
-                            >
-                              {element.playlist_owner}
-                              <Tooltip
-                                TransitionComponent={Zoom}
-                                title="Verified"
-                                placement="right"
-                              >
-                                <CheckCircleIcon
-                                  fontSize="100px"
-                                  style={{
-                                    color: "rgb(138, 138, 138)",
-                                    marginLeft: "4px",
-                                  }}
-                                />
-                              </Tooltip>
-                            </div>
-                          </p>
-
-                          <div
-                            className={
-                              theme
-                                ? "private-privacyy"
-                                : "private-privacyy-light"
-                            }
-                            style={
-                              element.playlist_privacy === "Private"
-                                ? { display: "flex" }
-                                : { display: "none" }
-                            }
-                          >
-                            <LockOutlinedIcon
-                              fontSize="small"
-                              style={{ color: theme ? "#aaa" : "black" }}
-                            />
-                            <p>Private</p>
-                          </div>
-                        </div>
-                        <p
-                          onClick={() => navigate(`/playlist/${element._id}`)}
-                          className={theme ? "view-playlist" : "view-playlist2"}
-                        >
-                          View full playlist
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-          </div>
-        </div>
-        <hr
-          className={theme ? "seperate" : "seperate-light"}
-          style={
-            videolike && videolike !== "NO DATA"
               ? { display: "block" }
               : { display: "none" }
           }
@@ -923,9 +448,9 @@ function Library() {
                 style={{ color: theme ? "white" : "black" }}
               />
               <p onClick={() => navigate("/likedVideos")}>Liked videos</p>
-              <p>{videolike && videolike.length}</p>
+              <p>{videolike && videolike?.length}</p>
             </div>
-            {LikedVideosArray && LikedVideosArray.length >= 6 ? (
+            {LikedVideosArray && LikedVideosArray?.length >= 6 ? (
               <p
                 className="see-all"
                 onClick={() => {
@@ -940,17 +465,17 @@ function Library() {
           </div>
           <div className="watchlater-library-videos">
             {LikedVideosArray &&
-              LikedVideosArray.map((element, index) => {
+              LikedVideosArray?.map((element, index) => {
                 return (
                   <div
                     className="thiswatchlater-videoss"
                     key={index}
                     onClick={() => {
-                      navigate(`/video/${element.likedVideoID}`);
+                      navigate(`/video/${element.videos._id}`);
                     }}
                   >
                     <img
-                      src={element.thumbnailURL}
+                      src={element.videos.thumbnail?.url}
                       alt="thumbnail"
                       className="thiswatch-thumbnail"
                     />
@@ -961,11 +486,11 @@ function Library() {
                           : "thislibrary-duration text-dark-mode"
                       }
                     >
-                      {Math.floor(element.videoLength / 60) +
+                      {Math.floor(element.videos.duration / 60) +
                         ":" +
-                        (Math.round(element.videoLength % 60) < 10
-                          ? "0" + Math.round(element.videoLength % 60)
-                          : Math.round(element.videoLength % 60))}
+                        (Math.round(element.videos.duration % 60) < 10
+                          ? "0" + Math.round(element.videos.duration % 60)
+                          : Math.round(element.videos.duration % 60))}
                     </p>
                     <div
                       className={
@@ -975,9 +500,10 @@ function Library() {
                       }
                     >
                       <p>
-                        {element.Title && element.Title.length <= 46
-                          ? element.Title
-                          : `${element.Title.slice(0, 46)}..`}
+                        {element.videos.title &&
+                        element.videos.title?.length <= 46
+                          ? element.videos.title
+                          : `${element.videos.title?.slice(0, 46)}..`}
                       </p>
                       <div className="thisvideo-extra-daataa">
                         <div
@@ -987,7 +513,7 @@ function Library() {
                               : "thisvide-oneliner-1 text-light-mode2"
                           }
                         >
-                          <p>{element.uploader}</p>
+                          <p>{element.videos.owner?.username}</p>
                           <Tooltip
                             TransitionComponent={Zoom}
                             title="Verified"
@@ -1012,7 +538,7 @@ function Library() {
                           >
                             {(() => {
                               const timeDifference =
-                                new Date() - new Date(element.uploaded_date);
+                                new Date() - new Date(element.videos.createdAt);
                               const minutes = Math.floor(
                                 timeDifference / 60000
                               );
@@ -1055,6 +581,6 @@ function Library() {
       </div>
     </>
   );
-}
+};
 
 export default Library;

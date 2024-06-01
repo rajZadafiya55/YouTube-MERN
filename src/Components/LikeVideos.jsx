@@ -8,6 +8,8 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllLikedVideos } from "../redux/actions/likeAction";
+import { Tooltip, Zoom } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 function LikeVideos() {
   const dispatch = useDispatch();
@@ -362,7 +364,31 @@ function LikeVideos() {
                               <p>{element.videos.title}</p>
                             )}
 
-                            <p className="">{element.videos.owner.username}</p>
+                            <div
+                              className={
+                                theme
+                                  ? "thisvide-oneliner-1"
+                                  : "thisvide-oneliner-1 text-light-mode2"
+                              }
+                            >
+                              <p className="">
+                                {element.videos.owner.username}
+                              </p>
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="Verified"
+                                placement="right"
+                              >
+                                <CheckCircleIcon
+                                  fontSize="100px"
+                                  style={{
+                                    color: "rgb(138, 138, 138)",
+                                    marginLeft: "4px",
+                                  }}
+                                />
+                              </Tooltip>
+                            </div>
+
                             <p className="liked-views">
                               {element.videos.views} views &#183;{" "}
                               {formatDate(element.videos.createdAt)}
@@ -613,7 +639,30 @@ function LikeVideos() {
                               <p>{element.videos.title}</p>
                             )}
 
-                            <p className="">{element.videos.owner?.username}</p>
+                            <div
+                              className={
+                                theme
+                                  ? "thisvide-oneliner-1"
+                                  : "thisvide-oneliner-1 text-light-mode2"
+                              }
+                            >
+                              <p className="">
+                                {element.videos.owner.username}
+                              </p>
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="Verified"
+                                placement="right"
+                              >
+                                <CheckCircleIcon
+                                  fontSize="100px"
+                                  style={{
+                                    color: "rgb(138, 138, 138)",
+                                    marginLeft: "4px",
+                                  }}
+                                />
+                              </Tooltip>
+                            </div>
                             <p className="liked-views">
                               {element.videos.views} views &#183;{" "}
                               {formatDate(element.videos.createdAt)}

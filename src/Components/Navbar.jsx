@@ -11,7 +11,7 @@ import Logo2 from "../img/logo2.png";
 import { useEffect, useState } from "react";
 import Signup from "./Signup";
 import Signin from "./Signin";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import { FiSearch } from "react-icons/fi";
@@ -20,13 +20,14 @@ import { RxCross1 } from "react-icons/rx";
 import { AiOutlineVideoCameraAdd } from "react-icons/ai";
 import Uavatar from "../img/Uavatar.png";
 import { avatar, accessToken, showLoginToast } from "../constant/Api";
+import { useDispatch } from "react-redux";
+import { setSearch } from "../redux/actions/videoAction";
 
-function Navbar() {
+const Navbar = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = accessToken;
 
-  const { data } = useParams();
-  const [data2, setData] = useState(data);
   const [isbtnClicked, setisbtnClicked] = useState(false);
   const [isSwitch, setisSwitched] = useState(false);
   const [showPop, setShowPop] = useState(false);
@@ -42,18 +43,12 @@ function Navbar() {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 2500);
+    }, 1200);
   }, []);
 
   const handleSearch = (e) => {
     setSearchedData(e.target.value);
-    setData(e.target.value);
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter" && searchedData) {
-      navigate(`/results/${searchedData}`);
-    }
+    dispatch(setSearch(e.target.value));
   };
 
   return (
@@ -81,18 +76,15 @@ function Navbar() {
               type="text"
               placeholder="Type to search"
               id={theme ? "searchType" : "searchType-light-mode"}
-              value={data2 ? data2 : searchedData}
+              value={searchedData}
               onChange={handleSearch}
-              onKeyDown={handleKeyPress}
             />
             <IoIosSearch
               className={theme ? "search-icon" : "search-light-icon"}
               fontSize="28px"
               style={{ color: theme ? "rgb(160, 160, 160)" : "black" }}
-              onClick={() => {
-                if (searchedData) {
-                  navigate(`/results/${searchedData}`);
-                }
+              onClick={(e) => {
+                dispatch(setSearch(e.target.value));
               }}
             />
           </div>
@@ -293,9 +285,8 @@ function Navbar() {
             name="search-content"
             placeholder="Type to search..."
             className="extra-search"
-            value={data2 ? data2 : searchedData}
+            value={searchedData}
             onChange={handleSearch}
-            onKeyDown={handleKeyPress}
           />
           <RxCross1
             fontSize="26px"
@@ -307,6 +298,6 @@ function Navbar() {
       </div>
     </>
   );
-}
+};
 
 export default Navbar;

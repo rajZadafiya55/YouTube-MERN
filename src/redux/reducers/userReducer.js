@@ -1,12 +1,14 @@
 import {
   CHANGE_PASSWORD,
   GET_USER_CHANNEL_PROFILE,
+  GET_USER_WATCH_HISTORY,
   NEW_REGISTRATION,
   USER_LOGIN,
 } from "../types";
 
 export const initialState = {
   channelDetails: [], //for store all user data
+  watchHistory: [],
 };
 
 const userReducer = (state = initialState, action) => {
@@ -30,6 +32,12 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         channelDetails: action.payload,
+      };
+
+    case GET_USER_WATCH_HISTORY:
+      return {
+        ...state,
+        watchHistory: action.payload,
       };
 
     default:

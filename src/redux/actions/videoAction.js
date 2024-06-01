@@ -4,16 +4,20 @@ import {
   DELETE_VIDEO,
   GET_ALL_VIDEOS,
   GET_VIDEO_BY_ID,
+  SEARCH_VIDEO,
+  TOGGLE_WATCH_LATER,
   UPDATE_VIDEO,
 } from "../types";
 import {
   APIHttp,
   Header,
   VideoHeader,
+  commonNotify,
   showErrorToast,
   showToast,
 } from "../../constant/Api";
 import { getAllChannelVideos } from "./dashboardAction";
+import { getUserWatchHistory } from "./userAction";
 
 // Action creators
 const addVideo = () => ({ type: ADD_VIDEOS });
@@ -35,6 +39,11 @@ const getVideoById = (videos) => ({
 
 const updateVideo = () => ({
   type: UPDATE_VIDEO,
+});
+
+const getWatchlater = (isWatchLater) => ({
+  type: TOGGLE_WATCH_LATER,
+  payload: isWatchLater,
 });
 
 // Thunks
@@ -135,3 +144,32 @@ export const updateVideoData = (videoId, formData, navigate) => {
       });
   };
 };
+
+export const toggleWatchLater = (id, isWatchLater) => {
+  return async (dispatch) => {
+    try {
+      const res = await axios.patch(
+        `${APIHttp}videos/toggle/watchlater/${id}`,
+        { isWatchLater },
+        Header
+      );
+      const updatedWLStatus = res.data.data.videoStatus;
+      await dispatch(getWatchlater(updatedWLStatus));
+      dispatch(getUserWatchHistory())
+
+      if (updatedWLStatus) {
+        commonNotify("Video saved to Watch Later.!");
+      } else {
+        commonNotify("Video unsaved to Watch Later.!");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+};
+
+
+export const setSearch = (searchTerm) => ({
+  type: SEARCH_VIDEO,
+  payload: searchTerm,
+});
