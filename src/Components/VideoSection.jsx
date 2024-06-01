@@ -40,13 +40,14 @@ import {
   deleteCommentsDetails,
   getSelectedComment,
 } from "../redux/actions/commentAction";
-import { EmptyMessage, avatar, email } from "../constant/Api";
+import { APIHttp, EmptyMessage, Header, avatar, email } from "../constant/Api";
 import {
   getLikeCommentToggle,
   getLikeVideoToggle,
 } from "../redux/actions/likeAction";
 import { getSubscriptionToggle } from "../redux/actions/subscriptionAction";
 import { getUserWatchHistory } from "../redux/actions/userAction";
+import axios from "axios";
 
 const VideoSection = () => {
   const dispatch = useDispatch();
@@ -111,6 +112,19 @@ const VideoSection = () => {
 
   //Signup user Profile Pic
   const [userProfile, setUserProfile] = useState(avatar);
+
+  // auto incriment views =====================================
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await axios.patch(`${APIHttp}videos/views/${id}`);
+      } catch (error) {
+        console.error("=====> view error", error.message);
+      }
+    };
+
+    fetchData();
+  }, [id]);
 
   // USE EFFECTS
   useEffect(() => {
@@ -246,7 +260,6 @@ const VideoSection = () => {
       }
     }
   }, [videoData, watchHistory]);
-
 
   if (!videoData) {
     return (
@@ -619,7 +632,7 @@ const VideoSection = () => {
                     saveVideo(_id);
                   }}
                 >
-                  {isHistory === true  ? (
+                  {isHistory === true ? (
                     <BookmarkAddedIcon
                       fontSize="medium"
                       style={{ color: theme ? "white" : "black" }}
@@ -1071,7 +1084,7 @@ const VideoSection = () => {
                   : views >= 1e3
                   ? `${(views / 1e3).toFixed(1)}K`
                   : views}
-                {"\u00A0"} views
+                &nbsp; views
               </p>
               <p style={{ marginLeft: "10px" }}>
                 {(() => {
@@ -1617,7 +1630,7 @@ const VideoSection = () => {
                             : element.views >= 1e3
                             ? `${(element.views / 1e3).toFixed(1)}K`
                             : element.views}
-                          views
+                          &nbsp; views
                         </p>
                         <p
                           className="upload-time"
@@ -1746,7 +1759,7 @@ const VideoSection = () => {
                               : element.views >= 1e3
                               ? `${(element.views / 1e3).toFixed(1)}K`
                               : element.views}
-                            views
+                            &nbsp; views
                           </p>
                           <p
                             className="upload-time"
