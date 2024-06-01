@@ -19,8 +19,10 @@ import "../../Css/Studio/dashboard.css";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { APIHttp, Header } from "../../constant/Api";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [menu, setMenu] = useState(() => {
     const menu = localStorage.getItem("studioMenuClicked");
     return menu ? JSON.parse(menu) : false;
@@ -64,14 +66,6 @@ const Dashboard = () => {
   });
 
   if (isLoading) return <div>Loading...</div>;
-  if (error || !statsData) {
-    statsData = {
-      totalViews: 0,
-      totalLikes: 0,
-      totalVideos: 0,
-      totalSubscribers: 0,
-    };
-  }
 
   return (
     <div className="studio-dashboard-section">
@@ -114,56 +108,66 @@ const Dashboard = () => {
             </MainCard>
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
-            <MainCard contentSX={{ p: 2.25 }} sx={{ boxShadow: 3 }}>
-              <Stack spacing={0.5}>
-                <Typography variant="h6" color="text.secondary">
-                  Total Likes
-                </Typography>
-                <Grid container alignItems="center">
-                  <Grid item>
-                    <Typography variant="h4" color="inherit">
-                      {statsData?.totalLikes || 0}
-                    </Typography>
-                  </Grid>
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate("/likedVideos")}
+            >
+              <MainCard contentSX={{ p: 2.25 }} sx={{ boxShadow: 3 }}>
+                <Stack spacing={0.5}>
+                  <Typography variant="h6" color="text.secondary">
+                    Total Likes
+                  </Typography>
+                  <Grid container alignItems="center">
+                    <Grid item>
+                      <Typography variant="h4" color="inherit">
+                        {statsData?.totalLikes || 0}
+                      </Typography>
+                    </Grid>
 
-                  <Grid item>
-                    <Chip
-                      variant="combined"
-                      style={{ background: "#ff0000" }}
-                      sx={{ ml: 1.25, pl: 1, py: 2 }}
-                      size="small"
-                      avatar={<ThumbUpIcon style={{ color: "white" }} />}
-                    />
+                    <Grid item>
+                      <Chip
+                        variant="combined"
+                        style={{ background: "#ff0000" }}
+                        sx={{ ml: 1.25, pl: 1, py: 2 }}
+                        size="small"
+                        avatar={<ThumbUpIcon style={{ color: "white" }} />}
+                      />
+                    </Grid>
                   </Grid>
-                </Grid>
-              </Stack>
-            </MainCard>
+                </Stack>
+              </MainCard>
+            </div>
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
-            <MainCard contentSX={{ p: 2.25 }} sx={{ boxShadow: 3 }}>
-              <Stack spacing={0.5}>
-                <Typography variant="h6" color="text.secondary">
-                  Total Videos
-                </Typography>
-                <Grid container alignItems="center">
-                  <Grid item>
-                    <Typography variant="h4" color="inherit">
-                      {statsData?.totalVideos || 0}
-                    </Typography>
-                  </Grid>
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate("/studio/video")}
+            >
+              <MainCard contentSX={{ p: 2.25 }} sx={{ boxShadow: 3 }}>
+                <Stack spacing={0.5}>
+                  <Typography variant="h6" color="text.secondary">
+                    Total Videos
+                  </Typography>
+                  <Grid container alignItems="center">
+                    <Grid item>
+                      <Typography variant="h4" color="inherit">
+                        {statsData?.totalVideos || 0}
+                      </Typography>
+                    </Grid>
 
-                  <Grid item>
-                    <Chip
-                      variant="combined"
-                      style={{ background: "#ff0000" }}
-                      sx={{ ml: 1.25, pl: 1, py: 2 }}
-                      size="small"
-                      avatar={<VideoLibraryIcon style={{ color: "white" }} />}
-                    />
+                    <Grid item>
+                      <Chip
+                        variant="combined"
+                        style={{ background: "#ff0000" }}
+                        sx={{ ml: 1.25, pl: 1, py: 2 }}
+                        size="small"
+                        avatar={<VideoLibraryIcon style={{ color: "white" }} />}
+                      />
+                    </Grid>
                   </Grid>
-                </Grid>
-              </Stack>
-            </MainCard>
+                </Stack>
+              </MainCard>
+            </div>
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <MainCard contentSX={{ p: 2.25 }} sx={{ boxShadow: 3 }}>

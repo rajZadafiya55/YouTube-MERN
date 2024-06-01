@@ -137,7 +137,7 @@ function LeftPanel() {
 
             <p>Home</p>
           </div>
-          <div
+          {/* <div
             className={
               selected === "trending"
                 ? `trending sec-data ${theme ? "changeBG" : "changeBG-light"}`
@@ -160,7 +160,7 @@ function LeftPanel() {
               />
             )}
             <p>Trending</p>
-          </div>
+          </div> */}
           <div
             className={
               selected === "subscription"
@@ -287,7 +287,7 @@ function LeftPanel() {
           <hr className={theme ? "seperate" : "seperate-light"} />
           <Tooltip
             TransitionComponent={Zoom}
-            title="Made with 💖 by Raj"
+            title="Made with 💖 by Raj Zadafiya and Ravi Senjaliya"
             placement="bottom"
           >
             <div className="developer">
@@ -296,11 +296,18 @@ function LeftPanel() {
                 style={{ color: theme ? "white" : "black" }}
               />
               <a
-                href="https://github.com/shubho0908"
+                href="https://github.com/rajZadafiya55"
                 target="_blank"
                 rel="noreferrer"
               >
-                Shubhojeet Bera 🚀
+                Raj 😁
+              </a>
+              <a
+                href="https://github.com/RaviSenjaliya"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Ravi 😎
               </a>
             </div>
           </Tooltip>
@@ -344,7 +351,7 @@ function LeftPanel() {
               />
             )}
           </div>
-          <div
+          {/* <div
             className={
               selected === "trending"
                 ? `trending trending2 sec-data sec-data2 ${
@@ -369,7 +376,7 @@ function LeftPanel() {
                 style={{ color: theme ? "white" : "black" }}
               />
             )}
-          </div>
+          </div> */}
           <div
             className={
               selected === "subscription"

@@ -155,7 +155,7 @@ export const toggleWatchLater = (id, isWatchLater) => {
       );
       const updatedWLStatus = res.data.data.videoStatus;
       await dispatch(getWatchlater(updatedWLStatus));
-      dispatch(getUserWatchHistory())
+      dispatch(getUserWatchHistory());
 
       if (updatedWLStatus) {
         commonNotify("Video saved to Watch Later.!");
@@ -167,7 +167,6 @@ export const toggleWatchLater = (id, isWatchLater) => {
     }
   };
 };
-
 
 export const setSearch = (searchTerm) => ({
   type: SEARCH_VIDEO,

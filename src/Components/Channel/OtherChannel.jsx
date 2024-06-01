@@ -78,13 +78,32 @@ function OtherChannel() {
 
   //POST REQUESTS
 
-  const SubscribeChannel = async (id,channelId) => {
-    try {
-      dispatch(getSubscriptionToggle(id,channelId, isSubscribe));
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  // const SubscribeChannel = async () => {
+  //   try {
+  //     const channelData = {
+  //       youtuberName: channelName,
+  //       youtuberProfile: ChannelProfile,
+  //       youtubeChannelID: id,
+  //     };
+
+  //     const response = await fetch(
+  //       `${backendURL}/subscribe/${id}/${newEmail}/${Email}`,
+  //       {
+  //         method: "POST",
+  //         body: JSON.stringify(channelData),
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     const data = await response.json();
+  //     if (data === "Subscribed") {
+  //       SubscribeNotify();
+  //     }
+  //   } catch (error) {
+  //     // console.log(error.message);
+  //   }
+  // };
 
   // Function to handle tab changes
   const handleTabChange = (newSection) => {
@@ -348,7 +367,12 @@ function OtherChannel() {
                               : { display: "block" }
                           }
                           onClick={() => {
-                            SubscribeChannel(element._id,id);
+                            if (token) {
+                              // SubscribeChannel();
+                            } else {
+                              setisbtnClicked(true);
+                              document.body.classList.add("bg-css");
+                            }
                           }}
                         >
                           Subscribe
@@ -365,7 +389,12 @@ function OtherChannel() {
                               : { display: "none" }
                           }
                           onClick={() => {
-                            SubscribeChannel(element?._id,id);
+                            if (token) {
+                              // SubscribeChannel();
+                            } else {
+                              setisbtnClicked(true);
+                              document.body.classList.add("bg-css");
+                            }
                           }}
                         >
                           Subscribed

@@ -53,6 +53,16 @@ import Upload from "../../img/upload.png";
 import axios from "axios";
 import { addVideoToPlaylist } from "../../redux/actions/playlistAction";
 
+
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import { ValidatorForm } from "react-material-ui-form-validator";
+import { Grid, TextField } from "@mui/material";
+
+
 const Content = () => {
   // ===============================================================
 
