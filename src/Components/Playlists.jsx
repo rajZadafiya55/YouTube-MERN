@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import nothing from "../img/nothing.png";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -12,8 +11,6 @@ import PlaylistAddOutlinedIcon from "@mui/icons-material/PlaylistAddOutlined";
 import PlaylistAddCheckOutlinedIcon from "@mui/icons-material/PlaylistAddCheckOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import jwtDecode from "jwt-decode";
-import Signup from "./Signup";
-import Signin from "./Signin";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Tooltip from "@mui/material/Tooltip";
@@ -36,7 +33,6 @@ function Playlists() {
     return Dark ? JSON.parse(Dark) : true;
   });
   const [isbtnClicked, setisbtnClicked] = useState(false);
-  const [isSwitch, setisSwitched] = useState(false);
 
   const [Email, setEmail] = useState();
   const [playlistsVideos, setPlaylistsVideos] = useState([]);
@@ -128,6 +124,12 @@ function Playlists() {
   useEffect(() => {
     localStorage.setItem("menuClicked", JSON.stringify(menuClicked));
   }, [menuClicked]);
+
+  // useEffect(() => {
+  //   axios.get(`${APIHttp}playlist/${id}`, Header).then((res) => {
+  //     setPlaylistData(res.data.data);
+  //   });
+  // }, []);
 
   useEffect(() => {
     const getPlaylists = async () => {
@@ -261,20 +263,6 @@ function Playlists() {
         },
       });
 
-      await response.json();
-    } catch (error) {
-      // console.log(error.message);
-    }
-  };
-
-  const DeletePlaylist = async () => {
-    try {
-      const response = await fetch(`${backendURL}/deleteplaylist/${id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
       await response.json();
     } catch (error) {
       // console.log(error.message);
@@ -455,64 +443,8 @@ function Playlists() {
                           : `${playlistDetails.playlist_name.slice(0, 15)}..`} */}
                       {playlistDetails.playlist_name}
                     </p>
-                    <Tooltip
-                      TransitionComponent={Zoom}
-                      title="Edit"
-                      placement="bottom"
-                    >
-                      <EditOutlinedIcon
-                        className="edit-name-btn"
-                        fontSize="medium"
-                        style={
-                          playlistDetails.owner_email === Email
-                            ? { color: "white" }
-                            : { display: "none" }
-                        }
-                        onClick={() => {
-                          if (token) {
-                            setIsEditmode(true);
-                          }
-                        }}
-                      />
-                    </Tooltip>
                   </div>
-                  <div
-                    className="like-div"
-                    style={
-                      isEditmode === true
-                        ? { display: "block" }
-                        : { display: "none" }
-                    }
-                  >
-                    <input
-                      type="text"
-                      name="playlist-name"
-                      className="like-head like-head2 playlist-name-edit"
-                      value={PlaylistName}
-                      maxLength={50}
-                      onChange={(e) => setPlaylistName(e.target.value)}
-                    />
-                    <div className="two-main-btns">
-                      <button
-                        className="cancel-edit"
-                        onClick={() => setIsEditmode(false)}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        className="save-edit"
-                        onClick={() => {
-                          saveEditData();
 
-                          setTimeout(() => {
-                            window.location.reload();
-                          }, 300);
-                        }}
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </div>
                   <div
                     className="last-like2"
                     style={
@@ -528,155 +460,12 @@ function Playlists() {
                       {playlistDetails.playlist_owner}
                     </p>
 
-                    <div
-                      className="update-privacy"
-                      style={
-                        playlistDetails && playlistDetails.owner_email === Email
-                          ? { display: "block" }
-                          : { display: "none" }
-                      }
-                    >
-                      <div
-                        className="updateit-one"
-                        onClick={() => {
-                          if (privacyClicked === false) {
-                            setprivacyClicked(true);
-                          } else {
-                            setprivacyClicked(false);
-                          }
-                        }}
-                      >
-                        <p>{playlistDetails.playlist_privacy}</p>
-                        <KeyboardArrowDownIcon
-                          fontSize="medium"
-                          style={
-                            playlistDetails.owner_email === Email
-                              ? { color: "white" }
-                              : { display: "none" }
-                          }
-                        />
-                      </div>
-                      <div
-                        className={
-                          theme
-                            ? "choose-privacy2"
-                            : "choose-privacy2 light-mode text-light-mode"
-                        }
-                        ref={window.innerWidth >= 1290 ? privacyRef : null}
-                        style={
-                          privacyClicked === true
-                            ? { display: "block" }
-                            : { display: "none" }
-                        }
-                      >
-                        <div
-                          className={
-                            theme
-                              ? "first-privacy"
-                              : "first-privacy feature-light text-light-mode"
-                          }
-                          onClick={() => {
-                            setprivacyClicked(false);
-                            setPrivacy("Public");
-                            setTimeout(() => {
-                              window.location.reload();
-                            }, 200);
-                          }}
-                        >
-                          <PublicOutlinedIcon
-                            fontSize="medium"
-                            style={{ color: theme ? "white" : "black" }}
-                          />
-                          <div className="right-privacy">
-                            <p>Public</p>
-                            <p className={theme ? "" : "text-light-mode2"}>
-                              Anyone can view
-                            </p>
-                          </div>
-                        </div>
-                        <div
-                          className={
-                            theme
-                              ? "second-privacy"
-                              : "second-privacy feature-light text-light-mode"
-                          }
-                          onClick={() => {
-                            setprivacyClicked(false);
-                            setPrivacy("Private");
-                            setTimeout(() => {
-                              window.location.reload();
-                            }, 200);
-                          }}
-                        >
-                          <LockOutlinedIcon
-                            fontSize="medium"
-                            style={{ color: theme ? "white" : "black" }}
-                          />
-                          <div className="right-privacy">
-                            <p>Private</p>
-                            <p className={theme ? "" : "text-light-mode2"}>
-                              Only you can view
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
                     <p className="like-total-videos">
                       {playlistsVideos.length} videos
                     </p>
                   </div>
 
                   <div className="playlist-btns">
-                    {isSaved === false ? (
-                      <Tooltip
-                        TransitionComponent={Zoom}
-                        title="Add to Library"
-                        placement="bottom"
-                      >
-                        <PlaylistAddOutlinedIcon
-                          className="savethis-playlist"
-                          fontSize="medium"
-                          style={
-                            playlistDetails.owner_email === Email
-                              ? { display: "none" }
-                              : { display: "block", color: "white" }
-                          }
-                          onClick={() => {
-                            if (token) {
-                              SaveOtherPlaylist();
-                            } else {
-                              setisbtnClicked(true);
-                              document.body.classList.add("bg-css");
-                            }
-                          }}
-                        />
-                      </Tooltip>
-                    ) : (
-                      <Tooltip
-                        TransitionComponent={Zoom}
-                        title="Add to Library"
-                        placement="bottom"
-                      >
-                        <PlaylistAddCheckOutlinedIcon
-                          className="savethis-playlist"
-                          fontSize="medium"
-                          style={
-                            playlistDetails.owner_email === Email
-                              ? { display: "none" }
-                              : { display: "block", color: "white" }
-                          }
-                          onClick={() => {
-                            if (token) {
-                              SaveOtherPlaylist();
-                            } else {
-                              setisbtnClicked(true);
-                              document.body.classList.add("bg-css");
-                            }
-                          }}
-                        />
-                      </Tooltip>
-                    )}
                     <Tooltip
                       TransitionComponent={Zoom}
                       title="Share"
@@ -687,25 +476,6 @@ function Playlists() {
                         fontSize="medium"
                         style={{ color: "white" }}
                         onClick={handleCopyLink}
-                      />
-                    </Tooltip>
-                    <Tooltip
-                      TransitionComponent={Zoom}
-                      title="Delete"
-                      placement="bottom"
-                    >
-                      <DeleteIcon
-                        className="delete-playlist"
-                        fontSize="medium"
-                        style={
-                          playlistDetails.owner_email === Email
-                            ? { color: "white" }
-                            : { display: "none" }
-                        }
-                        onClick={() => {
-                          setDeleteClicked(true);
-                          document.body.classList.add("bg-css");
-                        }}
                       />
                     </Tooltip>
                   </div>
@@ -1385,134 +1155,6 @@ function Playlists() {
             </div>
           </div>
         )}
-      </div>
-
-      {/* SIGNUP/SIGNIN  */}
-
-      <div
-        className={
-          theme ? "auth-popup" : "auth-popup light-mode text-light-mode"
-        }
-        style={
-          isbtnClicked === true ? { display: "block" } : { display: "none" }
-        }
-      >
-        <ClearRoundedIcon
-          onClick={() => {
-            if (isbtnClicked === false) {
-              setisbtnClicked(true);
-            } else {
-              setisbtnClicked(false);
-              document.body.classList.remove("bg-css");
-            }
-          }}
-          className="cancel"
-          fontSize="large"
-          style={{ color: "gray" }}
-        />
-        <div
-          className="signup-last"
-          style={
-            isSwitch === false ? { display: "block" } : { display: "none" }
-          }
-        >
-          <Signup />
-          <div className="already">
-            <p>Already have an account?</p>
-            <p
-              onClick={() => {
-                if (isSwitch === false) {
-                  setisSwitched(true);
-                } else {
-                  setisSwitched(false);
-                }
-              }}
-            >
-              Signin
-            </p>
-          </div>
-        </div>
-        <div
-          className="signin-last"
-          style={isSwitch === true ? { display: "block" } : { display: "none" }}
-        >
-          <Signin />
-          <div className="already">
-            <p>Don&apos;t have an account?</p>
-            <p
-              onClick={() => {
-                if (isSwitch === false) {
-                  setisSwitched(true);
-                } else {
-                  setisSwitched(false);
-                }
-              }}
-            >
-              Signup
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* DELETE PLAYLIST POPUP */}
-
-      <div
-        className={
-          theme ? "delete-playlist-pop" : "delete-playlist-pop light-mode"
-        }
-        ref={deleteRef}
-        style={{ display: deleteClicked ? "block" : "none" }}
-      >
-        <p className="delete-playlist-top">Delete playlist</p>
-        <div className="delete-mid">
-          <p
-            className={
-              theme
-                ? "delete-playlist-mid"
-                : "delete-playlist-mid text-light-mode2"
-            }
-          >
-            Are your sure you want to delete{" "}
-            <b>{PlaylistName && PlaylistName}</b>?
-          </p>
-          <p
-            className={
-              theme
-                ? "delete-playlist-mid2"
-                : "delete-playlist-mid2 text-light-mode2"
-            }
-          >
-            Note: Deleting playlists is a permanent action and cannot be undone.
-          </p>
-        </div>
-        <div className="delete-playlist-bottom">
-          <button
-            className={
-              theme
-                ? "delete-playlist-cancel"
-                : "delete-playlist-cancel delete-playlist-cancel-light"
-            }
-            onClick={() => {
-              setDeleteClicked(false);
-              document.body.classList.remove("bg-css");
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            className={
-              theme ? "delete-playlist-ok" : "delete-playlist-ok blue-txt"
-            }
-            onClick={() => {
-              DeletePlaylist();
-              setTimeout(() => {
-                navigate("/");
-              }, 400);
-            }}
-          >
-            Delete
-          </button>
-        </div>
       </div>
     </>
   );

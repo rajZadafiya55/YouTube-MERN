@@ -53,42 +53,7 @@ import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import Upload from "../../img/upload.png";
 import axios from "axios";
 
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import { ValidatorForm } from "react-material-ui-form-validator";
-import { Grid, TextField } from "@mui/material";
-
 const Content = () => {
-  // ===================(New Playlist)============================================
-
-  const [newPlaylist, setnewPlaylist] = useState({
-    email: "",
-    fullName: "",
-  });
-
-  const handlePlaylistChange = (e) => {
-    e.persist();
-    setnewPlaylist({ ...newPlaylist, [e.target.name]: e.target.value });
-  };
-
-  const handlePlaylistSubmit = async (e) => {
-    e.preventDefault();
-    //code write here new playlist
-  };
-
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
   // ===============================================================
 
   const dispatch = useDispatch();
@@ -423,19 +388,26 @@ const Content = () => {
       }
     });
 
-  //POST REQUESTS
+  const [isLoading, setIsLoading] = useState(false);
+
   const DeleteVideo = async (id) => {
     try {
       if (id !== undefined) {
-        dispatch(deleteVideoDetails(id));
-        setIsDeleteClicked(false);
-        document.body.classList.remove("bg-css2");
+        setIsLoading(true);
+
+        // Show loader for 2 seconds
+        setTimeout(async () => {
+          await dispatch(deleteVideoDetails(id));
+          setIsLoading(false);
+          setIsDeleteClicked(false);
+          document.body.classList.remove("bg-css2");
+        }, 1000);
       }
     } catch (error) {
+      setIsLoading(false);
       console.log(error.message);
     }
   };
-
   const handleCopyLink = (id) => {
     navigator.clipboard
       .writeText(`${videoUrl}/${id}`)
@@ -476,71 +448,6 @@ const Content = () => {
                 }
               >
                 Videos
-                <Button
-                  variant="text"
-                  onClick={handleClickOpen}
-                  style={{ marginLeft: "20px" }}
-                >
-                  <PlaylistAddIcon />
-                </Button>
-                <Dialog
-                  open={open}
-                  onClose={handleClose}
-                  aria-labelledby="alert-dialog-title"
-                  aria-describedby="alert-dialog-description"
-                >
-                  <DialogTitle id="alert-dialog-title">
-                    {"Create a new playlist"}
-                  </DialogTitle>
-                  <DialogContent>
-                    <ValidatorForm
-                      onSubmit={handlePlaylistSubmit}
-                      onError={() => null}
-                      className="signup-form"
-                    >
-                      <Grid container spacing={0}>
-                        <Grid item sm={12} xs={12}>
-                          <TextField
-                            type="email"
-                            name="email"
-                            label="Email"
-                            value={newPlaylist.email}
-                            onChange={handlePlaylistChange}
-                            validators={["required", "isEmail"]}
-                            errorMessages={[
-                              "Email is required",
-                              "Email is not valid",
-                            ]}
-                          />
-                        </Grid>
-                        <Grid item sm={12} xs={12}>
-                          <TextField
-                            type="text"
-                            name="fullName"
-                            id="standard-basic"
-                            value={newPlaylist.fullName}
-                            onChange={handlePlaylistChange}
-                            label="Full Name"
-                            errorMessages={["Full Name is required"]}
-                            validators={["required"]}
-                          />
-                        </Grid>
-                      </Grid>
-
-                      <Button
-                        type="submit"
-                        style={{ width: "50%" }}
-                        variant="contained"
-                        color="primary"
-                      >
-                        Change Basic Info
-                      </Button>
-                    </ValidatorForm>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={handleClose}>Close</Button>
-                  </DialogActions>
-                </Dialog>
               </p>
             </div>
 
@@ -1593,19 +1500,22 @@ const Content = () => {
                         !boxclicked ? "" : "blue-txt"
                       }`
                 }
-                disabled={!boxclicked}
+                disabled={!boxclicked || isLoading}
                 onClick={() => {
                   if (boxclicked === true && DeleteVideoData) {
                     DeleteVideo(DeleteVideoData._id);
                   }
                 }}
                 style={{
-                  opacity: boxclicked === false ? 0.7 : 1,
+                  opacity: boxclicked === false || isLoading ? 0.7 : 1,
                   color: boxclicked === false ? "#aaa" : "#3eaffe",
-                  cursor: boxclicked === false ? "not-allowed" : "pointer",
+                  cursor:
+                    boxclicked === false || isLoading
+                      ? "not-allowed"
+                      : "pointer",
                 }}
               >
-                DELETE VIDEO
+                {isLoading ? "Deleting..." : "DELETE VIDEO"}
               </button>
             </div>
           </div>

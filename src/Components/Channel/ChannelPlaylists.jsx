@@ -4,7 +4,9 @@ import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import deleteIMG from "../../img/delete.jpg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { APIHttp, Header } from "../../constant/Api";
+import axios from "axios";
 
 function generateRandomColors(count) {
   const transparency = 0.7; // Adjust transparency as needed (0 to 1)
@@ -21,24 +23,17 @@ function generateRandomColors(count) {
 }
 
 function ChannelPlaylists(prop) {
+  const { id } = useParams();
+
   const navigate = useNavigate();
-  const backendURL = "http://localhost:3000";
   const [PlaylistData, setPlaylistData] = useState([]);
-  const [email, setEmail] = useState();
   const [playlistColors, setPlaylistColors] = useState([]);
-  const token = localStorage.getItem("userToken");
   const [loading, setLoading] = useState(true);
   const sampleArr = [1, 2, 3, 4];
   const [theme, setTheme] = useState(() => {
     const Dark = localStorage.getItem("Dark");
     return Dark ? JSON.parse(Dark) : true;
   });
-
-  useEffect(() => {
-    if (token) {
-      setEmail(jwtDecode(token).email);
-    }
-  }, [token]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -53,33 +48,14 @@ function ChannelPlaylists(prop) {
   }, [PlaylistData]);
 
   useEffect(() => {
-    const getPlaylistData = async () => {
-      try {
-        if (prop.newmail !== undefined) {
-          const response = await fetch(
-            `${backendURL}/getplaylistdata/${prop.newmail}`
-          );
-          const playlistData = await response.json();
-          setPlaylistData(playlistData);
-        }
-      } catch (error) {
-        // console.log(error.message);
-      }
-    };
-    getPlaylistData();
-  }, [prop.newmail]);
-
-  const publicPlaylists =
-    PlaylistData &&
-    PlaylistData !== "No playlists available..." &&
-    PlaylistData.filter((item) => item.playlist_privacy === "Public");
-
-  const noPublicPlaylists = publicPlaylists.length === 0;
+    axios.get(`${APIHttp}playlist/user/${id}`, Header).then((res) => {
+      setPlaylistData(res.data.data);
+    });
+  }, []);
 
   if (
     (loading === false && PlaylistData === "No playlists available...") ||
-    (loading === false && PlaylistData.length === 0) ||
-    (email !== prop.newmail && noPublicPlaylists)
+    (loading === false && PlaylistData.length === 0)
   ) {
     return (
       <p
@@ -122,42 +98,39 @@ function ChannelPlaylists(prop) {
               {sampleArr &&
                 sampleArr.map(() => {
                   return (
-                    <>
-                      <div className="created-all-playlistss">
+                    <div className="created-all-playlistss" key={Math.random()}>
+                      <Skeleton
+                        count={1}
+                        width={230}
+                        height={129}
+                        style={{ borderRadius: "9px" }}
+                        className="sk-playlist-thumbnail"
+                      />
+                      <div className="playlistt-details">
                         <Skeleton
                           count={1}
-                          width={230}
-                          height={129}
-                          style={{ borderRadius: "9px" }}
-                          className="sk-playlist-thumbnail"
+                          width={150}
+                          height={18}
+                          style={{
+                            borderRadius: "4px",
+                            position: "relative",
+                            top: "23px",
+                          }}
+                          className="sk-playlist-name"
                         />
-
-                        <div className="playlistt-details">
-                          <Skeleton
-                            count={1}
-                            width={150}
-                            height={18}
-                            style={{
-                              borderRadius: "4px",
-                              position: "relative",
-                              top: "23px",
-                            }}
-                            className="sk-playlist-name"
-                          />
-                          <Skeleton
-                            count={1}
-                            width={120}
-                            height={16}
-                            style={{
-                              borderRadius: "4px",
-                              position: "relative",
-                              top: "27px",
-                            }}
-                            className="sk-playlist-desc"
-                          />
-                        </div>
+                        <Skeleton
+                          count={1}
+                          width={120}
+                          height={16}
+                          style={{
+                            borderRadius: "4px",
+                            position: "relative",
+                            top: "27px",
+                          }}
+                          className="sk-playlist-desc"
+                        />
                       </div>
-                    </>
+                    </div>
                   );
                 })}
             </div>
@@ -184,81 +157,66 @@ function ChannelPlaylists(prop) {
         >
           <p>Created playlists</p>
           <div className="thischannel-playlists">
-            {PlaylistData &&
-              PlaylistData !== "No playlists available..." &&
-              PlaylistData.length > 0 &&
-              PlaylistData.map((element, index) => {
-                const backgroundColor =
-                  playlistColors[index] || playlistColors[0];
-
-                return (
-                  <>
-                    <div
-                      className="created-all-playlistss"
-                      key={index}
-                      style={
-                        prop.newmail !== email &&
-                        element.playlist_privacy === "Private"
-                          ? { display: "none" }
-                          : { display: "block" }
+            {PlaylistData.map((playlist, index) => (
+              <div
+                className="created-all-playlistss"
+                key={playlist._id}
+                style={{
+                  display:
+                    playlist.playlist_privacy === "Private" ? "none" : "block",
+                }}
+              >
+                <div className="keep-playlist-one">
+                  <div className="playlist-main-img">
+                    <img
+                      src={
+                        playlist.videos.length > 0
+                          ? playlist.videos[0].thumbnail.url
+                          : deleteIMG
                       }
-                    >
-                      <div className="keep-playlist-one">
-                        <div className="playlist-main-img">
-                          <img
-                            src={
-                              element.playlist_videos[0] !== undefined
-                                ? element.playlist_videos[0].thumbnail
-                                : deleteIMG
-                            }
-                            alt=""
-                            className="playlist-thumbnail"
-                            onClick={() => {
-                              navigate(
-                                `/video/${element.playlist_videos[0].videoID}`
-                              );
-                            }}
-                          />
-                        </div>
-
-                        <div
-                          className={
-                            theme
-                              ? "playlist-element"
-                              : "playlist-element text-dark-mode"
-                          }
-                          style={{ backgroundColor }}
-                          onClick={() => {
-                            navigate(
-                              `/video/${element.playlist_videos[0].videoID}`
-                            );
-                          }}
-                        >
-                          <PlaylistPlayIcon
-                            fontSize="medium"
-                            style={{ color: "white" }}
-                          />
-                          <p>{element.playlist_videos.length} videos</p>
-                        </div>
-                      </div>
-
-                      <div className="playlistt-details">
-                        <p>{element.playlist_name}</p>
-                        <p
-                          onClick={() => navigate(`/playlist/${element._id}`)}
-                          className={
-                            theme
-                              ? "view-playlist2"
-                              : "view-playlist2-light text-light-mode2"
-                          }
-                        >
-                          View full playlist
-                        </p>
-                      </div>
-                    </div>
-                  </>
-                );
-              })}
+                      alt=""
+                      className="playlist-thumbnail"
+                      onClick={() => {
+                        navigate(`/playlist/${playlist._id}`);
+                      }}
+                    />
+                  </div>
+                  <div
+                    className={
+                      theme
+                        ? "playlist-element"
+                        : "playlist-element text-dark-mode"
+                    }
+                    style={{
+                      backgroundColor:
+                        playlistColors[index] || playlistColors[0],
+                    }}
+                    onClick={() => {
+                      navigate(`/video/${playlist.videos[0]._id}`);
+                    }}
+                  >
+                    <PlaylistPlayIcon
+                      fontSize="medium"
+                      style={{ color: "white" }}
+                    />
+                    <p>{playlist.videos.length} videos</p>
+                  </div>
+                </div>
+                <div className="playlistt-details">
+                  <p>{playlist.name}</p>
+                  <p
+                    onClick={() => navigate(`/playlist/${playlist._id}`)}
+                    className={
+                      theme
+                        ? "view-playlist2"
+                        : "view-playlist2-light text-light-mode2"
+                    }
+                  >
+                    View full playlist
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

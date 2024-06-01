@@ -1,7 +1,7 @@
 import "../../Css/Studio/customize.css";
 import Branding from "./Branding";
 import Basic from "./Basic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { _id } from "../../constant/Api";
 
@@ -16,14 +16,36 @@ function Customization() {
   if (theme === false && window.location.href.includes("/studio/customize")) {
     document.body.style.backgroundColor = "white";
   }
+  const [menu, setMenu] = useState(() => {
+    const menu = localStorage.getItem("studioMenuClicked");
+    return menu ? JSON.parse(menu) : false;
+  });
+
+  useEffect(() => {
+    const handleMenuButtonClick = () => {
+      setMenu((prevMenuClicked) => !prevMenuClicked);
+    };
+
+    const menuButton = document.querySelector(".menu2");
+    if (menuButton) {
+      menuButton.addEventListener("click", handleMenuButtonClick);
+    }
+
+    return () => {
+      if (menuButton) {
+        menuButton.removeEventListener("click", handleMenuButtonClick);
+      }
+    };
+  }, []);
 
   return (
     <div className="channel-customize">
       <div
         className="channel-customize-section"
         style={{
-          left: "270px",
-          transition: "none",
+          left: menu ? "120px" : "290px",
+          right: "30px",
+          transition: "all .1s ease",
         }}
       >
         <div className="customize-header">

@@ -20,6 +20,7 @@ import VideoSection from "./Components/VideoSection";
 import Layout from "./Components/Layout";
 import AdminLayout from "./Components/Studio/AdminLayout";
 import Layout3 from "./Components/Studio/Layout3";
+import PlayList from "./Components/Studio/PlayList";
 
 function App() {
   const token = localStorage.getItem("userToken");
@@ -92,11 +93,23 @@ function App() {
           }
         />
         <Route
+          path="/studio/playlist"
+          element={
+            token ? (
+              <AdminLayout>
+                <PlayList />
+              </AdminLayout>
+            ) : (
+              <Error />
+            )
+          }
+        />
+        <Route
           path="/studio/video/edit/:id"
           element={
             token ? (
               <Layout3>
-                <VideoDetails />{" "}
+                <VideoDetails />
               </Layout3>
             ) : (
               <Error />
@@ -108,7 +121,6 @@ function App() {
           element={
             token ? (
               <Layout3>
-                {" "}
                 <VideoComments />
               </Layout3>
             ) : (
@@ -144,52 +156,79 @@ function App() {
         <Route
           path="/library"
           element={
-            <Layout>
-              <Library />
-            </Layout>
+            token ? (
+              <Layout>
+                <Library />
+              </Layout>
+            ) : (
+              <Error />
+            )
           }
         />
         <Route
           path="/channel/:id"
           element={
-            <Layout>
-              <OtherChannel />
-            </Layout>
+            token ? (
+              <Layout>
+                <OtherChannel />
+              </Layout>
+            ) : (
+              <Error />
+            )
           }
         />
         <Route
           path="/trending"
           element={
-            <Layout>
-              <Trending />
-            </Layout>
+            token ? (
+              <Layout>
+                <Trending />
+              </Layout>
+            ) : (
+              <Error />
+            )
           }
         />
         <Route
           path="/results/:data"
           element={
-            <Layout>
-              <SearchResults />
-            </Layout>
+            token ? (
+              <Layout>
+                <SearchResults />
+              </Layout>
+            ) : (
+              <Error />
+            )
           }
         />
         <Route
           path="/playlist/:id"
           element={
-            <Layout>
-              <Playlists />
-            </Layout>
+            token ? (
+              <Layout>
+                <Playlists />
+              </Layout>
+            ) : (
+              <Error />
+            )
           }
         />
         <Route
           path="/subscriptions"
           element={
-            <Layout>
-              <Subscriptions />
-            </Layout>
+            token ? (
+              <Layout>
+                <Subscriptions />
+              </Layout>
+            ) : (
+              <Error />
+            )
           }
         />
-        <Route path="/video/:id" element={<VideoSection />} />
+        <Route
+          path="/video/:id"
+          element={token ? <VideoSection /> : <Error />}
+        />
         <Route path="/*" element={<Error />} />
       </Routes>
     </BrowserRouter>

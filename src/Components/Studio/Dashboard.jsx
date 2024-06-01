@@ -64,7 +64,14 @@ const Dashboard = () => {
   });
 
   if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading stats</div>;
+  if (error || !statsData) {
+    statsData = {
+      totalViews: 0,
+      totalLikes: 0,
+      totalVideos: 0,
+      totalSubscribers: 0,
+    };
+  }
 
   return (
     <div className="studio-dashboard-section">
