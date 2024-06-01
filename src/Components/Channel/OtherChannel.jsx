@@ -78,32 +78,13 @@ function OtherChannel() {
 
   //POST REQUESTS
 
-  // const SubscribeChannel = async () => {
-  //   try {
-  //     const channelData = {
-  //       youtuberName: channelName,
-  //       youtuberProfile: ChannelProfile,
-  //       youtubeChannelID: id,
-  //     };
-
-  //     const response = await fetch(
-  //       `${backendURL}/subscribe/${id}/${newEmail}/${Email}`,
-  //       {
-  //         method: "POST",
-  //         body: JSON.stringify(channelData),
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-  //     const data = await response.json();
-  //     if (data === "Subscribed") {
-  //       SubscribeNotify();
-  //     }
-  //   } catch (error) {
-  //     // console.log(error.message);
-  //   }
-  // };
+  const SubscribeChannel = async (id, channelId) => {
+    try {
+      dispatch(getSubscriptionToggle(id, channelId, isSubscribe));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   // Function to handle tab changes
   const handleTabChange = (newSection) => {
@@ -144,7 +125,7 @@ function OtherChannel() {
           {element.avatar ? (
             <div
               className={
-                Top === "2%" 
+                Top === "2%"
                   ? "channel-main-content-nocover"
                   : "channel-main-content"
               }
@@ -367,12 +348,7 @@ function OtherChannel() {
                               : { display: "block" }
                           }
                           onClick={() => {
-                            if (token) {
-                              // SubscribeChannel();
-                            } else {
-                              setisbtnClicked(true);
-                              document.body.classList.add("bg-css");
-                            }
+                            SubscribeChannel(element._id, id);
                           }}
                         >
                           Subscribe
@@ -389,12 +365,7 @@ function OtherChannel() {
                               : { display: "none" }
                           }
                           onClick={() => {
-                            if (token) {
-                              // SubscribeChannel();
-                            } else {
-                              setisbtnClicked(true);
-                              document.body.classList.add("bg-css");
-                            }
+                            SubscribeChannel(element?._id, id);
                           }}
                         >
                           Subscribed
