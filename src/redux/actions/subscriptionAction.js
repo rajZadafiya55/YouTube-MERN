@@ -18,7 +18,7 @@ export const getSubscriptionToggle = (id, channelId, isSubscribed) => {
         Header
       );
       const updatedSubStatus = res.data.data.isSubscribed;
-      await dispatch(getSubscription(updatedSubStatus));
+      dispatch(getSubscription(updatedSubStatus));
 
       dispatch(getSelectedVideo(channelId));
 

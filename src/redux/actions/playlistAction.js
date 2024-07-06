@@ -25,7 +25,7 @@ const getAllPlaylists = (playlists) => ({
   payload: playlists,
 });
 
-export const fetchPlaylists = () => (dispatch) => {
+export const fetchPlaylists = (_id) => (dispatch) => {
   axios
     .get(`${APIHttp}playlist/user/${_id}`, Header)
     .then(async (res) => {

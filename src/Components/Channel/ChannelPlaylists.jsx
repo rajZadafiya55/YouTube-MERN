@@ -21,9 +21,8 @@ function generateRandomColors(count) {
   return colors;
 }
 
-function ChannelPlaylists(prop) {
-  const { id } = useParams();
-
+function ChannelPlaylists(props) {
+  const { id } = props;
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { playlists } = useSelector((state) => state.playlist);
@@ -51,7 +50,7 @@ function ChannelPlaylists(prop) {
 
   useEffect(() => {
     dispatch(fetchPlaylists(id));
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     setPlaylistData(playlists);

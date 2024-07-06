@@ -1,6 +1,5 @@
 import "../Css/leftpanel.css";
 import HomeIcon from "@mui/icons-material/Home";
-import WhatshotOutlinedIcon from "@mui/icons-material/WhatshotOutlined";
 import SubscriptionsOutlinedIcon from "@mui/icons-material/SubscriptionsOutlined";
 import VideoLibraryOutlinedIcon from "@mui/icons-material/VideoLibraryOutlined";
 import WatchLaterOutlinedIcon from "@mui/icons-material/WatchLaterOutlined";
@@ -22,7 +21,6 @@ import { MdOutlineSubscriptions } from "react-icons/md";
 import { MdSubscriptions } from "react-icons/md";
 import { MdOutlineVideoLibrary } from "react-icons/md";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import WhatshotIcon from "@mui/icons-material/Whatshot";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
 import WatchLaterIcon from "@mui/icons-material/WatchLater";

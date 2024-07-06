@@ -79,6 +79,7 @@ export default function PlayList() {
 
   const handlePlistClick = (row) => () => {
     setEditRow(row);
+    dispatch(fetchPlaylists());
     setOpen(true);
   };
 

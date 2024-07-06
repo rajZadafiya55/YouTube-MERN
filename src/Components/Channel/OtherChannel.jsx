@@ -23,17 +23,15 @@ function OtherChannel() {
   const channelData = useSelector((state) => state.user.channelDetails);
 
   const isSubscribe = useSelector((state) => state.subscription.isSubscribed);
+  console.log("isSubscriber", isSubscribe);
 
   const { id } = useParams();
   const [Email, setEmail] = useState(email);
   const [channelName, setChannelname] = useState(username);
   const [myVideos, setMyVideos] = useState([]);
-  const [isbtnClicked, setisbtnClicked] = useState(false);
   const [Section, setSection] = useState(
     localStorage.getItem("Section") || "Videos"
   );
-  const token = localStorage.getItem("userToken");
-  // const [isSubscribed, setIsSubscribed] = useState();
   const [Top, setTop] = useState("155px");
   const [coverIMG, setCoverIMG] = useState(coverImage);
   const [loading, setLoading] = useState(true);
@@ -80,7 +78,7 @@ function OtherChannel() {
 
   const SubscribeChannel = async (id, channelId) => {
     try {
-      dispatch(getSubscriptionToggle(id, channelId, isSubscribe));
+      await dispatch(getSubscriptionToggle(id, channelId, isSubscribe));
     } catch (error) {
       console.log(error.message);
     }

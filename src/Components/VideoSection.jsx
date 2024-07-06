@@ -41,7 +41,7 @@ import {
   deleteCommentsDetails,
   getSelectedComment,
 } from "../redux/actions/commentAction";
-import { APIHttp, EmptyMessage, Header, avatar, email } from "../constant/Api";
+import { APIHttp, EmptyMessage, avatar, email } from "../constant/Api";
 import {
   getLikeCommentToggle,
   getLikeVideoToggle,
@@ -69,6 +69,8 @@ const VideoSection = () => {
   const isLikedComment = useSelector((state) => state.like.isLiked);
 
   const isSubscribe = useSelector((state) => state.subscription.isSubscribed);
+
+  console.log("isSubscribe", isSubscribe);
 
   const isWatchLater = useSelector((state) => state.videos.isWatchLater);
 
@@ -348,7 +350,7 @@ const VideoSection = () => {
 
   const SubscribeChannel = async (id, channelId) => {
     try {
-      dispatch(getSubscriptionToggle(id, channelId, isSubscribe));
+      await dispatch(getSubscriptionToggle(id, channelId, isSubscribe));
     } catch (error) {
       console.log(error.message);
     }
