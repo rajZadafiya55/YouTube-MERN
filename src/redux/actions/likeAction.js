@@ -56,9 +56,9 @@ export const getLikeCommentToggle = (commentId, isLiked, _id) => {
   };
 };
 
-const getLikevideo = (isLiked) => ({
+const getLikevideo = (isVideoLiked) => ({
   type: TOGGLE_VIDEO_LIKE,
-  payload: isLiked,
+  payload: isVideoLiked,
 });
 
 export const getLikeVideoToggle = (id, isLiked) => {

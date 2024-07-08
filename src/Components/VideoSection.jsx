@@ -62,7 +62,7 @@ const VideoSection = () => {
   );
   const listVideo = useSelector((state) => state.videos.videosDetails);
 
-  const isLikedStatus = useSelector((state) => state.like.isLiked);
+  const isLikedStatus = useSelector((state) => state.like.isVideoLiked);
 
   const [listVideoDetails, setListVideoDetails] = useState([]);
 
@@ -300,7 +300,7 @@ const VideoSection = () => {
 
   const LikeComment = async (commentId, id) => {
     try {
-      dispatch(getLikeCommentToggle(commentId, id, isLikedComment));
+      dispatch(getLikeCommentToggle(commentId,isLikedComment, _id ));
     } catch (error) {
       console.log(error.message);
     }

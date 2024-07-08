@@ -7,6 +7,7 @@ import {
 export const initialState = {
   videosDetails: [], //for store all video data
   isLiked: null,
+  isVideoLiked: null,
 };
 
 const likeReducer = (state = initialState, action) => {
@@ -25,6 +26,7 @@ const likeReducer = (state = initialState, action) => {
     case TOGGLE_VIDEO_LIKE:
       return {
         ...state,
+        isVideoLiked: action.payload,
       };
 
     default:
