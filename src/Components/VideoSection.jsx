@@ -192,22 +192,6 @@ const VideoSection = () => {
     setVideoData(selectedVideo);
   }, [selectedVideo]);
 
-  // useEffect(() => {
-  //   const initializePlyr = () => {
-  //     if (!plyrInitialized && videoRef.current) {
-  //       const player = new Plyr(videoRef.current, {
-  //         background: "red",
-  //         ratio: null,
-  //       });
-  //       setPlyrInitialized(true);
-  //     }
-  //   };
-
-  //   if (videoData) {
-  //     initializePlyr();
-  //   }
-  // }, [plyrInitialized, videoData]);
-
   useEffect(() => {
     dispatch(getAllVideos());
   }, []);
@@ -285,6 +269,7 @@ const VideoSection = () => {
     );
   }
 
+  console.log("comments", comments);
   const {
     _id,
     videoFile: videoURL,
@@ -313,9 +298,9 @@ const VideoSection = () => {
     }
   };
 
-  const LikeComment = async (commentId, _id) => {
+  const LikeComment = async (commentId, id) => {
     try {
-      dispatch(getLikeCommentToggle(commentId, _id, isLikedComment));
+      dispatch(getLikeCommentToggle(commentId, id, isLikedComment));
     } catch (error) {
       console.log(error.message);
     }
@@ -1348,6 +1333,8 @@ const VideoSection = () => {
                           </p>
                         </div>
                         <p className="main-comment">{element.content}</p>
+
+                        {/*==================== comment like ====================  */}
                         <div className="comment-interaction">
                           <ThumbUpIcon
                             fontSize="small"
@@ -1572,6 +1559,7 @@ const VideoSection = () => {
                     key={index}
                     onClick={() => {
                       navigate(`/video/${element._id}`);
+                      window.location.reload();
                     }}
                   >
                     <div className="video-left-side">
@@ -1701,6 +1689,7 @@ const VideoSection = () => {
                       key={index}
                       onClick={() => {
                         navigate(`/video/${element._id}`);
+                        window.location.reload();
                       }}
                     >
                       <div className="video-left-side">
@@ -1989,6 +1978,8 @@ const VideoSection = () => {
                           </p>
                         </div>
                         <p className="main-comment">{element.content}</p>
+
+                        {/*====================== comment like =========================== */}
                         <div className="comment-interaction">
                           <ThumbUpIcon
                             fontSize="small"

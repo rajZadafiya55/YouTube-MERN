@@ -14,7 +14,6 @@ import {
   APIHttp,
   CancelNotify,
   Header,
-  _id,
   commonNotify,
   showErrorToast,
   showToast,
@@ -41,7 +40,7 @@ const deletePlaylistAction = (playlistId) => ({
   payload: playlistId,
 });
 
-export const deletePlaylist = (playlistId) => (dispatch) => {
+export const deletePlaylist = (playlistId, _id) => (dispatch) => {
   Swal.fire({
     title: "Do you want to Delete?",
     showCancelButton: true,
@@ -52,7 +51,7 @@ export const deletePlaylist = (playlistId) => (dispatch) => {
         .delete(`${APIHttp}playlist/${playlistId}`, Header)
         .then(async (res) => {
           await dispatch(deletePlaylistAction(playlistId));
-          fetchPlaylists();
+          fetchPlaylists(_id);
           if (res.data.success) {
             showToast("Playlist Deleted successfully!");
           }
@@ -70,13 +69,13 @@ const updatePlaylistAction = (playlist) => ({
   payload: playlist,
 });
 
-export const updatePlaylist = (id, formData) => (dispatch) => {
+export const updatePlaylist = (id, _id, formData) => (dispatch) => {
   axios
     .patch(`${APIHttp}playlist/${id}`, formData, Header)
     .then(async (res) => {
       await dispatch(updatePlaylistAction(res.data));
-      fetchPlaylists();
       commonNotify("Playlist Updated Successfully!");
+      fetchPlaylists(_id);
     })
     .catch((err) => {
       console.log(err);
@@ -88,31 +87,35 @@ const removeVideoFromPlaylistAction = (playListId, videoId) => ({
   payload: { playListId, videoId },
 });
 
-export const removeVideoFromPlaylist = (playListId, videoId) => (dispatch) => {
-  axios
-    .patch(`${APIHttp}playlist/remove/${videoId}/${playListId}`)
-    .then(async () => {
-      await dispatch(removeVideoFromPlaylistAction(playListId, videoId));
-      fetchPlaylists();
-      commonNotify("Video successfully removed from the playlist.");
-    })
-    .catch((err) => {
-      console.log(err);
-      CancelNotify("There was an error removing the video from the playlist.");
-    });
-};
+export const removeVideoFromPlaylist =
+  (playListId, videoId, _id) => (dispatch) => {
+    axios
+      .patch(`${APIHttp}playlist/remove/${videoId}/${playListId}`)
+      .then(async () => {
+        await dispatch(removeVideoFromPlaylistAction(playListId, videoId));
+        fetchPlaylists(_id);
+        commonNotify("Video successfully removed from the playlist.");
+      })
+      .catch((err) => {
+        console.log(err);
+        CancelNotify(
+          "There was an error removing the video from the playlist."
+        );
+      });
+  };
 
 const createPlaylistAction = (playlist) => ({
   type: CREATE_PLAYLIST,
   payload: playlist,
 });
 
-export const createPlaylist = (data) => (dispatch) => {
+export const createPlaylist = (data,_id) => (dispatch) => {
   axios
     .post(`${APIHttp}playlist`, data, Header)
-    .then((res) => {
-      dispatch(createPlaylistAction(res.data.data));
+    .then(async (res) => {
+      await dispatch(createPlaylistAction(res.data.data));
       commonNotify("Playlist Created Successfully!");
+      fetchPlaylists(_id);
     })
     .catch((err) => {
       console.log(err);
@@ -125,12 +128,12 @@ const addVideoToPlaylistAction = (playlistId, videoId) => ({
   payload: { playlistId, videoId },
 });
 
-export const addVideoToPlaylist = (videoId, playlistId) => (dispatch) => {
+export const addVideoToPlaylist = (videoId, playlistId, _id) => (dispatch) => {
   axios
     .patch(`${APIHttp}playlist/add/${videoId}/${playlistId}`, Header)
     .then(async (response) => {
       await dispatch(addVideoToPlaylistAction(playlistId, videoId));
-      fetchPlaylists();
+      fetchPlaylists(_id);
       commonNotify("Video successfully added to the playlist.");
     })
     .catch((error) => {

@@ -7,7 +7,7 @@ import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
 import { toast } from "react-toastify";
 import { APIHttp } from "../constant/Api";
 import ClipLoader from "react-spinners/ClipLoader";
- 
+
 const TextField = styled(TextValidator)(() => ({
   width: "100%",
   marginBottom: "16px",

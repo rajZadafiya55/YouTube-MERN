@@ -33,7 +33,6 @@ function VideoComments() {
     console.log("Like status changed:", isLiked);
   }, [isLiked]);
 
-  const backendURL = "http://localhost:3000";
   const { id } = useParams();
   const [Email, setEmail] = useState();
   const [videoComments, setVideoComments] = useState([]);
@@ -150,10 +149,10 @@ function VideoComments() {
     setVideoComments(selectedComment);
   }, [selectedComment]);
 
-  const LikeComment = async (id) => {
+  const LikeComment = async (_id, id) => {
     try {
       if (id !== undefined) {
-        dispatch(getLikeCommentToggle(id, isLiked));
+        dispatch(getLikeCommentToggle(_id, isLiked, id));
       }
     } catch (error) {
       console.log(error.message);
@@ -415,7 +414,7 @@ function VideoComments() {
                                   className="thiscomment-like-btn"
                                   style={{ color: theme ? "white" : "#606060" }}
                                   onClick={() => {
-                                    LikeComment(element._id);
+                                    LikeComment(element._id, id);
                                   }}
                                 />
                               </Tooltip>
@@ -537,7 +536,7 @@ function VideoComments() {
                                 className="thiscomment-like-btn"
                                 style={{ color: theme ? "white" : "#606060" }}
                                 onClick={() => {
-                                  LikeComment(element._id);
+                                  LikeComment(element._id, id);
                                 }}
                               />
                             </Tooltip>

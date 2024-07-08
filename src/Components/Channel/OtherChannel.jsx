@@ -103,9 +103,7 @@ function OtherChannel() {
   }, [channelData]);
 
   return (
-    <>
-      <LeftPanel />
-
+    <div>
       {userProfile?.map((element, index) => (
         <div key={index}>
           {element.coverImage !== "No data" ? (
@@ -213,173 +211,181 @@ function OtherChannel() {
                   </div>
                 </div>
               </SkeletonTheme>
-
-              <div
-                className="channel-top-content"
-                style={
-                  loading === true
-                    ? { visibility: "hidden", display: "none" }
-                    : { visibility: "visible", display: "flex" }
-                }
-              >
+              {/* ============================================= */}
+              <div className="ProfileLeft" style={{ marginLeft: "65px" }}>
                 <div
-                  className={
-                    theme
-                      ? "channel-left-content"
-                      : "channel-left-content text-light-mode"
+                  className="channel-top-content"
+                  style={
+                    loading === true
+                      ? {
+                          visibility: "hidden",
+                          display: "none",
+                        }
+                      : {
+                          visibility: "visible",
+                          display: "flex",
+                        }
                   }
                 >
-                  <img
-                    src={element.avatar}
-                    alt="channelDP"
-                    className="channel_profile"
-                  />
-                  <div className="channel-topleft-data">
-                    <div className="channel-left">
-                      <div className="channel-name-verified">
-                        <p className="channelname">{element.username}</p>
-                        <Tooltip
-                          TransitionComponent={Zoom}
-                          title="Verified"
-                          placement="right"
-                        >
-                          <CheckCircleIcon
-                            fontSize="small"
-                            style={{
-                              color: "rgb(138, 138, 138)",
-                              marginLeft: "6px",
-                            }}
-                          />
-                        </Tooltip>
-                      </div>
-                      <div
-                        className={
-                          theme
-                            ? "channel-extra"
-                            : "channel-extra text-light-mode2"
-                        }
-                      >
-                        <p className="channeluser">@{element.username}</p>
-                        <p className="my-subs">
-                          {element.subscribersCount} subscribers
-                        </p>
-                        {myVideos &&
-                        myVideos.message !== "USER DOESN'T EXIST" ? (
-                          <p className="my-videoscount">
-                            {/* {myVideos && myVideos.length} videos */}
-                          </p>
-                        ) : (
-                          <p className="my-videoscount">0 videos</p>
-                        )}
-                      </div>
-
-                      <div
-                        className={
-                          theme ? "more-about" : "more-about text-light-mode2"
-                        }
-                        onClick={() => {
-                          localStorage.setItem("Section", "About");
-                          window.location.reload();
-                        }}
-                      >
-                        <p className="more-text">More about this channel</p>
-                        <ArrowForwardIosIcon
-                          fontSize="15px"
-                          style={{ color: "#aaa", marginLeft: "7px" }}
-                        />
-                      </div>
-                    </div>
-                    {element.email === Email ? (
-                      <div className="channel-right-content channel-dualbtns">
-                        <button
-                          className={
-                            theme
-                              ? "customize-channel"
-                              : "customize-channel btn-light-mode"
-                          }
-                          onClick={() => {
-                            navigate("/studio/customize");
-                          }}
-                        >
-                          Customize channel
-                        </button>
-                        <button
-                          className={
-                            theme
-                              ? "manage-videos"
-                              : "manage-videos btn-light-mode"
-                          }
-                          onClick={() => {
-                            navigate("/studio/video");
-                          }}
-                        >
-                          Manage videos
-                        </button>
+                  <div
+                    className={
+                      theme
+                        ? "channel-left-content"
+                        : "channel-left-content text-light-mode"
+                    }
+                  >
+                    <img
+                      src={element.avatar}
+                      alt="channelDP"
+                      className="channel_profile"
+                    />
+                    <div className="channel-topleft-data">
+                      <div className="channel-left">
+                        <div className="channel-name-verified">
+                          <p className="channelname">{element.username}</p>
+                          <Tooltip
+                            TransitionComponent={Zoom}
+                            title="Verified"
+                            placement="right"
+                          >
+                            <CheckCircleIcon
+                              fontSize="small"
+                              style={{
+                                color: "rgb(138, 138, 138)",
+                                marginLeft: "6px",
+                              }}
+                            />
+                          </Tooltip>
+                        </div>
                         <div
-                          className="setting-btn"
+                          className={
+                            theme
+                              ? "channel-extra"
+                              : "channel-extra text-light-mode2"
+                          }
+                        >
+                          <p className="channeluser">@{element.username}</p>
+                          <p className="my-subs">
+                            {element.subscribersCount} subscribers
+                          </p>
+                          {myVideos &&
+                          myVideos.message !== "USER DOESN'T EXIST" ? (
+                            <p className="my-videoscount">
+                              {/* {myVideos && myVideos.length} videos */}
+                            </p>
+                          ) : (
+                            <p className="my-videoscount">0 videos</p>
+                          )}
+                        </div>
+
+                        <div
+                          className={
+                            theme ? "more-about" : "more-about text-light-mode2"
+                          }
                           onClick={() => {
-                            navigate("/studio/video");
+                            localStorage.setItem("Section", "About");
+                            window.location.reload();
                           }}
                         >
-                          <RiUserSettingsLine
-                            fontSize="28px"
-                            color={theme ? "white" : "black"}
-                            className={
-                              theme
-                                ? "channel-settings"
-                                : "channel-settings channel-settings-light"
-                            }
+                          <p className="more-text">More about this channel</p>
+                          <ArrowForwardIosIcon
+                            fontSize="15px"
+                            style={{ color: "#aaa", marginLeft: "7px" }}
                           />
                         </div>
                       </div>
-                    ) : (
-                      <div className="channel-right-content">
-                        <button
-                          className={
-                            theme
-                              ? "subscribethis-channel"
-                              : "subscribethis-channel-light text-dark-mode"
-                          }
-                          style={
-                            isSubscribe === true
-                              ? { display: "none" }
-                              : { display: "block" }
-                          }
-                          onClick={() => {
-                            SubscribeChannel(element._id, id);
-                          }}
-                        >
-                          Subscribe
-                        </button>
-                        <button
-                          className={
-                            theme
-                              ? "subscribethis-channel2"
-                              : "subscribethis-channel2-light"
-                          }
-                          style={
-                            isSubscribe === true
-                              ? { display: "block" }
-                              : { display: "none" }
-                          }
-                          onClick={() => {
-                            SubscribeChannel(element?._id, id);
-                          }}
-                        >
-                          Subscribed
-                        </button>
-                      </div>
-                    )}
+                      {element.email === Email ? (
+                        <div className="channel-right-content channel-dualbtns">
+                          <button
+                            className={
+                              theme
+                                ? "customize-channel"
+                                : "customize-channel btn-light-mode"
+                            }
+                            onClick={() => {
+                              navigate("/studio/customize");
+                            }}
+                          >
+                            Customize channel
+                          </button>
+                          <button
+                            className={
+                              theme
+                                ? "manage-videos"
+                                : "manage-videos btn-light-mode"
+                            }
+                            onClick={() => {
+                              navigate("/studio/video");
+                            }}
+                          >
+                            Manage videos
+                          </button>
+                          <div
+                            className="setting-btn"
+                            onClick={() => {
+                              navigate("/studio/video");
+                            }}
+                          >
+                            <RiUserSettingsLine
+                              fontSize="28px"
+                              color={theme ? "white" : "black"}
+                              className={
+                                theme
+                                  ? "channel-settings"
+                                  : "channel-settings channel-settings-light"
+                              }
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="channel-right-content">
+                          <button
+                            className={
+                              theme
+                                ? "subscribethis-channel"
+                                : "subscribethis-channel-light text-dark-mode"
+                            }
+                            style={
+                              isSubscribe === true
+                                ? { display: "none" }
+                                : { display: "block" }
+                            }
+                            onClick={() => {
+                              SubscribeChannel(element._id, id);
+                            }}
+                          >
+                            Subscribe
+                          </button>
+                          <button
+                            className={
+                              theme
+                                ? "subscribethis-channel2"
+                                : "subscribethis-channel2-light"
+                            }
+                            style={
+                              isSubscribe === true
+                                ? { display: "block" }
+                                : { display: "none" }
+                            }
+                            onClick={() => {
+                              SubscribeChannel(element?._id, id);
+                            }}
+                          >
+                            Subscribed
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="channel-mid-content">
-                <BasicTabs
-                  section={Section}
-                  handleTabChange={handleTabChange}
-                  newemail={element.email}
-                />
+                <div className="channel-mid-content">
+                  <BasicTabs
+                    section={Section}
+                    handleTabChange={handleTabChange}
+                    newemail={element.email}
+                  />
+                </div>
               </div>
               <br />
             </div>
@@ -392,7 +398,7 @@ function OtherChannel() {
           )}
         </div>
       ))}
-    </>
+    </div>
   );
 }
 

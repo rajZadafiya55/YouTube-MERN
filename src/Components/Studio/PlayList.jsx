@@ -27,6 +27,7 @@ import {
   removeVideoFromPlaylist,
   updatePlaylist,
 } from "../../redux/actions/playlistAction";
+import { _id } from "../../constant/Api";
 
 export default function PlayList() {
   const dispatch = useDispatch();
@@ -70,8 +71,8 @@ export default function PlayList() {
   });
 
   useEffect(() => {
-    dispatch(fetchPlaylists());
-  }, [dispatch]);
+    dispatch(fetchPlaylists(_id));
+  }, [_id]);
 
   useEffect(() => {
     setRows(playlists);
@@ -79,7 +80,7 @@ export default function PlayList() {
 
   const handlePlistClick = (row) => () => {
     setEditRow(row);
-    dispatch(fetchPlaylists());
+    dispatch(fetchPlaylists(_id));
     setOpen(true);
   };
 
@@ -98,15 +99,15 @@ export default function PlayList() {
   };
 
   const handleDeleteClick = (row) => () => {
-    dispatch(deletePlaylist(row.row._id));
+    dispatch(deletePlaylist(row.row._id, _id));
     refreshData();
   };
 
   const columns = [
+    { field: "name", headerName: "Name", width: 180 },
     { field: "description", headerName: "Description", width: 300 },
-    { field: "name", headerName: "Name", width: 200 },
-    { field: "totalVideos", headerName: "Total Videos", width: 150 },
-    { field: "totalViews", headerName: "Total Views", width: 150 },
+    { field: "totalVideos", headerName: "Total Videos", width: 120 },
+    { field: "totalViews", headerName: "Total Views", width: 120 },
     {
       field: "actions",
       type: "actions",
@@ -139,14 +140,15 @@ export default function PlayList() {
   ];
 
   // ==========================(remove playlist)==================================================
-  const RemoveToPlaylist = (playListId, videoId) => {
-    dispatch(removeVideoFromPlaylist(playListId, videoId));
+  const RemoveToPlaylist = (playListId, videoId, _id) => {
+    dispatch(removeVideoFromPlaylist(playListId, videoId, _id));
     refreshData();
     setOpen(false);
+    dispatch(fetchPlaylists(_id));
   };
 
   const refreshData = () => {
-    dispatch(fetchPlaylists());
+    dispatch(fetchPlaylists(_id));
   };
 
   const handleFormChange = (e) => {
@@ -156,9 +158,10 @@ export default function PlayList() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updatePlaylist(editRow._id, formData));
+    dispatch(updatePlaylist(editRow._id, _id, formData));
     refreshData();
     setEditOpen(false);
+    dispatch(fetchPlaylists(_id));
   };
 
   return (
@@ -275,7 +278,9 @@ export default function PlayList() {
                       <Button
                         variant="contained"
                         color="error"
-                        onClick={() => RemoveToPlaylist(editRow._id, val._id)}
+                        onClick={() =>
+                          RemoveToPlaylist(editRow._id, val._id, _id)
+                        }
                       >
                         <PlaylistRemoveIcon />
                       </Button>

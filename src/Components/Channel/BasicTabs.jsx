@@ -85,16 +85,15 @@ export default function BasicTabs({ section, handleTabChange, newemail }) {
               {...a11yProps(2)}
             />
           )}
-          <Tab label="About" value="About" {...a11yProps(3)} />
         </Tabs>
       </Box>
 
       <CustomTabPanel value={section} index="Videos">
-        <ChannelVideos newmail={Email} id={id}/>
+        <ChannelVideos newmail={Email} id={id} />
       </CustomTabPanel>
 
       <CustomTabPanel value={section} index="Playlists">
-        <ChannelPlaylists newmail={Email} id={id}/>
+        <ChannelPlaylists newmail={Email} id={id} />
       </CustomTabPanel>
 
       {Email === newemail && (
@@ -102,9 +101,6 @@ export default function BasicTabs({ section, handleTabChange, newemail }) {
           <Subscription newmail={Email} />
         </CustomTabPanel>
       )}
-      <CustomTabPanel value={section} index="About">
-        <ChannelAbout newmail={Email} channelid={id} />
-      </CustomTabPanel>
     </Box>
   );
 }

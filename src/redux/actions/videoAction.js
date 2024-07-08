@@ -85,6 +85,7 @@ export const addVideoData = (formData, setLoading, setIsClicked) => {
       .post(`${APIHttp}videos`, formDataToSend, VideoHeader)
       .then(async (res) => {
         if (res.data.success === true) {
+          
           showToast("Video added successfully!");
           setLoading(false);
           setIsClicked(false);

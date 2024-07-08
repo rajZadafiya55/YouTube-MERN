@@ -188,6 +188,7 @@ const Navbar = () => {
       {/* ================(Log-in form)============================================ */}
 
       <div
+      id="LoginFRM"
         className={
           theme ? "auth-popup" : "auth-popup light-mode text-light-mode"
         }

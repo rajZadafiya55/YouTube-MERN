@@ -40,6 +40,7 @@ import {
   commonNotify,
   _id,
   Header,
+  showToast,
 } from "../../constant/Api";
 import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -53,7 +54,6 @@ import Upload from "../../img/upload.png";
 import axios from "axios";
 import { addVideoToPlaylist } from "../../redux/actions/playlistAction";
 
-
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -61,7 +61,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { ValidatorForm } from "react-material-ui-form-validator";
 import { Grid, TextField } from "@mui/material";
-
+import { toast } from "react-toastify";
 
 const Content = () => {
   // ===============================================================
@@ -259,13 +259,25 @@ const Content = () => {
     };
     reader.readAsDataURL(file);
   };
+  const showToast = (message) => {
+    toast(message, { position: "top-right", autoClose: false });
+  };
+
+  const hideToast = () => {
+    toast.dismiss();
+  };
 
   const PublishData = async (e) => {
     e.preventDefault();
 
     await dispatch(addVideoData(formData, setLoading, setIsClicked));
-
     clearFormState();
+
+    showToast("Uploading...");
+
+    setTimeout(() => {
+      hideToast();
+    }, 10000);
   };
 
   useEffect(() => {

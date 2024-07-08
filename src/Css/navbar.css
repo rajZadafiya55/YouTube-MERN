@@ -11,6 +11,10 @@
   display: none;
 }
 
+#LoginFRM {
+  max-height: 350px;
+  overflow-y: scroll;
+}
 .navbar {
   padding: 10px;
   padding-left: 25px;

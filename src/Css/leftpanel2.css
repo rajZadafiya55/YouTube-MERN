@@ -65,7 +65,7 @@
   background-color: #1f1f1f;
 }
 
-.panel-light:hover{
+.panel-light:hover {
   background-color: #e4e4e4 !important;
 }
 
@@ -156,6 +156,12 @@
 
 /* MEDIA QUERIES */
 
+@media (width<= 1300px) {
+  .main-section2 {
+    height: 450px !important;
+    overflow-y: scroll !important;
+  }
+}
 @media (width<= 860px) {
   .long-left {
     display: none !important;

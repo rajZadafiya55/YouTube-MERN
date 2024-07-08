@@ -1,11 +1,15 @@
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Grid, styled, Dialog } from "@mui/material";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
 import { useDispatch } from "react-redux";
-import { createPlaylist } from "../../../redux/actions/playlistAction";
+import {
+  createPlaylist,
+  fetchPlaylists,
+} from "../../../redux/actions/playlistAction";
+import { _id } from "../../../constant/Api";
 
 const TextField = styled(TextValidator)(() => ({
   width: "100%",
@@ -33,13 +37,19 @@ export default function NewPlaylistDialog(props) {
     setdata({ ...data, [e.target.name]: e.target.value });
   };
 
+  // useEffect(() => {
+  //   dispatch(fetchPlaylists(_id));
+  // }, [_id]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    dispatch(createPlaylist(data));
+    dispatch(createPlaylist(data, _id));
     setdata("");
     handleClose();
     props.refreshData();
+    dispatch(fetchPlaylists(_id));
+    window.location.reload();
   };
 
   return (

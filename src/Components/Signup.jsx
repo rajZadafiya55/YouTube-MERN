@@ -123,8 +123,6 @@ const Signup = () => {
         setLoading(false); // Set loading to false
       });
 
-
-      
     navigate("/");
   };
 

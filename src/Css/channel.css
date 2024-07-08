@@ -1279,6 +1279,10 @@
     left: 14%;
     width: 82vw;
   }
+  .ProfileLeft {
+    margin-left: 0px !important;
+  }
+
   .channelname {
     font-size: 22px;
   }
