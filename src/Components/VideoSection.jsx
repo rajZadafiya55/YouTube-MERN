@@ -46,7 +46,7 @@ import {
   getLikeCommentToggle,
   getLikeVideoToggle,
 } from "../redux/actions/likeAction";
-import { getSubscriptionToggle } from "../redux/actions/subscriptionAction";
+import { fetchSubscriptionsDetails, getSubscriptionToggle } from "../redux/actions/subscriptionAction";
 import { getUserWatchHistory } from "../redux/actions/userAction";
 import axios from "axios";
 
@@ -69,8 +69,6 @@ const VideoSection = () => {
   const isLikedComment = useSelector((state) => state.like.isLiked);
 
   const isSubscribe = useSelector((state) => state.subscription.isSubscribed);
-
-  console.log("isSubscribe", isSubscribe);
 
   const isWatchLater = useSelector((state) => state.videos.isWatchLater);
 
@@ -253,6 +251,13 @@ const VideoSection = () => {
     }
   }, [videoData, watchHistory]);
 
+  useEffect(() => {
+    dispatch(fetchSubscriptionsDetails(videoData?.owner?._id));
+  }, [dispatch, videoData?.owner?._id]);
+  
+  console.log("owner",videoData?.owner?._id)
+  console.log("isSubscribe", isSubscribe);
+
   if (!videoData) {
     return (
       <>
@@ -300,7 +305,7 @@ const VideoSection = () => {
 
   const LikeComment = async (commentId, id) => {
     try {
-      dispatch(getLikeCommentToggle(commentId,isLikedComment, _id ));
+      dispatch(getLikeCommentToggle(commentId, isLikedComment, _id));
     } catch (error) {
       console.log(error.message);
     }
@@ -335,7 +340,7 @@ const VideoSection = () => {
 
   const SubscribeChannel = async (id, channelId) => {
     try {
-      await dispatch(getSubscriptionToggle(id, channelId, isSubscribe));
+      await dispatch(getSubscriptionToggle(id, channelId, !isSubscribe));
     } catch (error) {
       console.log(error.message);
     }

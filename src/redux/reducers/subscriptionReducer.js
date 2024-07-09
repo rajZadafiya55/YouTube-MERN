@@ -21,6 +21,7 @@ const subscriptionRedcucer = (state = initialState, action) => {
     case FETCH_SUBSCRIPTIONS_USER:
       return {
         subscriptions: action.payload,
+        isSubscribed: action.payload.length > 0,
       };
     case CHANNEL_SUBCRIBE_TO_MYCH:
       return {
