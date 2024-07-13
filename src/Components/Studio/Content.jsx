@@ -206,7 +206,7 @@ const Content = () => {
     description: "",
     videoFile: null,
     thumbnail: null,
-    isPublished: false,
+    isPublished: true,
   });
 
   const handleInputChange = (e) => {
@@ -246,19 +246,32 @@ const Content = () => {
 
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
-    setFormData({
-      ...formData,
-      thumbnail: file,
-    });
-    setIsThumbnailSelected(!!file);
-    setPreviewThumbnail(file);
+    const img = new Image();
+    img.onload = () => {
+      const aspectRatio = img.width / img.height;
+      if (aspectRatio !== 16 / 9) {
+        alert("Please upload a 16:9 aspect ratio image.");
+        return;
+      }
+      setFormData({
+        ...formData,
+        thumbnail: file,
+      });
+      setIsThumbnailSelected(!!file);
+      setPreviewThumbnail(file);
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreviewThumbnail(reader.result);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewThumbnail(reader.result);
+      };
+      reader.readAsDataURL(file);
     };
-    reader.readAsDataURL(file);
+    img.onerror = () => {
+      alert("Invalid image file.");
+    };
+    img.src = URL.createObjectURL(file);
   };
+
   const showToast = (message) => {
     toast(message, { position: "top-right", autoClose: false });
   };

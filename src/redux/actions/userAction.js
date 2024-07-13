@@ -51,7 +51,6 @@ export const registerUserData = (data) => {
     axios
       .post(`${APIHttp}users/register`, formData)
       .then((res) => {
-        console.log("res", res);
         dispatch(addUser);
         if (res.data.success === true) {
           showToastMessage();
@@ -74,7 +73,6 @@ export const loginUser = (data, navigate) => {
     axios
       .post(`${APIHttp}users/login`, data)
       .then((res) => {
-        console.log("login", res.data.data);
         dispatch(login);
         if (res.data.success === true) {
           localStorage.setItem("loginData", JSON.stringify(res.data.data || 0));
@@ -100,7 +98,6 @@ export const changePassword = (data, navigate) => {
     axios
       .post(`${APIHttp}users/change-password`, data)
       .then((res) => {
-        console.log("pwd", res.data.data);
         dispatch(changePwd);
 
         if (res.data.success === true) {
@@ -128,7 +125,6 @@ export const getUserChannelProfile = (id) => {
       .get(`${APIHttp}users/c/${id}`, Header)
       .then(async (res) => {
         await dispatch(getChannelProfile(res.data.data));
-        console.log("channel data ", res.data.data);
       })
       .catch((err) => {
         console.log(err);
@@ -147,7 +143,6 @@ export const getUserWatchHistory = () => {
       .get(`${APIHttp}users/histroy`, Header)
       .then(async (res) => {
         await dispatch(getUserHistory(res.data.data));
-        console.log("histroy data ", res.data.data);
       })
       .catch((err) => {
         console.log(err);

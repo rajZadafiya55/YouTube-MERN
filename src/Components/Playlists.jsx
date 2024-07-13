@@ -19,7 +19,6 @@ const Playlists = () => {
   const navigate = useNavigate();
 
   const playlists = useSelector((state) => state.playlist.playlists);
-  console.log("playlist", playlists);
 
   const { id } = useParams();
   const [menuClicked, setMenuClicked] = useState(() => {
@@ -63,7 +62,6 @@ const Playlists = () => {
     setPlaylistsVideos(playlists[0]?.videos);
   }, [playlists]);
 
-  console.log("videos",playlistsVideos)
   document.title =
     PlaylistName && PlaylistName !== undefined
       ? `${PlaylistName} - YouTube`
@@ -566,9 +564,7 @@ const Playlists = () => {
                               : { display: "none" }
                           }
                           onClick={() => {
-                            if (token) {
-                              setIsEditmode(true);
-                            }
+                            navigate("/studio/playlist");
                           }}
                         />
                       </Tooltip>
@@ -591,7 +587,6 @@ const Playlists = () => {
                         }
                       >
                         {playlistDetails?.[0]?.owner?.[0]?.username || ""}
-
                       </p>
 
                       <p className="like-total-videos">

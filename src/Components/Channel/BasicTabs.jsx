@@ -43,9 +43,12 @@ function a11yProps(index) {
   };
 }
 
-export default function BasicTabs({ section, handleTabChange, newemail }) {
+export default function BasicTabs({
+  section = "Videos",
+  handleTabChange,
+  newemail,
+}) {
   const AllVideo = useSelector((state) => state.videos.videosDetails);
-  console.log("allVideos", AllVideo);
 
   const { id } = useParams();
   const [Email, setEmail] = useState(email);

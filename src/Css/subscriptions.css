@@ -1,3 +1,19 @@
+.NO_SUB {
+  margin-top: 100px;
+}
+
+.searched-content {
+  display: flex !important;
+  justify-content: center !important;
+}
+.nothing-foundSub {
+  width: 450px;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  left: 50%;
+  top: 200px;
+}
+
 .sub-channelDP {
   width: 100px;
   height: 100px;
@@ -139,7 +155,7 @@
     left: 83.2vw;
   }
   .sub-channelname {
-    display: none !important;
+    display: block !important;
   }
   .sub-channelDP {
     width: 80px;

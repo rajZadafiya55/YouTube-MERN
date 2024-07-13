@@ -244,7 +244,6 @@ function VideoDetails() {
       setLoading(true);
     }
   };
-  console.log("videodata", videoData);
   return (
     <>
       <div className="back-menu-edit" onClick={() => navigate("/studio/video")}>

@@ -86,7 +86,6 @@ const Subscriptions = () => {
   }, [theme]);
 
   if (subscriptionsData?.length === 0) {
-    console.log("jjjjjjjj", subscriptionsData);
     return (
       <div className="searched-content">
         <img src={nothing} alt="no results" className="nothing-found" />

@@ -46,9 +46,13 @@ import {
   getLikeCommentToggle,
   getLikeVideoToggle,
 } from "../redux/actions/likeAction";
-import { fetchSubscriptionsDetails, getSubscriptionToggle } from "../redux/actions/subscriptionAction";
+import {
+  fetchSubscriptionsDetails,
+  getSubscriptionToggle,
+} from "../redux/actions/subscriptionAction";
 import { getUserWatchHistory } from "../redux/actions/userAction";
 import axios from "axios";
+import { ThumbDown } from "@mui/icons-material";
 
 const VideoSection = () => {
   const dispatch = useDispatch();
@@ -56,19 +60,14 @@ const VideoSection = () => {
 
   // get state
   const selectedVideo = useSelector((state) => state.videos.selectedVideo);
-  console.log("selevctvideo", selectedVideo);
   const selectedComment = useSelector(
     (state) => state.comments.selectedComment
   );
   const listVideo = useSelector((state) => state.videos.videosDetails);
 
-  const isLikedStatus = useSelector((state) => state.like.isVideoLiked);
-
   const [listVideoDetails, setListVideoDetails] = useState([]);
 
   const isLikedComment = useSelector((state) => state.like.isLiked);
-
-  const isSubscribe = useSelector((state) => state.subscription.isSubscribed);
 
   const isWatchLater = useSelector((state) => state.videos.isWatchLater);
 
@@ -252,11 +251,11 @@ const VideoSection = () => {
   }, [videoData, watchHistory]);
 
   useEffect(() => {
-    dispatch(fetchSubscriptionsDetails(videoData?.owner?._id));
+    if (videoData?.owner?._id) {
+      dispatch(fetchSubscriptionsDetails(videoData.owner._id));
+    }
   }, [dispatch, videoData?.owner?._id]);
-  
-  console.log("owner",videoData?.owner?._id)
-  console.log("isSubscribe", isSubscribe);
+
 
   if (!videoData) {
     return (
@@ -274,7 +273,6 @@ const VideoSection = () => {
     );
   }
 
-  console.log("comments", comments);
   const {
     _id,
     videoFile: videoURL,
@@ -283,10 +281,12 @@ const VideoSection = () => {
     owner,
     description,
     views,
-    likes,
+    likesCount,
     createdAt,
     isPublished,
     subscribersCount,
+    isSubscribed,
+    likeFlag,
   } = videoData;
 
   document.title =
@@ -296,7 +296,7 @@ const VideoSection = () => {
     try {
       setLikeLoading(true);
 
-      dispatch(getLikeVideoToggle(id, isLikedStatus));
+      dispatch(getLikeVideoToggle(id, likeFlag));
       setLikeLoading(false);
     } catch (error) {
       console.log(error.message);
@@ -340,7 +340,8 @@ const VideoSection = () => {
 
   const SubscribeChannel = async (id, channelId) => {
     try {
-      await dispatch(getSubscriptionToggle(id, channelId, !isSubscribe));
+      await dispatch(getSubscriptionToggle(id, channelId, !isSubscribed));
+      dispatch(getSelectedVideo(_id));
     } catch (error) {
       console.log(error.message);
     }
@@ -460,7 +461,7 @@ const VideoSection = () => {
               </div>
 
               {/* ===================== Subscribe toggle button ====================================== */}
-              {isSubscribe === false ? (
+              {!isSubscribed ? (
                 <button
                   className={
                     theme
@@ -475,8 +476,8 @@ const VideoSection = () => {
                   }}
                   style={
                     loginEmail === owner?.email
-                      ? { cursor: "not-allowed" }
-                      : { cursor: "pointer" }
+                      ? { cursor: "not-allowed", display: "none" }
+                      : { cursor: "pointer", display: "block" }
                   }
                 >
                   Subscribe
@@ -502,7 +503,7 @@ const VideoSection = () => {
               <div
                 className="like-dislike"
                 style={
-                  likeLoading === true
+                  likeLoading
                     ? { opacity: 0.46, cursor: "wait", pointerEvents: "none" }
                     : { opacity: 1, cursor: "pointer", pointerEvents: "auto" }
                 }
@@ -522,7 +523,7 @@ const VideoSection = () => {
                       likeVideo();
                     }}
                   >
-                    {isLikedStatus === true ? (
+                    {likeFlag ? (
                       <ThumbUpIcon
                         fontSize="medium"
                         style={{ color: theme ? "white" : "black" }}
@@ -536,7 +537,7 @@ const VideoSection = () => {
                       />
                     )}
 
-                    <p className="like-count">{likes}</p>
+                    <p className="like-count">{likesCount}</p>
                   </div>
                 </Tooltip>
                 <div className={theme ? "vl" : "vl-light"}></div>
@@ -550,16 +551,24 @@ const VideoSection = () => {
                       theme
                         ? "dislike-data"
                         : "dislike-data dislike-data-light text-light-mode"
-                    } ${isLikedStatus ? "d-block" : "d-none"}`}
+                    } ${likeFlag ? "d-block" : "d-none"}`}
                     onClick={() => {
                       likeVideo();
                     }}
                   >
-                    <ThumbDownOutlinedIcon
-                      fontSize="medium"
-                      style={{ color: theme ? "white" : "black" }}
-                      className="dislike-icon"
-                    />
+                    {likeFlag ? (
+                      <ThumbDownOutlinedIcon
+                        fontSize="medium"
+                        style={{ color: theme ? "white" : "black" }}
+                        className="dislike-icon"
+                      />
+                    ) : (
+                      <ThumbDown
+                        fontSize="medium"
+                        style={{ color: theme ? "white" : "black" }}
+                        className="dislike-icon"
+                      />
+                    )}
                   </div>
                 </Tooltip>
               </div>
@@ -646,36 +655,6 @@ const VideoSection = () => {
                   <p>Save</p>
                 </div>
               </Tooltip>
-              <Tooltip
-                TransitionComponent={Zoom}
-                title="Add to playlist"
-                placement="top"
-              >
-                <div
-                  className={
-                    theme
-                      ? "add-playlist"
-                      : "add-playlist add-playlist-light text-light-mode"
-                  }
-                  onClick={() => {
-                    if (playlistClicked === false) {
-                      setPlaylistClicked(true);
-                      document.body.classList.add("bg-css");
-                    } else if (!token) {
-                      setisbtnClicked(true);
-                      document.body.classList.add("bg-css");
-                    }
-                  }}
-                >
-                  <PlaylistAddIcon
-                    fontSize="medium"
-                    style={{ color: theme ? "white" : "black" }}
-                    className="playlist-iconn"
-                  />
-
-                  <p>Playlist</p>
-                </div>
-              </Tooltip>
             </div>
 
             <div className="channel-right-data c-right2">
@@ -707,7 +686,7 @@ const VideoSection = () => {
                         likeVideo();
                       }}
                     >
-                      {isLikedStatus === true ? (
+                      {likeFlag === true ? (
                         <ThumbUpIcon
                           fontSize="medium"
                           style={{ color: theme ? "white" : "black" }}
@@ -721,7 +700,7 @@ const VideoSection = () => {
                         />
                       )}
 
-                      <p className="like-count">{likes}</p>
+                      <p className="like-count">{likesCount}</p>
                     </div>
                   </Tooltip>
 
@@ -865,7 +844,7 @@ const VideoSection = () => {
                         likeVideo();
                       }}
                     >
-                      {isLikedStatus === true ? (
+                      {likeFlag === true ? (
                         <ThumbUpIcon
                           fontSize="medium"
                           style={{ color: theme ? "white" : "black" }}
@@ -879,7 +858,7 @@ const VideoSection = () => {
                         />
                       )}
 
-                      <p className="like-count">{likes}</p>
+                      <p className="like-count">{likesCount}</p>
                     </div>
                   </Tooltip>
                   <div className={theme ? "vl" : "vl-light"}></div>
@@ -963,39 +942,6 @@ const VideoSection = () => {
                 </Tooltip>
               </div>
 
-              {/* ===================== add playlist button ====================================== */}
-              <div className="second-c-data">
-                <Tooltip
-                  TransitionComponent={Zoom}
-                  title="Add to playlist"
-                  placement="top"
-                >
-                  <div
-                    className={
-                      theme
-                        ? "add-playlist"
-                        : "add-playlist add-playlist-light text-light-mode"
-                    }
-                    onClick={() => {
-                      if (playlistClicked === false && token) {
-                        setPlaylistClicked(true);
-                        document.body.classList.add("bg-css");
-                      } else if (!token) {
-                        setisbtnClicked(true);
-                        document.body.classList.add("bg-css");
-                      }
-                    }}
-                  >
-                    <PlaylistAddIcon
-                      fontSize="medium"
-                      style={{ color: theme ? "white" : "black" }}
-                    />
-
-                    <p>Playlist</p>
-                  </div>
-                </Tooltip>
-              </div>
-
               {/* ===================== save-later button ====================================== */}
 
               <div className="third-c-data">
@@ -1028,36 +974,6 @@ const VideoSection = () => {
                       />
                     )}
                     <p>Save</p>
-                  </div>
-                </Tooltip>
-                <Tooltip
-                  TransitionComponent={Zoom}
-                  title="Add to playlist"
-                  placement="top"
-                >
-                  {/* playlist  */}
-                  <div
-                    className={
-                      theme
-                        ? "add-playlist"
-                        : "add-playlist add-playlist-light text-light-mode"
-                    }
-                    onClick={() => {
-                      if (playlistClicked === false && token) {
-                        setPlaylistClicked(true);
-                        document.body.classList.add("bg-css");
-                      } else if (!token) {
-                        setisbtnClicked(true);
-                        document.body.classList.add("bg-css");
-                      }
-                    }}
-                  >
-                    <PlaylistAddIcon
-                      fontSize="medium"
-                      style={{ color: theme ? "white" : "black" }}
-                    />
-
-                    <p>Playlist</p>
                   </div>
                 </Tooltip>
               </div>
@@ -1353,7 +1269,9 @@ const VideoSection = () => {
                             className="comment-like"
                           />
 
-                          <p style={{ marginLeft: "16px" }}>{element.likes}</p>
+                          <p style={{ marginLeft: "16px" }}>
+                            {element.likesCount}
+                          </p>
 
                           {isHeart[index] === false ? (
                             <FavoriteBorderOutlinedIcon
@@ -1998,7 +1916,9 @@ const VideoSection = () => {
                             className="comment-like"
                           />
 
-                          <p style={{ marginLeft: "16px" }}>{element.likes}</p>
+                          <p style={{ marginLeft: "16px" }}>
+                            {element.likesCount}
+                          </p>
 
                           {isHeart[index] === false ? (
                             <FavoriteBorderOutlinedIcon
@@ -2073,231 +1993,6 @@ const VideoSection = () => {
         }
       >
         <Share />
-      </div>
-
-      {/*================================= PLAYLIST POPUP ================================= */}
-
-      <div
-        className={
-          theme ? "playlist-pop" : "playlist-pop light-mode text-light-mode"
-        }
-        style={{
-          minHeight: createPlaylistClicked === false ? "262px" : "420px",
-          display: playlistClicked === true ? "block" : "none",
-          width:
-            UserPlaylist && !UserPlaylist.includes("No playlists available...")
-              ? "270px"
-              : "270px",
-        }}
-      >
-        <div className="this-top-section">
-          <p>Save video to...</p>
-          <ClearRoundedIcon
-            className="close-playlist-pop"
-            fontSize="medium"
-            style={{ color: theme ? "white" : "black", cursor: "pointer" }}
-            onClick={() => {
-              setPlaylistClicked(false);
-              setcreatePlaylistClicked(false);
-              document.body.classList.remove("bg-css");
-            }}
-          />
-        </div>
-        <div
-          className="this-middle-section"
-          style={
-            createPlaylistClicked === true ? { top: "38%" } : { top: "50%" }
-          }
-        >
-          {!UserPlaylist ||
-          UserPlaylist.includes("No playlists available...") ? (
-            <p>No Playlists available...</p>
-          ) : (
-            ""
-          )}
-        </div>
-        <div className="this-middle-section2">
-          <div className="show-playlists">
-            {UserPlaylist &&
-              !UserPlaylist.includes("No playlists available...") &&
-              UserPlaylist.map((element, index) => {
-                return (
-                  <div className="all-playlists" key={index}>
-                    {(playlistID &&
-                      playlistID.length > 0 &&
-                      playlistID.includes(element._id) === false) ||
-                    playlistID === "Video doesn't exist in any playlist" ? (
-                      <CheckBoxOutlineBlankIcon
-                        className="tick-box"
-                        fontSize="medium"
-                        style={{ color: theme ? "white" : "black" }}
-                        onClick={() => {
-                          // AddVideoToExistingPlaylist(element._id);
-                        }}
-                      />
-                    ) : (
-                      <CheckBoxIcon
-                        className="tick-box"
-                        fontSize="medium"
-                        style={{ color: theme ? "white" : "black" }}
-                        // onClick={() => RemoveVideo(element._id)}
-                      />
-                    )}
-                    {element.playlist_name.length <= 16
-                      ? element.playlist_name
-                      : `${element.playlist_name.slice(0, 16)}..`}
-                    {element.playlist_privacy === "Public" ? (
-                      <PublicOutlinedIcon
-                        className="new-privacy"
-                        fontSize="medium"
-                        style={{ color: theme ? "white" : "black" }}
-                      />
-                    ) : (
-                      ""
-                    )}
-                    {element.playlist_privacy === "Private" ? (
-                      <LockOutlinedIcon
-                        className="new-privacy"
-                        fontSize="medium"
-                        style={{ color: theme ? "white" : "black" }}
-                      />
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                );
-              })}
-          </div>
-        </div>
-        <div
-          className="this-bottom-section"
-          onClick={() => {
-            if (createPlaylistClicked === false) {
-              setcreatePlaylistClicked(true);
-            }
-          }}
-          style={
-            createPlaylistClicked === false
-              ? { display: "flex" }
-              : { display: "none" }
-          }
-        >
-          <AddToPhotosOutlinedIcon
-            fontSize="medium"
-            style={{ color: theme ? "white" : "black" }}
-          />
-          <p style={{ marginLeft: "12px" }}>Create new playlist</p>
-        </div>
-        <div
-          className="create-playlist-section"
-          style={
-            createPlaylistClicked === true
-              ? { display: "block" }
-              : { display: "none" }
-          }
-        >
-          <div className="first-que">
-            <p>Name</p>
-            <input
-              type="text"
-              name="playlist_name"
-              className={
-                theme
-                  ? "playlist-name"
-                  : "playlist-name playlist-name-light light-mode text-light-mode"
-              }
-              placeholder="Enter playlist name..."
-              value={playlistName}
-              onChange={(e) => {
-                setPlaylistName(e.target.value);
-              }}
-            />
-          </div>
-          <div className="second-que">
-            <p>Privacy</p>
-            <div
-              className="combine2"
-              onClick={() => {
-                if (privacyClicked === false) {
-                  setprivacyClicked(true);
-                }
-              }}
-            >
-              <p>{privacy}</p>
-              <hr className="bottom-line" />
-            </div>
-          </div>
-          <div
-            className={
-              theme
-                ? "choose-privacy"
-                : "choose-privacy light-mode text-light-mode"
-            }
-            style={
-              privacyClicked === true
-                ? { display: "block" }
-                : { display: "none" }
-            }
-          >
-            <div
-              className={
-                theme ? "first-privacy" : "first-privacy feature-light"
-              }
-              onClick={() => {
-                setPrivacy("Public");
-                setprivacyClicked(false);
-              }}
-            >
-              <PublicOutlinedIcon
-                fontSize="medium"
-                style={{ color: theme ? "white" : "black" }}
-              />
-              <div className="right-privacy">
-                <p>Public</p>
-                <p className={theme ? "" : "text-light-mode2"}>
-                  Anyone can view
-                </p>
-              </div>
-            </div>
-            <div
-              className={
-                theme ? "second-privacy" : "second-privacy feature-light"
-              }
-              onClick={() => {
-                setPrivacy("Private");
-                setprivacyClicked(false);
-              }}
-            >
-              <LockOutlinedIcon
-                fontSize="medium"
-                style={{ color: theme ? "white" : "black" }}
-              />
-              <div className="right-privacy">
-                <p>Private</p>
-                <p className={theme ? "" : "text-light-mode2"}>
-                  Only you can view
-                </p>
-              </div>
-            </div>
-          </div>
-          <div
-            className="playlist-create-btn"
-            style={
-              loading === true
-                ? { pointerEvents: "none" }
-                : { pointerEvents: "auto" }
-            }
-            onClick={() => {
-              if (playlistName !== "" || privacy !== "") {
-                // AddPlaylist();
-              } else {
-                EmptyMessage("Input fileds can't be empty");
-              }
-            }}
-          >
-            {loading === true ? <p>Loading...</p> : <p>Create</p>}
-          </div>
-        </div>
       </div>
     </>
   );

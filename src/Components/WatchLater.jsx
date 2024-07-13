@@ -20,8 +20,6 @@ function WatchLater() {
   const watchHistory = useSelector(
     (state) => state.user.watchHistory.watchHistory
   );
-  console.log("watcHistory", watchHistory);
-
   const [email, setEmail] = useState();
   const [name, setName] = useState(username);
   const [menuClicked, setMenuClicked] = useState(() => {
@@ -104,7 +102,6 @@ function WatchLater() {
     setWatchLater(watchHistory);
   }, [watchHistory]);
 
-  console.log("watch", watchlater);
 
   if (watchlater?.length == 0 || watchlater?.length < 0) {
     return (

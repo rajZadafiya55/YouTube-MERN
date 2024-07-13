@@ -33,6 +33,7 @@ export default function PlayList() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { playlists } = useSelector((state) => state.playlist);
+
   // ==========================(UI code)==================================================
   const [theme, setTheme] = useState(false);
   if (theme === false && window.location.href.includes("/studio/playList")) {
@@ -196,6 +197,7 @@ export default function PlayList() {
               pageSize={5}
               rowsPerPageOptions={[10]}
               checkboxSelection
+              getRowId={(row) => row._id} // Use _id as the unique identifier
             />
           </Card>
         </div>

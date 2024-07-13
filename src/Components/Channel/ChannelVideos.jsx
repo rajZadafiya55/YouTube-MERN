@@ -5,9 +5,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { useDispatch, useSelector } from "react-redux";
 import nothing from "../../img/nothing.png";
 import "../../Css/channel.css";
-import {
-  getAllChannelVideosById,
-} from "../../redux/actions/dashboardAction.js";
+import { getAllChannelVideosById } from "../../redux/actions/dashboardAction.js";
 
 const ChannelVideos = (props) => {
   const { id } = props;
@@ -50,8 +48,6 @@ const ChannelVideos = (props) => {
   useEffect(() => {
     setMyVideos(AllVideo);
   }, [AllVideo]);
-
-  console.log("my videos ", myVideos);
 
   useEffect(() => {
     const sortVideos = () => {

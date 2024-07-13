@@ -66,9 +66,7 @@ function SearchResults() {
         const { videoData, channelData } = Data;
         setsearchedVideoData(videoData);
         setsearchedChannelData(channelData);
-      } catch (error) {
-        // console.log(error.message);
-      }
+      } catch (error) {}
     };
     getSearchResult();
   }, [data, searchedChannelData, searchedVideoData]);
@@ -94,9 +92,7 @@ function SearchResults() {
           const userEmail = await response.json();
           setUserEmail(userEmail);
         }
-      } catch (error) {
-        // console.log(error.message);
-      }
+      } catch (error) {}
     };
 
     const interval = setInterval(getOtherChannel, 200);
@@ -115,9 +111,7 @@ function SearchResults() {
           const myvideos = await response.json();
           setUserVideos(myvideos);
         }
-      } catch (error) {
-        // console.log(error.message);
-      }
+      } catch (error) {}
     };
 
     getUserVideos();
@@ -137,9 +131,7 @@ function SearchResults() {
             setIsSubscribed(false);
           }
         }
-      } catch (error) {
-        // console.log(error.message);
-      }
+      } catch (error) {}
     };
 
     const interval = setInterval(checkSubscription, 100);
@@ -158,9 +150,7 @@ function SearchResults() {
         },
       });
       await response.json();
-    } catch (error) {
-      // console.log(error.message);
-    }
+    } catch (error) {}
   };
 
   const SubscribeChannel = async (
@@ -185,9 +175,7 @@ function SearchResults() {
         }
       );
       await response.json();
-    } catch (error) {
-      // console.log(error.message);
-    }
+    } catch (error) {}
   };
 
   if (

@@ -75,7 +75,7 @@ const Browse = () => {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 700);
   }, []);
 
   useEffect(() => {

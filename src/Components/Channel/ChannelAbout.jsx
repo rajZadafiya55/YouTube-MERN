@@ -36,22 +36,6 @@ function ChannelAbout(prop) {
       theme: theme ? "dark" : "light",
     });
 
-  // useEffect(() => {
-  //   const getUserMail = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         `${backendURL}/getotherchannel/${prop.channelid}`
-  //       );
-  //       const userEmail = await response.json();
-  //       setEmail(userEmail);
-  //     } catch (error) {
-  //       // console.log(error.message);
-  //     }
-  //   };
-
-  //   getUserMail();
-  // }, [prop.channelid]);
-
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
@@ -68,9 +52,7 @@ function ChannelAbout(prop) {
           setLinks(sociallinks);
           setjoinedDate(joining);
         }
-      } catch (error) {
-        // console.log(error.message);
-      }
+      } catch (error) {}
     };
     GetAboutData();
   }, [Email]);
@@ -83,9 +65,7 @@ function ChannelAbout(prop) {
           const totalViews = await response.json();
           setTotalViews(totalViews);
         }
-      } catch (error) {
-        // console.log(error.message);
-      }
+      } catch (error) {}
     };
 
     GetTotalViews();

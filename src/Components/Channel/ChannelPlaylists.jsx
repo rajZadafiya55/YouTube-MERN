@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import deleteIMG from "../../img/delete.jpg";
+import deleteIMG from "../../img/playlistComing.gif";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPlaylists } from "../../redux/actions/playlistAction";
+import { showToast } from "../../constant/Api";
 
 function generateRandomColors(count) {
   const transparency = 0.7; // Adjust transparency as needed (0 to 1)
@@ -180,7 +181,11 @@ function ChannelPlaylists(props) {
                       alt=""
                       className="playlist-thumbnail"
                       onClick={() => {
-                        navigate(`/playlist/${playlist._id}`);
+                        if (playlist.videos.length > 0) {
+                          navigate(`/playlist/${playlist._id}`);
+                        } else {
+                          showToast("Comming Soon...");
+                        }
                       }}
                     />
                   </div>

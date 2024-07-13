@@ -1477,7 +1477,8 @@
     top: 10px;
   }
   .no-results {
-    top: 240px !important;
+    display: none !important;
+    /* top: 240px !important; */
   }
 
   .featured-channels-added {
@@ -1807,7 +1808,7 @@
     width: 180px !important;
   }
   .channel-playlist-section {
-    top: 50px;
+    top: 20px;
   }
   .playlistt-details {
     width: 37vw !important;

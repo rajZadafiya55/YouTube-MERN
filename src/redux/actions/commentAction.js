@@ -23,7 +23,6 @@ export const getUserAllComments = () => (dispatch) => {
   axios
     .get(`${APIHttp}comments`, Header)
     .then(async (res) => {
-      console.log("res data data ", res.data.data);
       dispatch(getAllComment(res.data.data));
     })
     .catch((err) => {
@@ -97,7 +96,6 @@ export const createComment = (id, comment) => (dispatch) => {
       dispatch(getSelectedComment(id));
       commonNotify("Comment addded Successfully.!");
 
-      console.log("res data data", res.data.data);
     })
     .catch((err) => {
       console.log(err);

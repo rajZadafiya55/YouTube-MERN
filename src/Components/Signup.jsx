@@ -113,7 +113,6 @@ const Signup = () => {
     axios
       .post(`${APIHttp}users/register`, formData)
       .then((r) => {
-        console.log(r.data);
         toast("Registration successful.");
         resetForm(); // Reset the form
         setLoading(false); // Set loading to false

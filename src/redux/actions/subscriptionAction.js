@@ -1,6 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import axios from "axios";
-import { CHANNEL_SUBCRIBE_TO_MYCH, FETCH_SUBSCRIPTIONS_USER, SUBSCRIBE_TOGGLE } from "../types";
+import {
+  CHANNEL_SUBCRIBE_TO_MYCH,
+  FETCH_SUBSCRIPTIONS_USER,
+  SUBSCRIBE_TOGGLE,
+} from "../types";
 import { APIHttp, Header, commonNotify } from "../../constant/Api";
 import { getSelectedVideo } from "./videoAction";
 
@@ -19,8 +23,6 @@ export const getSubscriptionToggle = (id, channelId, isSubscribed) => {
       );
       const updatedSubStatus = res.data.data.isSubscribed;
       dispatch(getSubscription(updatedSubStatus));
-
-      dispatch(getSelectedVideo(channelId));
 
       if (updatedSubStatus) {
         commonNotify("Channel subscribed successfully!");

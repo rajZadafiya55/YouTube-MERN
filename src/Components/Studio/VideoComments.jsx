@@ -29,10 +29,6 @@ function VideoComments() {
 
   const isLiked = useSelector((state) => state.like.isLiked);
 
-  useEffect(() => {
-    console.log("Like status changed:", isLiked);
-  }, [isLiked]);
-
   const { id } = useParams();
   const [Email, setEmail] = useState();
   const [videoComments, setVideoComments] = useState([]);

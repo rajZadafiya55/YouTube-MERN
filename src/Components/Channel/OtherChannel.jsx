@@ -22,9 +22,6 @@ function OtherChannel() {
 
   const channelData = useSelector((state) => state.user.channelDetails);
 
-  const isSubscribe = useSelector((state) => state.subscription.isSubscribed);
-  console.log("isSubscriber", isSubscribe);
-
   const { id } = useParams();
   const [Email, setEmail] = useState(email);
   const [channelName, setChannelname] = useState(username);
@@ -75,10 +72,12 @@ function OtherChannel() {
   }, [theme]);
 
   //POST REQUESTS
+  const isSubscribe = userProfile[0]?.isSubscribed;
 
   const SubscribeChannel = async (id, channelId) => {
     try {
       await dispatch(getSubscriptionToggle(id, channelId, isSubscribe));
+      dispatch(getUserChannelProfile(id));
     } catch (error) {
       console.log(error.message);
     }
@@ -212,7 +211,7 @@ function OtherChannel() {
                 </div>
               </SkeletonTheme>
               {/* ============================================= */}
-              <div className="ProfileLeft" style={{ marginLeft: "65px" }}>
+              <div className="ProfileLeft">
                 <div
                   className="channel-top-content"
                   style={
@@ -282,10 +281,6 @@ function OtherChannel() {
                           className={
                             theme ? "more-about" : "more-about text-light-mode2"
                           }
-                          onClick={() => {
-                            localStorage.setItem("Section", "About");
-                            window.location.reload();
-                          }}
                         >
                           <p className="more-text">More about this channel</p>
                           <ArrowForwardIosIcon

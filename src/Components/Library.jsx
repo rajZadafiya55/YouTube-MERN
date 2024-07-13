@@ -71,7 +71,6 @@ const Library = () => {
   useEffect(() => {
     setVideolike(likeVideos);
   }, [likeVideos]);
-  console.log("videolike", videolike);
 
   useEffect(() => {
     const handleMenuButtonClick = () => {

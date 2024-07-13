@@ -39,7 +39,6 @@ const Subscriptions = () => {
   useEffect(() => {
     setSubscriptions(channelSubscriber);
   }, [channelSubscriber]);
-  console.log("subscriber", subscriptions);
 
   useEffect(() => {
     localStorage.setItem("menuClicked", JSON.stringify(menuClicked));
@@ -104,11 +103,8 @@ const Subscriptions = () => {
 
   if (subscriptions.length === 0) {
     return (
-      <div className="searched-content">
-        <img src={nothing} alt="no results" className="nothing-found" />
-        <p className={theme ? "no-results" : "no-results text-light-mode"}>
-          No subscriptions found!
-        </p>
+      <div className="NO_SUB">
+        <p>No subscriptions found...😅</p>
       </div>
     );
   }
