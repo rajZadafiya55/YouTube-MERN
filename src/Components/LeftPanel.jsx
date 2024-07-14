@@ -536,8 +536,13 @@ function LeftPanel() {
                 : "trending-hori hori text-light-mode"
             }
             onClick={() => {
-              localStorage.setItem("selected", "trending");
-              navigate("/trending");
+              if (token) {
+                localStorage.setItem("selected", "trending");
+
+                navigate("/trending");
+              } else {
+                showLoginToast();
+              }
             }}
           >
             {selected === "trending" ? (
