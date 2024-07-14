@@ -1270,7 +1270,7 @@ const VideoSection = () => {
                           />
 
                           <p style={{ marginLeft: "16px" }}>
-                            {element.likesCount}
+                            {element.likes}
                           </p>
 
                           {isHeart[index] === false ? (
@@ -1917,7 +1917,7 @@ const VideoSection = () => {
                           />
 
                           <p style={{ marginLeft: "16px" }}>
-                            {element.likesCount}
+                            {element.likes}
                           </p>
 
                           {isHeart[index] === false ? (

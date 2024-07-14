@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-export const APIHttp = "https://youtube-serv.vercel.app/api/v1/";
+export const APIHttp = "https://youtube-api-ucsp.onrender.com/api/v1/";
 export const FrontendDomain = "https://yoouttube.netlify.app/";
 import Uavatar from "../img/Uavatar.png";
 
