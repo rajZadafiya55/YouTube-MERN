@@ -14,6 +14,7 @@ import {
   _id,
   APIHttp,
   Header,
+  FrontendDomain,
 } from "../../constant/Api";
 
 const TextField = styled(TextValidator)(() => ({
@@ -31,7 +32,7 @@ function Basic() {
   });
 
   const [channelID, setChannelID] = useState(_id);
-  const channelUrl = `${APIHttp}channel`;
+  const channelUrl = `${FrontendDomain}channel`;
   const channelIDInputRef = useRef(null);
   const [copy, setCopy] = useState(false);
 

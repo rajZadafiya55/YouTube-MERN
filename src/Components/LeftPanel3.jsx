@@ -164,6 +164,7 @@ const LeftPanel2 = () => {
             onClick={() => {
               if (videodata) {
                 navigate(`/video/${videodata._id}`);
+                window.location.reload();
               }
             }}
           >
@@ -322,6 +323,7 @@ const LeftPanel2 = () => {
             onClick={() => {
               if (videodata) {
                 navigate(`/video/${videodata._id}`);
+                window.location.reload();
               }
             }}
           >

@@ -252,9 +252,11 @@ const ChannelVideos = (props) => {
                     if (token) {
                       setTimeout(() => {
                         navigate(`/video/${element._id}`);
+                        window.location.reload();
                       }, 400);
                     } else {
                       navigate(`/video/${element._id}`);
+                      window.location.reload();
                     }
                   }}
                 >

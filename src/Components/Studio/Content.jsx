@@ -40,6 +40,7 @@ import {
   commonNotify,
   _id,
   Header,
+  FrontendDomain,
   showToast,
 } from "../../constant/Api";
 import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
@@ -82,7 +83,7 @@ const Content = () => {
   const [DeleteVideoData, setDeleteVideoData] = useState();
   const [boxclicked, setBoxClicked] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
-  const videoUrl = `${APIHttp}videos`;
+  const videoUrl = `${FrontendDomain}videos`;
   const [loading, setLoading] = useState(true);
   const [menu, setmenu] = useState(() => {
     const menu = localStorage.getItem("studioMenuClicked");
@@ -1179,6 +1180,7 @@ const Content = () => {
                                   style={{ color: theme ? "#aaa" : "#606060" }}
                                   onClick={() => {
                                     navigate(`/video/${element._id}`);
+                                    window.location.reload();
                                   }}
                                 />
                               </Tooltip>

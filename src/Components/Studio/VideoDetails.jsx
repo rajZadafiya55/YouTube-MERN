@@ -14,7 +14,7 @@ import WestIcon from "@mui/icons-material/West";
 
 import "react-toastify/dist/ReactToastify.css";
 import { GrUndo } from "react-icons/gr";
-import { APIHttp, commonNotify } from "../../constant/Api";
+import { commonNotify, FrontendDomain } from "../../constant/Api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getSelectedVideo,
@@ -36,7 +36,7 @@ function VideoDetails() {
     visibility: "",
   });
 
-  const videolink = `${APIHttp}videos`;
+  const videolink = `${FrontendDomain}videos`;
   const [thumbnailImage, setThumbnailImage] = useState(null);
   const [thumbnailSelected, setThumbnailSelected] = useState(false);
 
@@ -539,7 +539,8 @@ function VideoDetails() {
                       className="current-videolink"
                       onClick={() => {
                         if (videoData) {
-                          navigate(`${videolink}/${videoData._id}`);
+                          navigate(`${videolink}
+                          ${videoData._id}`);
                         }
                       }}
                     >

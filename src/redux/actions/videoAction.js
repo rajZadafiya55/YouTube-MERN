@@ -72,7 +72,7 @@ export const getSelectedVideo = (id) => (dispatch) => {
 
 export const addVideoData = (formData, setLoading, setIsClicked) => {
   return (dispatch) => {
-    const formDataToSend = new FormData();
+    const formDataToSend = new FormData(); 
 
     formDataToSend.append("title", formData.title || "");
     formDataToSend.append("description", formData.description || "");

@@ -299,6 +299,7 @@ const Browse = () => {
                         if (token) {
                           setTimeout(() => {
                             navigate(`/video/${element._id}`);
+                            window.location.reload();
                           }, 400);
                         } else {
                           showLoginToast();

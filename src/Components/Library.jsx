@@ -269,6 +269,7 @@ const Library = () => {
                     key={index}
                     onClick={() => {
                       navigate(`/video/${element._id}`);
+                      window.location.reload();
                     }}
                   >
                     <img
@@ -471,6 +472,7 @@ const Library = () => {
                     key={index}
                     onClick={() => {
                       navigate(`/video/${element.videos._id}`);
+                      window.location.reload();
                     }}
                   >
                     <img

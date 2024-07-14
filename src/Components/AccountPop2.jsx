@@ -17,7 +17,6 @@ import { _id } from "../constant/Api";
 
 function AccountPop() {
   const navigate = useNavigate();
-  const backendURL = "http://localhost:3000";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [profile, setProfile] = useState("");

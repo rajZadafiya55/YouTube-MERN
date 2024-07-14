@@ -428,7 +428,10 @@ const Comments = () => {
                       <div
                         className="right-sidevideo"
                         key={index}
-                        onClick={() => navigate(`/video/${element.video._id}`)}
+                        onClick={() => {
+                          navigate(`/video/${element.video._id}`);
+                          window.location.reload();
+                        }}
                       >
                         <img
                           src={element.video.thumbnail.url}
@@ -582,7 +585,10 @@ const Comments = () => {
                     <div
                       className="right-sidevideo"
                       key={index}
-                      onClick={() => navigate(`/video/${element.video._id}`)}
+                      onClick={() => {
+                        navigate(`/video/${element.video._id}`);
+                        window.location.reload();
+                      }}
                     >
                       <img
                         src={element.video.thumbnail.url}

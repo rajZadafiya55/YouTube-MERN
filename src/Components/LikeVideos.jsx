@@ -144,9 +144,11 @@ function LikeVideos() {
                       if (token) {
                         setTimeout(() => {
                           navigate(`/video/${likeVideos[0].videos._id}`);
+                          window.location.reload();
                         }, 400);
                       } else {
                         navigate(`/video/${likeVideos[0].videos._id}`);
+                        window.location.reload();
                       }
                     }}
                   >
@@ -205,9 +207,11 @@ function LikeVideos() {
                     if (token) {
                       setTimeout(() => {
                         navigate(`/video/${likeVideos[0].videos._id}`);
+                        window.location.reload();
                       }, 400);
                     } else {
                       navigate(`/video/${likeVideos[0].videos._id}`);
+                      window.location.reload();
                     }
                   }}
                 >
@@ -416,9 +420,11 @@ function LikeVideos() {
                         if (token) {
                           setTimeout(() => {
                             navigate(`/video/${likeVideos[0].videos._id}`);
+                            window.location.reload();
                           }, 400);
                         } else {
                           navigate(`/video/${likeVideos[0].videos._id}`);
+                          window.location.reload();
                         }
                       }}
                     >
@@ -478,9 +484,11 @@ function LikeVideos() {
                     if (token) {
                       setTimeout(() => {
                         navigate(`/video/${likeVideos[0].videos._id}`);
+                        window.location.reload();
                       }, 400);
                     } else {
                       navigate(`/video/${likeVideos[0].videos._id}`);
+                      window.location.reload();
                     }
                   }}
                 >

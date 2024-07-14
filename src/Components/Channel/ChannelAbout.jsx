@@ -10,9 +10,10 @@ import { AiOutlineInfoCircle } from "react-icons/ai";
 import { BiTrendingUp } from "react-icons/bi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { APIHttp } from "../../constant/Api";
 
 function ChannelAbout(prop) {
-  const backendURL = "http://localhost:3000";
+  const backendURL = APIHttp;
   const [Email, setEmail] = useState();
   const [description, setDescription] = useState();
   const [links, setLinks] = useState();

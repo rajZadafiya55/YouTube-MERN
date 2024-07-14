@@ -102,7 +102,6 @@ function WatchLater() {
     setWatchLater(watchHistory);
   }, [watchHistory]);
 
-
   if (watchlater?.length == 0 || watchlater?.length < 0) {
     return (
       <>
@@ -146,9 +145,11 @@ function WatchLater() {
                       if (token) {
                         setTimeout(() => {
                           navigate(`/video/${watchlater[0]._id}`);
+                          window.location.reload();
                         }, 400);
                       } else {
                         navigate(`/video/${watchlater[0]._id}`);
+                        window.location.reload();
                       }
                     }}
                   >
@@ -207,9 +208,11 @@ function WatchLater() {
                     if (token) {
                       setTimeout(() => {
                         navigate(`/video/${watchlater[0]._id}`);
+                        window.location.reload();
                       }, 400);
                     } else {
                       navigate(`/video/${watchlater[0]._id}`);
+                      window.location.reload();
                     }
                   }}
                 >
@@ -417,9 +420,11 @@ function WatchLater() {
                         if (token) {
                           setTimeout(() => {
                             navigate(`/video/${watchlater[0]._id}`);
+                            window.location.reload();
                           }, 400);
                         } else {
                           navigate(`/video/${watchlater[0]._id}`);
+                          window.location.reload();
                         }
                       }}
                     >
@@ -479,9 +484,11 @@ function WatchLater() {
                     if (token) {
                       setTimeout(() => {
                         navigate(`/video/${watchlater[0]._id}`);
+                        window.location.reload();
                       }, 400);
                     } else {
                       navigate(`/video/${watchlater[0]._id}`);
+                      window.location.reload();
                     }
                   }}
                 >

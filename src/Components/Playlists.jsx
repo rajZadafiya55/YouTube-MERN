@@ -186,8 +186,10 @@ const Playlists = () => {
                     onClick={() => {
                       if (token) {
                         navigate(`/video/${playlistsVideos[0]._id}`);
+                        window.location.reload();
                       } else {
                         navigate(`/video/${playlistsVideos[0]._id}`);
+                        window.location.reload();
                       }
                     }}
                   >
@@ -286,8 +288,10 @@ const Playlists = () => {
                   onClick={() => {
                     if (token) {
                       navigate(`/video/${playlistsVideos[0]._id}`);
+                      window.location.reload();
                     } else {
                       navigate(`/video/${playlistsVideos[0]._id}`);
+                      window.location.reload();
                     }
                   }}
                 >
@@ -496,8 +500,10 @@ const Playlists = () => {
                       onClick={() => {
                         if (token) {
                           navigate(`/video/${playlistsVideos[0]._id}`);
+                          window.location.reload();
                         } else {
                           navigate(`/video/${playlistsVideos[0]._id}`);
+                          window.location.reload();
                         }
                       }}
                     >
@@ -600,8 +606,10 @@ const Playlists = () => {
                   onClick={() => {
                     if (token) {
                       navigate(`/video/${playlistsVideos[0]._id}`);
+                      window.location.reload();
                     } else {
                       navigate(`/video/${playlistsVideos[0]._id}`);
+                      window.location.reload();
                     }
                   }}
                 >

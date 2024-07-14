@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
-export const APIHttp = "http://localhost:5000/api/v1/";
+export const APIHttp = "https://youtube-serv.vercel.app/api/v1/";
+export const FrontendDomain = "https://yoouttube.netlify.app/";
 import Uavatar from "../img/Uavatar.png";
 
 // const userData = JSON.parse(localStorage.getItem('loginData'));
@@ -44,6 +45,8 @@ export const VideoHeader = {
   headers: {
     "Content-Type": "multipart/form-data",
     Authorization: "Bearer " + accessToken,
+    maxContentLength: Infinity,
+    maxBodyLength: Infinity,
   },
 };
 
