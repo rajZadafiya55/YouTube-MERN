@@ -4,21 +4,27 @@ import { Button, Grid, styled, Dialog } from "@mui/material";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { _id } from "../../../constant/Api";
 import {
   createPlaylist,
   fetchPlaylists,
 } from "../../../redux/actions/playlistAction";
-import { _id } from "../../../constant/Api";
 
 const TextField = styled(TextValidator)(() => ({
   width: "100%",
   marginBottom: "16px",
 }));
 
-export default function NewPlaylistDialog(props) {
+export default function NewPlaylistDialog() {
   const dispatch = useDispatch();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const playlists = useSelector((state) => state.playlist.playlists);
+
+  const [data, setData] = useState({
+    name: "",
+    description: "",
+  });
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -28,79 +34,72 @@ export default function NewPlaylistDialog(props) {
     setOpen(false);
   };
 
-  const [data, setdata] = useState({
-    name: "",
-    description: "",
-  });
   const handleChange = (e) => {
-    e.persist();
-    setdata({ ...data, [e.target.name]: e.target.value });
+    setData({ ...data, [e.target.name]: e.target.value });
   };
 
-  // useEffect(() => {
-  //   dispatch(fetchPlaylists(_id));
-  // }, [_id]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    dispatch(createPlaylist(data, _id));
-    setdata("");
-    handleClose();
-    props.refreshData();
+  useEffect(() => {
     dispatch(fetchPlaylists(_id));
-    window.location.reload();
+  }, [dispatch]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await dispatch(createPlaylist(data, _id));
+      setData({
+        name: "",
+        description: "",
+      });
+      handleClose();
+    } catch (error) {
+      console.error("Error creating playlist: ", error);
+    }
   };
 
   return (
     <div>
       <Button variant="contained" onClick={handleClickOpen}>
-        New PlayList
+        New Playlist
       </Button>
       <Dialog
         open={open}
         onClose={handleClose}
-        // fullScreen
         fullWidth
         maxWidth="sm"
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"New PlayList"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">New Playlist</DialogTitle>
         <DialogContent>
-          <div>
-            <ValidatorForm
-              onSubmit={handleSubmit}
-              onError={() => null}
-              autocomplete="off"
-            >
-              <Grid container>
-                <Grid item lg={12} md={12} sm={12} xs={12}>
-                  <TextField
-                    type="text"
-                    name="name"
-                    id="standard-basic"
-                    value={data.name || ""}
-                    onChange={handleChange}
-                    errorMessages={["this field is required"]}
-                    label="Playlist Name "
-                    validators={["required"]}
-                  />
-                  <TextField
-                    type="text"
-                    name="description"
-                    id="standard-basic"
-                    value={data.description || ""}
-                    onChange={handleChange}
-                    errorMessages={["this field is required"]}
-                    label="Description.. "
-                    validators={["required"]}
-                  />
-                </Grid>
+          <ValidatorForm
+            onSubmit={handleSubmit}
+            onError={() => null}
+            autoComplete="off"
+          >
+            <Grid container spacing={2}>
+              <Grid item lg={12} md={12} sm={12} xs={12}>
+                <TextField
+                  type="text"
+                  name="name"
+                  value={data.name}
+                  onChange={handleChange}
+                  errorMessages={["This field is required"]}
+                  label="Playlist Name"
+                  validators={["required"]}
+                />
+                <TextField
+                  type="text"
+                  name="description"
+                  value={data.description}
+                  onChange={handleChange}
+                  errorMessages={["This field is required"]}
+                  label="Description"
+                  validators={["required"]}
+                />
               </Grid>
-              <Grid sm={6}>
+              <Grid item sm={6}>
                 <Button color="primary" variant="contained" type="submit">
-                  <span>Submit</span>
+                  Submit
                 </Button>
                 <Button
                   variant="outlined"
@@ -108,11 +107,11 @@ export default function NewPlaylistDialog(props) {
                   style={{ marginLeft: "10px" }}
                   onClick={handleClose}
                 >
-                  cancel
+                  Cancel
                 </Button>
               </Grid>
-            </ValidatorForm>
-          </div>
+            </Grid>
+          </ValidatorForm>
         </DialogContent>
       </Dialog>
     </div>

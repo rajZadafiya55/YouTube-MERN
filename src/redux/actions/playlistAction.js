@@ -1,4 +1,3 @@
-// src/redux/actions/playlistActions.js
 import axios from "axios";
 import Swal from "sweetalert2";
 import {
@@ -109,16 +108,17 @@ const createPlaylistAction = (playlist) => ({
   payload: playlist,
 });
 
-export const createPlaylist = (data,_id) => (dispatch) => {
+export const createPlaylist = (data, _id) => (dispatch) => {
   axios
     .post(`${APIHttp}playlist`, data, Header)
     .then(async (res) => {
+      console.log('Created Playlist:', res.data.data);
       await dispatch(createPlaylistAction(res.data.data));
       commonNotify("Playlist Created Successfully!");
-      fetchPlaylists(_id);
+      dispatch(fetchPlaylists(_id));
     })
     .catch((err) => {
-      console.log(err);
+      console.log('Create Playlist Error:', err);
       showErrorToast("Failed to create playlist");
     });
 };
