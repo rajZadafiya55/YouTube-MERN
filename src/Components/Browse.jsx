@@ -1,5 +1,5 @@
 import "../Css/browse.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
@@ -16,16 +16,14 @@ const Browse = () => {
   const navigate = useNavigate();
 
   const searchTerm = useSelector((state) => state.videos.searchTerm);
-
   const AllVideo = useSelector((state) => state.videos.videosDetails);
+
   const [videoDetails, setVideoDetails] = useState([]);
   const [filteredVideos, setFilteredVideos] = useState([]);
-
   const [menuClicked, setMenuClicked] = useState(() => {
     const menu = localStorage.getItem("menuClicked");
     return menu ? JSON.parse(menu) : false;
   });
-
   const [TagsSelected, setTagsSelected] = useState("All");
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState(() => {
@@ -87,31 +85,38 @@ const Browse = () => {
   }, [theme]);
 
   useEffect(() => {
-    dispatch(getAllVideos());
-  }, []);
+    const fetchData = async () => {
+      setLoading(true);
+      await dispatch(getAllVideos());
+      setLoading(false);
+    };
+    fetchData();
+  }, [dispatch]);
 
   useEffect(() => {
     setVideoDetails(AllVideo);
   }, [AllVideo]);
 
-  useEffect(() => {
+  const filteredVideosMemo = useMemo(() => {
     if (searchTerm) {
-      const filtered = videoDetails.filter(
+      return videoDetails.filter(
         (video) =>
           video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           video.owner[0].username
             .toLowerCase()
             .includes(searchTerm.toLowerCase())
       );
-      setFilteredVideos(filtered);
-    } else {
-      setFilteredVideos(videoDetails);
     }
+    return videoDetails;
   }, [searchTerm, videoDetails]);
+
+  useEffect(() => {
+    setFilteredVideos(filteredVideosMemo);
+  }, [filteredVideosMemo]);
 
   return (
     <>
-      {/*===================== catagory filter section ============================ */}
+      {/*===================== category filter section ============================ */}
 
       <SkeletonTheme
         baseColor={theme ? "#353535" : "#aaaaaa"}
