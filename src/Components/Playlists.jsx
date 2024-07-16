@@ -391,8 +391,10 @@ const Playlists = () => {
                           onClick={() => {
                             if (token) {
                               navigate(`/video/${element._id}`);
+                              window.location.reload();
                             } else {
                               navigate(`/video/${element._id}`);
+                              window.location.reload();
                             }
                           }}
                         >
@@ -709,8 +711,10 @@ const Playlists = () => {
                           onClick={() => {
                             if (token) {
                               navigate(`/video/${element._id}`);
+                              window.location.reload();
                             } else {
                               navigate(`/video/${element._id}`);
+                              window.location.reload();
                             }
                           }}
                         >
