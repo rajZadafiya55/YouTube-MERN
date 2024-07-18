@@ -1,5 +1,5 @@
 import "../Css/browse.css";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
@@ -71,12 +71,6 @@ const Browse = () => {
   ];
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 700);
-  }, []);
-
-  useEffect(() => {
     if (theme === false && !window.location.href.includes("/studio")) {
       document.body.style.backgroundColor = "white";
     } else if (theme === true && !window.location.href.includes("/studio")) {
@@ -116,116 +110,28 @@ const Browse = () => {
 
   return (
     <>
-      {/*===================== category filter section ============================ */}
-
       <SkeletonTheme
         baseColor={theme ? "#353535" : "#aaaaaa"}
         highlightColor={theme ? "#444" : "#b6b6b6"}
       >
         <div
           className={theme ? "browse" : "browse light-mode"}
-          style={loading === true ? { display: "flex" } : { display: "none" }}
+          style={loading ? { display: "flex" } : { display: "none" }}
         >
           <div
             className={
-              menuClicked === true
+              menuClicked
                 ? `browse-data ${theme ? "" : "light-mode"}`
                 : `browse-data2 ${theme ? "" : "light-mode"}`
             }
-            style={menuClicked === false ? { left: "74px" } : { left: "250px" }}
+            style={menuClicked ? { left: "250px" } : { left: "74px" }}
           >
             <div
               className={
                 theme ? "popular-categories" : "popular-categories light-mode"
               }
             >
-              {Tags.map((element, index) => {
-                return (
-                  <div
-                    className={
-                      TagsSelected === element
-                        ? `top-tags ${theme ? "tag-color" : "tag-color-light"}`
-                        : `top-tags ${theme ? "" : "tagcolor-newlight"}`
-                    }
-                    key={index}
-                  >
-                    <p>{element}</p>
-                  </div>
-                );
-              })}
-            </div>
-            <div
-              className="video-section"
-              style={{
-                marginLeft: menuClicked ? "40px" : "40px",
-              }}
-            >
-              <div className="uploaded-videos">
-                {Array.from({ length: 16 }).map((_, index) => (
-                  <>
-                    <div className="video-data">
-                      <Skeleton
-                        key={index}
-                        count={1}
-                        width={330}
-                        height={186}
-                        style={{ borderRadius: "12px" }}
-                        className="sk-browse-vid"
-                      />
-                      <div className="channel-basic-data">
-                        <Skeleton
-                          key={index}
-                          count={1}
-                          width={40}
-                          height={40}
-                          style={{ borderRadius: "100%", marginTop: "40px" }}
-                          className="sk-browse-profile"
-                        />
-                        <Skeleton
-                          key={index}
-                          count={2}
-                          width={250}
-                          height={15}
-                          style={{
-                            position: "relative",
-                            top: "40px",
-                            left: "15px",
-                          }}
-                          className="sk-browse-title"
-                        />
-                      </div>
-                    </div>
-                  </>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </SkeletonTheme>
-
-      <div
-        className={theme ? "browse" : "browse light-mode"}
-        style={
-          loading === true
-            ? { visibility: "hidden", display: "none" }
-            : { visibility: "visible", display: "flex" }
-        }
-      >
-        <div
-          className={
-            menuClicked === true
-              ? `browse-data ${theme ? "" : "light-mode"}`
-              : `browse-data2 ${theme ? "" : "light-mode"}`
-          }
-          style={menuClicked === false ? { left: "74px " } : { left: "250px " }}
-        >
-          <div
-            className={
-              theme ? "popular-categories" : "popular-categories light-mode"
-            }
-          >
-            {Tags.map((element, index) => {
-              return (
+              {Tags.map((element, index) => (
                 <div
                   className={
                     TagsSelected === element
@@ -236,30 +142,99 @@ const Browse = () => {
                 >
                   <p>{element}</p>
                 </div>
-              );
-            })}
+              ))}
+            </div>
+            <div
+              className="video-section"
+              style={{
+                marginLeft: "40px",
+              }}
+            >
+              <div className="uploaded-videos">
+                {Array.from({ length: 16 }).map((_, index) => (
+                  <div className="video-data" key={index}>
+                    <Skeleton
+                      count={1}
+                      width={330}
+                      height={186}
+                      style={{ borderRadius: "12px" }}
+                      className="sk-browse-vid"
+                    />
+                    <div className="channel-basic-data">
+                      <Skeleton
+                        count={1}
+                        width={40}
+                        height={40}
+                        style={{ borderRadius: "100%", marginTop: "40px" }}
+                        className="sk-browse-profile"
+                      />
+                      <Skeleton
+                        count={2}
+                        width={250}
+                        height={15}
+                        style={{
+                          position: "relative",
+                          top: "40px",
+                          left: "15px",
+                        }}
+                        className="sk-browse-title"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </SkeletonTheme>
+
+      <div
+        className={theme ? "browse" : "browse light-mode"}
+        style={
+          loading
+            ? { visibility: "hidden", display: "none" }
+            : { visibility: "visible", display: "flex" }
+        }
+      >
+        <div
+          className={
+            menuClicked
+              ? `browse-data ${theme ? "" : "light-mode"}`
+              : `browse-data2 ${theme ? "" : "light-mode"}`
+          }
+          style={menuClicked ? { left: "250px" } : { left: "74px" }}
+        >
+          <div
+            className={
+              theme ? "popular-categories" : "popular-categories light-mode"
+            }
+          >
+            {Tags.map((element, index) => (
+              <div
+                className={
+                  TagsSelected === element
+                    ? `top-tags ${theme ? "tag-color" : "tag-color-light"}`
+                    : `top-tags ${theme ? "" : "tagcolor-newlight"}`
+                }
+                key={index}
+              >
+                <p>{element}</p>
+              </div>
+            ))}
           </div>
 
-          {/*===================== video thumbnail card detail ============================ */}
           <div
             className="video-section"
             style={{
-              marginLeft: menuClicked ? "40px" : "40px",
+              marginLeft: "40px",
             }}
           >
             <div
               className="uploaded-videos"
-              style={
-                menuClicked === true
-                  ? {
-                      paddingRight: "50px",
-                      display: TagsSelected === "All" ? "grid" : "none",
-                    }
-                  : {
-                      paddingRight: "0px",
-                      display: TagsSelected === "All" ? "grid" : "none",
-                    }
-              }
+              style={{
+                paddingRight: menuClicked ? "50px" : "0px",
+                display: TagsSelected === "All" ? "grid" : "none",
+              }}
             >
               {filteredVideos && filteredVideos.length > 0 ? (
                 filteredVideos.map((element, index) => {
