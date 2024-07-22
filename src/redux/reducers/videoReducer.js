@@ -11,10 +11,11 @@ import {
 } from "../types";
 
 export const initialState = {
-  videosDetails: [], //for store all video data
-  selectedVideo: null, //for store single seleceted video data
+  videosDetails: [], // for storing all video data
+  selectedVideo: null, // for storing single selected video data
   isWatchLater: null,
   searchTerm: "",
+  loading: false, // loading state
 };
 
 const videoReducer = (state = initialState, action) => {
@@ -62,6 +63,7 @@ const videoReducer = (state = initialState, action) => {
         ...state,
         searchTerm: action.payload,
       };
+
     case VIDEO_VIEWS:
       const updatedVideoDetails = state.videosDetails.map((video) => {
         if (video.id === action.payload) {
@@ -73,6 +75,13 @@ const videoReducer = (state = initialState, action) => {
         ...state,
         videosDetails: updatedVideoDetails,
       };
+
+    case 'SET_LOADING':
+      return {
+        ...state,
+        loading: action.payload,
+      };
+
     default:
       return state;
   }

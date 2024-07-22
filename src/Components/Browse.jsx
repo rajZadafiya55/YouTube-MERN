@@ -15,8 +15,11 @@ const Browse = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const searchTerm = useSelector((state) => state.videos.searchTerm);
+  const { loading } = useSelector((state) => state.videos);
   const AllVideo = useSelector((state) => state.videos.videosDetails);
+
+  const searchTerm = useSelector((state) => state.videos.searchTerm);
+  // const AllVideo = useSelector((state) => state.videos.videosDetails);
 
   const [videoDetails, setVideoDetails] = useState([]);
   const [filteredVideos, setFilteredVideos] = useState([]);
@@ -25,7 +28,7 @@ const Browse = () => {
     return menu ? JSON.parse(menu) : false;
   });
   const [TagsSelected, setTagsSelected] = useState("All");
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState(() => {
     const Dark = localStorage.getItem("Dark");
     return Dark ? JSON.parse(Dark) : true;
@@ -80,9 +83,9 @@ const Browse = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
+      // setLoading(true);
       await dispatch(getAllVideos());
-      setLoading(false);
+      // setLoading(false);
     };
     fetchData();
   }, [dispatch]);
