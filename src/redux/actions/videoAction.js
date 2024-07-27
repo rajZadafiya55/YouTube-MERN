@@ -20,12 +20,13 @@ import {
 import { getAllChannelVideos } from "./dashboardAction";
 import { getUserWatchHistory } from "./userAction";
 
+// Action creators
+
 const setLoading = (isLoading) => ({
-  type: 'SET_LOADING',
+  type: "SET_LOADING",
   payload: isLoading,
 });
 
-// Action creators
 const addVideo = () => ({ type: ADD_VIDEOS });
 
 const deleteVideo = (videoId) => ({
@@ -64,22 +65,19 @@ export const getAllVideos = () => async (dispatch) => {
     dispatch(setLoading(false)); // Set loading state to false
   }
 };
-
-export const getSelectedVideo = (id) => async (dispatch) => {
-  dispatch(setLoading(true));
-  try {
-    const res = await axios.get(`${APIHttp}videos/${id}`, Header);
-    dispatch(getVideoById(res.data.data));
-  } catch (err) {
-    console.log(err);
-  } finally {
-    dispatch(setLoading(false));
-  }
+export const getSelectedVideo = (id) => (dispatch) => {
+  axios
+    .get(`${APIHttp}videos/${id}`, Header)
+    .then((res) => {
+      dispatch(getVideoById(res.data.data));
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 export const addVideoData = (formData, setLoading, setIsClicked) => {
-  return async (dispatch) => {
-    dispatch(setLoading(true));
+  return (dispatch) => {
     const formDataToSend = new FormData();
 
     formDataToSend.append("title", formData.title || "");
@@ -89,88 +87,92 @@ export const addVideoData = (formData, setLoading, setIsClicked) => {
     formDataToSend.append("videoFile", formData.videoFile);
     formDataToSend.append("thumbnail", formData.thumbnail);
 
-    try {
-      const res = await axios.post(`${APIHttp}videos`, formDataToSend, VideoHeader);
-      if (res.data.success) {
-        showToast("Video added successfully!");
-        setIsClicked(false);
-        await dispatch(addVideo());
-        dispatch(getAllChannelVideos());
-      } else {
-        showErrorToast("Failed to upload video");
-      }
-    } catch (err) {
-      console.log(err);
-      showErrorToast("Failed to upload video");
-    } finally {
-      dispatch(setLoading(false));
-      setLoading(false);
-    }
+    axios
+      .post(`${APIHttp}videos`, formDataToSend, VideoHeader)
+      .then(async (res) => {
+        if (res.data.success === true) {
+          showToast("Video added successfully!");
+          setLoading(false);
+          setIsClicked(false);
+          await dispatch(addVideo());
+          dispatch(getAllChannelVideos());
+        } else {
+          showErrorToast("Failed to upload video");
+          setLoading(true);
+          setIsClicked(true);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 };
 
-export const deleteVideoDetails = (videoId) => async (dispatch) => {
-  dispatch(setLoading(true));
-  try {
-    const res = await axios.delete(`${APIHttp}videos/${videoId}`, Header);
-    if (res.data.success) {
-      showToast("Video Deleted successfully!");
+export const deleteVideoDetails = (videoId) => (dispatch) => {
+  axios
+    .delete(`${APIHttp}videos/${videoId}`, Header)
+    .then(async (res) => {
       await dispatch(deleteVideo(videoId));
       dispatch(getAllChannelVideos());
-    }
-  } catch (err) {
-    console.log(err);
-    showErrorToast("Failed to delete video");
-  } finally {
-    dispatch(setLoading(false));
-  }
+      if (res.data.success) {
+        showToast("Video Deleted successfully!");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      showErrorToast("Failed to delete video");
+    });
 };
 
-export const updateVideoData = (videoId, formData, navigate) => async (dispatch) => {
-  dispatch(setLoading(true));
-  const formDataToSend = new FormData();
+export const updateVideoData = (videoId, formData, navigate) => {
+  return (dispatch) => {
+    const formDataToSend = new FormData();
 
-  formDataToSend.append("title", formData.title || "");
-  formDataToSend.append("description", formData.description || "");
-  formDataToSend.append("isPublished", formData.isPublished || false);
-  formDataToSend.append("thumbnail", formData.thumbnail);
+    formDataToSend.append("title", formData.title || "");
+    formDataToSend.append("description", formData.description || "");
+    formDataToSend.append("isPublished", formData.isPublished || false);
+    formDataToSend.append("thumbnail", formData.thumbnail);
 
-  try {
-    const res = await axios.patch(`${APIHttp}videos/${videoId}`, formData, VideoHeader);
-    if (res.data.success) {
-      await dispatch(updateVideo(res.data.data));
-      dispatch(getAllChannelVideos());
-      navigate("/studio/video");
-      showToast("Video updated successfully!");
-    } else {
-      showErrorToast("Failed to update video");
-    }
-  } catch (err) {
-    console.log(err);
-    showErrorToast("Failed to update video");
-  } finally {
-    dispatch(setLoading(false));
-  }
+    axios
+      .patch(`${APIHttp}videos/${videoId}`, formData, VideoHeader)
+      .then(async (res) => {
+        if (res.data.success) {
+          await dispatch(updateVideo(res.data.data));
+          dispatch(getAllChannelVideos());
+          navigate("/studio/video");
+          showToast("Video updated successfully!");
+        } else {
+          showErrorToast("Failed to update video");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        showErrorToast("Failed to update video");
+      });
+  };
 };
 
-export const toggleWatchLater = (id, isWatchLater) => async (dispatch) => {
-  dispatch(setLoading(true));
-  try {
-    const res = await axios.patch(`${APIHttp}videos/toggle/watchlater/${id}`, { isWatchLater }, Header);
-    const updatedWLStatus = res.data.data.videoStatus;
-    await dispatch(getWatchlater(updatedWLStatus));
-    dispatch(getUserWatchHistory());
+export const toggleWatchLater = (id, isWatchLater) => {
+  return async (dispatch) => {
+    try {
+      const res = await axios.patch(
+        `${APIHttp}videos/toggle/watchlater/${id}`,
+        { isWatchLater },
+        Header
+      );
+      const updatedWLStatus = res.data.data.videoStatus;
+      await dispatch(getWatchlater(updatedWLStatus));
+      dispatch(getUserWatchHistory());
 
-    if (updatedWLStatus) {
-      commonNotify("Video saved to Watch Later.!");
-    } else {
-      commonNotify("Video unsaved to Watch Later.!");
+      if (updatedWLStatus) {
+        commonNotify("Video saved to Watch Later.!");
+      } else {
+        commonNotify("Video unsaved to Watch Later.!");
+      }
+    } catch (err) {
+      console.log(err);
     }
-  } catch (err) {
-    console.log(err);
-  } finally {
-    dispatch(setLoading(false));
-  }
+  };
 };
 
 export const setSearch = (searchTerm) => ({

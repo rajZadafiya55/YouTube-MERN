@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
-export const APIHttp = "https://youtube-api-ucsp.onrender.com/api/v1/";
-export const FrontendDomain = "https://yoouttube.vercel.app/";
+export const APIHttp = "http://localhost:5000/api/v1/";
+export const FrontendDomain = "http://localhost:5173/";
 import Uavatar from "../img/Uavatar.png";
 
 // const userData = JSON.parse(localStorage.getItem('loginData'));

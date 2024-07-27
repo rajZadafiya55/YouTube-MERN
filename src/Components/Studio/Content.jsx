@@ -546,6 +546,7 @@ const Content = () => {
                   if (Progress !== 100) {
                     CancelNotify("Video upload was cancelled!");
                     setIsClicked(false);
+                    window.location.reload();
                   } else if (
                     Progress === 100 &&
                     formData.isPublished === "true"
@@ -554,6 +555,7 @@ const Content = () => {
                   }
                   if (isClicked === true) {
                     clearFormState();
+                    window.location.reload();
                   }
                 }}
               />
