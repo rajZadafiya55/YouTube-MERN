@@ -14,6 +14,9 @@ import Box from "@mui/material/Box";
 import MainCard from "./Chart/MainCard";
 import MonthlyBarChart from "./Chart/MonthlyBarChart";
 import UniqueVisitorCard from "./Chart/UniqueVisitorCard";
+import DuoIcon from "@mui/icons-material/Duo";
+import Tooltip from "@mui/material/Tooltip";
+
 // ====================================================
 import "../../Css/Studio/dashboard.css";
 import { useQuery } from "@tanstack/react-query";
@@ -21,8 +24,13 @@ import axios from "axios";
 import { APIHttp, Header } from "../../constant/Api";
 import { useNavigate } from "react-router-dom";
 
+// =====================================================
+import { Button, styled, Dialog } from "@mui/material";
+import { _id } from "../../constant/Api";
+
 const Dashboard = () => {
   const navigate = useNavigate();
+
   const [menu, setMenu] = useState(() => {
     const menu = localStorage.getItem("studioMenuClicked");
     return menu ? JSON.parse(menu) : false;
@@ -66,6 +74,12 @@ const Dashboard = () => {
   });
 
   if (isLoading) return <div>Loading...</div>;
+  // ===================================================================
+
+  const handleSubmit = async (e) => {
+    navigate(`/room/${_id}`);
+    window.location.reload();
+  };
 
   return (
     <div className="studio-dashboard-section">
@@ -78,8 +92,16 @@ const Dashboard = () => {
         }}
       >
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
-          <Grid item xs={12} sx={{ mb: -2.25 }}>
+          <Grid item xs={11} sx={{ mb: -2.25 }}>
             <Typography variant="h5">Dashboard</Typography>
+          </Grid>
+          <Grid item xs={1} sx={{ mb: -2.25 }}>
+            <Tooltip title="Your Room">
+              <DuoIcon
+                onClick={handleSubmit}
+                sx={{ width: "50px", height: "50px", cursor: "pointer" }}
+              />
+            </Tooltip>
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <MainCard contentSX={{ p: 2.25 }} sx={{ boxShadow: 3 }}>

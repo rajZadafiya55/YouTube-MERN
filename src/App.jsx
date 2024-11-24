@@ -21,6 +21,7 @@ import Layout from "./Components/Layout";
 import AdminLayout from "./Components/Studio/AdminLayout";
 import Layout3 from "./Components/Studio/Layout3";
 import PlayList from "./Components/Studio/PlayList";
+import Room from "./Components/Studio/Room";
 
 function App() {
   const token = localStorage.getItem("userToken");
@@ -50,6 +51,18 @@ function App() {
             token ? (
               <AdminLayout>
                 <Studio />
+              </AdminLayout>
+            ) : (
+              <Error />
+            )
+          }
+        />
+        <Route
+          path="/room/:roomId"
+          element={
+            token ? (
+              <AdminLayout>
+                <Room />
               </AdminLayout>
             ) : (
               <Error />

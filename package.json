@@ -19,6 +19,7 @@
     "@mui/x-charts": "^7.5.1",
     "@mui/x-data-grid": "^7.6.1",
     "@tanstack/react-query": "^5.39.0",
+    "@zegocloud/zego-uikit-prebuilt": "^2.8.0",
     "animate.css": "^4.1.1",
     "axios": "^1.6.8",
     "dotenv": "^16.1.4",
